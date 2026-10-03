@@ -28,7 +28,7 @@ Cozmo AI take-home: iPhone captures → dimensioned floor plans with intervals. 
 - **Fix loop** ([docs/fix_loop.md](docs/fix_loop.md)): shipped Fix 01 (rooms found
   2/4 → 4/4), Fix 01c (hall fragment gone, IoU 0.59 → 0.79), Fix 02 ceiling (the damage
   room's three scans agree to 1 cm). Fix 02's wall half missed its prediction twice and is
-  parked on branch `fix02-wall-occluder`; the cause is most likely drift. Tags
+  not shipped (closed, unmerged: [PR #1](https://github.com/bedantsharma/YC-assignment/pull/1)); the cause is most likely drift. Tags
   `fix01-before/after`, `fix01c-before/after`, `fix02-before/after`.
 
 ### Video tier (`src/floorplan/video.py`, `mvs.py`, `intervals.py`)
