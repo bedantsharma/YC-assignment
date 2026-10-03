@@ -38,6 +38,11 @@ def test_widen_adds_scale_and_surface_terms_in_quadrature():
     assert m.value - m.lo == pytest.approx(np.hypot(0.05, extra), abs=1e-4)
 
 
+def test_photo_scale_bias_is_its_own():
+    pts = np.array([[0.964, 0.0, 0.930]])
+    assert np.allclose(correct_scale(pts, "pi3x", "photo"), [[1.0, 0.0, 1.0]])
+
+
 def test_correct_scale_divides_out_horizontal_and_vertical_bias():
     pts = np.array([[0.964, -1.928, 0.914], [0.0, 0.0, 2.742]])
     out = correct_scale(pts, "pi3x")

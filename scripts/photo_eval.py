@@ -26,10 +26,13 @@ def main() -> None:
     ap.add_argument("folder", type=Path)
     ap.add_argument("--model", default="pi3x", choices=["pi3x", "mapanything"])
     ap.add_argument("--every", type=int, default=1, help="keep every n-th photo per room")
+    ap.add_argument("--room", help="reconstruct only this room folder")
     ap.add_argument("--out", type=Path, default=Path("outputs/photo_eval"))
     args = ap.parse_args()
 
     rooms = load_photos(args.folder).rooms
+    if args.room:
+        rooms = {args.room: rooms[args.room]}
     paths = [p for photos in rooms.values() for p in photos[:: args.every]]
     images = load_images(paths)
     if len(images) <= VIDEO_WINDOW:
@@ -47,8 +50,8 @@ def main() -> None:
         p = voxel_downsample(rec.view_points[i][rec.view_keep[i]].astype(float), 0.02)
         pts.append(p)
         view.append(np.full(len(p), i, np.int16))
-    cap = args.folder.parent.name
-    k = 8 // args.every
+    cap = args.folder.parent.name + (f"@{args.room}" if args.room else "")
+    k = args.folder.name.removeprefix("k") + (f"e{args.every}" if args.every > 1 else "")
     args.out.mkdir(parents=True, exist_ok=True)
     out = args.out / f"{cap}__{args.model}__k{k}.npz"
     names = np.array([f"{p.parent.name}/{p.name}" for p in paths])

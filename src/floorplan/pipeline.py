@@ -25,6 +25,7 @@ MAX_LIDAR_FRAMES = 3000  # more adds run time, not accuracy (depth frames overla
 VIDEO_FRAMES = 30  # 12.8 GB peak on a 16 GB Mac (docs/model_spike.md)
 VIDEO_WINDOW = 30  # frames per model pass; more frames are reconstructed in chained windows
 VIDEO_OVERLAP = 10  # frames shared by consecutive windows (src/floorplan/chunks.py)
+PHOTO_WINDOW = 32  # photos per model pass: 8 per room x 4 rooms; 11.4 GB on the M4
 VIDEO_VOXEL_M = 0.02
 MODEL_NAMES = {"pi3x": "Pi3X (CC BY-NC weights)", "mapanything": "MapAnything (Apache 2.0)"}
 
@@ -62,11 +63,11 @@ def _run_video(path: Path, capture: Capture, n_frames: int, up: str, model: str)
     note = (
         f"used {len(frames)} frames of {video.name}; up = stored frame's {orient.up_side} ({how})"
     )
-    return _from_images(capture, frames, model, "video", timing, note)
+    return _from_images(capture, frames, model, "video", timing, [note])
 
 
 def _run_photos(path: Path, capture: Capture, model: str) -> Result:
-    from floorplan.photos import load_images
+    from floorplan.photos import few_photo_warnings, load_images
 
     timing = {}
     start = time.perf_counter()
@@ -78,7 +79,8 @@ def _run_photos(path: Path, capture: Capture, model: str) -> Result:
         f"used {len(images)} photos in {len(rooms)} folders "
         f"({', '.join(f'{r}: {len(p)}' for r, p in rooms.items())}), reconstructed jointly"
     )
-    return _from_images(capture, images, model, "photo", timing, note, folders)
+    notes = [note, *few_photo_warnings(rooms)]
+    return _from_images(capture, images, model, "photo", timing, notes, folders)
 
 
 def _from_images(
@@ -87,7 +89,7 @@ def _from_images(
     model: str,
     tier: str,
     timing: dict,
-    note: str,
+    notes: list[str],
     folders: list[str] | None = None,
 ) -> Result:
     """Shared geometry of the video and photo tiers: images -> metric cloud -> plan."""
@@ -97,25 +99,26 @@ def _from_images(
 
     start = time.perf_counter()
     links = []
-    if len(images) <= VIDEO_WINDOW:
+    window = PHOTO_WINDOW if tier == "photo" else VIDEO_WINDOW
+    if len(images) <= window:
         rec = reconstruct(images, model)
         joint = f"none needed: all {tier} images reconstructed jointly in one pass"
     else:
         rec, links = chain(
             len(images),
             lambda idx: reconstruct([images[i] for i in idx], model),
-            VIDEO_WINDOW,
+            window,
             VIDEO_OVERLAP,
         )
         joint = (
-            f"{len(links) + 1} windows of {VIDEO_WINDOW} images ({VIDEO_OVERLAP} shared), "
+            f"{len(links) + 1} windows of {window} images ({VIDEO_OVERLAP} shared), "
             "chained by similarity fits on the shared images' point maps"
         )
     timing["reconstruction"] = round(time.perf_counter() - start, 3)
 
     start = time.perf_counter()
     vertical = estimate_up(rec.points, rec.cam_poses)
-    points = voxel_downsample(correct_scale(z_up(rec.points, vertical), model), VIDEO_VOXEL_M)
+    points = voxel_downsample(correct_scale(z_up(rec.points, vertical), model, tier), VIDEO_VOXEL_M)
     # photos see walls only in parts: accept rooms enclosed by fewer observed walls
     sparse = ENCLOSED_FRACTION_SPARSE if tier == "photo" else ENCLOSED_FRACTION
     plan = build_plan(points, sparse)
@@ -123,9 +126,10 @@ def _from_images(
     if folders is not None:
         from floorplan.photos import label_rooms
 
-        cams = correct_scale(z_up(rec.cam_poses[:, :3, 3], vertical), model)
+        cams = correct_scale(z_up(rec.cam_poses[:, :3, 3], vertical), model, tier)
         labels = label_rooms(plan.rooms, plan.rotation_deg, cams[:, :2], folders)
     rel_h, rel_v = RESIDUAL_REL[(tier, model)]
+    bias_h, bias_v = SCALE_BIAS[(tier, model)]
     rooms = [widen_room(r, rel_h, rel_v, VIDEO_SURFACE_M) for r in plan.rooms]
     timing["geometry"] = round(time.perf_counter() - start, 3)
 
@@ -137,10 +141,10 @@ def _from_images(
             round(total, 4), round(total - half, 4), round(total + half, 4), "m2"
         )
     warnings = [
-        note,
+        *notes,
         f"reconstruction: {MODEL_NAMES[rec.model]}, {rec.seconds:.0f} s",
-        f"scale corrected by the model's measured bias (horizontal x{1 / SCALE_BIAS[model][0]:.3f},"
-        f" vertical x{1 / SCALE_BIAS[model][1]:.3f}; damage room vs LiDAR); intervals widened by"
+        f"scale corrected by the model's measured bias (horizontal x{1 / bias_h:.3f},"
+        f" vertical x{1 / bias_v:.3f}; damage room vs LiDAR); intervals widened by"
         f" {100 * rel_h:.0f}% horizontal, {100 * rel_v:.0f}% vertical and"
         f" {100 * VIDEO_SURFACE_M:.0f} cm surface error (provisional until ground truth)",
         *[

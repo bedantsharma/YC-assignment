@@ -4,11 +4,11 @@ Per room, video / LiDAR: the longest wall, the square root of the floor area (a 
 measure) and the ceiling height. Not the bounding box: a spurious spur in one plan
 stretches it (Pi3X on c_damage_02: 1.16).
 
-Matching rooms (evaluation only): the video cloud is moved into the LiDAR frame by the
-rotation of a similarity fit of its camera centres to ARKit's, and a translation that puts
-the camera centroids together. The fit's scale is NOT applied, so every length keeps the
-model's own metric scale. Each LiDAR room is then paired with the video room whose floor
-overlaps it most. C has no ground truth yet, so LiDAR is the reference.
+Matching rooms (evaluation only): the video cloud is levelled as the tier does it (wall
+normals), then turned and shifted in the floor plane onto ARKit's camera positions. No
+scale is applied, so every length keeps the model's own metric scale. Each LiDAR room is
+then paired with the video room whose floor overlaps it most. C has no ground truth yet,
+so LiDAR is the reference.
 
 Inputs: video reconstructions as .npz (outputs/bakeoff/ or outputs/video_eval/,
 <capture>__<model>__<n>.npz).
@@ -23,11 +23,10 @@ import numpy as np
 from matplotlib.path import Path as Poly
 
 from floorplan.capture import load_lidar
-from floorplan.chunks import umeyama
 from floorplan.lidar import build_plan
 from floorplan.pipeline import run
 from floorplan.plan2d import Grid
-from floorplan.video import duration
+from floorplan.video import duration, estimate_up, z_up
 
 FPS = 60  # Stray rgb.mp4: frame index = time * 60 = pose index
 CELL = 0.05
@@ -51,6 +50,21 @@ def overlap(pa: np.ndarray, pb: np.ndarray) -> float:
     return float((Poly(pa).contains_points(g) & Poly(pb).contains_points(g)).sum() * CELL**2)
 
 
+def place(pts: np.ndarray, poses: np.ndarray, c_ref: np.ndarray) -> np.ndarray:
+    """Level the cloud the way the tier does (vertical from wall normals), then turn and
+    shift it in the floor plane onto the reference cameras (ARKit, evaluation only). No
+    scale and no tilt from the reference: a 3D fit to a few cameras at one height can tilt
+    the floor (8 photos of c_damage_02: no room found after a 3D fit, one room without)."""
+    up = estimate_up(pts, poses)
+    p, c = z_up(pts, up), z_up(poses[:, :3, 3], up)
+    a, b = c[:, :2] - c[:, :2].mean(0), c_ref[:, :2] - c_ref[:, :2].mean(0)
+    u, _, vt = np.linalg.svd(b.T @ a)
+    r = u @ np.diag([1.0, np.sign(np.linalg.det(u @ vt))]) @ vt
+    out = p.copy()
+    out[:, :2] = (p[:, :2] - c[:, :2].mean(0)) @ r.T + c_ref[:, :2].mean(0)
+    return out
+
+
 def aligned_plan(path: Path, src: Path):
     d = np.load(path)
     pts, poses = d["points"].astype(float), d["poses"]
@@ -58,10 +72,7 @@ def aligned_plan(path: Path, src: Path):
     times = np.linspace(0.5, duration(src / "rgb.mp4") - 0.5, n)
     ref = load_lidar(src).poses
     idx = np.clip((times * FPS).round().astype(int), 0, len(ref) - 1)
-    c, c_ref = poses[:, :3, 3], ref[idx, :3, 3]
-    _, r, _ = umeyama(c, c_ref)
-    t = c_ref.mean(0) - r @ c.mean(0)  # no scale: lengths stay the model's own
-    return build_plan(pts @ r.T + t)
+    return build_plan(place(pts, poses, ref[idx, :3, 3]))
 
 
 def main() -> None:

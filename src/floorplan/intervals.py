@@ -21,21 +21,29 @@ import numpy as np
 from floorplan.output import Measurement, Room
 
 Z90 = 1.645
-# (horizontal, vertical), video / LiDAR
-SCALE_BIAS = {"pi3x": (0.964, 0.914), "mapanything": (0.935, 1.035)}
-# 1 sigma, per (tier, model). Photo: provisional copy of video until measured
+# (horizontal, vertical), image / LiDAR, per (tier, model). Photo, Pi3X: vertical from six
+# damage-room photo runs (ceilings 0.903-0.948, docs/photo_tier.md); horizontal as video
+# (protocol-style photo runs 0.954 / 0.970 agree). MapAnything photo: video values.
+SCALE_BIAS = {
+    ("video", "pi3x"): (0.964, 0.914),
+    ("video", "mapanything"): (0.935, 1.035),
+    ("photo", "pi3x"): (0.964, 0.930),
+    ("photo", "mapanything"): (0.935, 1.035),
+}
+# 1 sigma, per (tier, model). Photo: rooms with few photos come out small (coverage), so
+# horizontal is wider; vertical from the corrected photo ceilings (0.95-1.02)
 RESIDUAL_REL = {
     ("video", "pi3x"): (0.05, 0.02),
     ("video", "mapanything"): (0.06, 0.04),
-    ("photo", "pi3x"): (0.05, 0.02),
-    ("photo", "mapanything"): (0.06, 0.04),
+    ("photo", "pi3x"): (0.10, 0.03),
+    ("photo", "mapanything"): (0.10, 0.04),
 }
 VIDEO_SURFACE_M = 0.05
 
 
-def correct_scale(points: np.ndarray, model: str) -> np.ndarray:
+def correct_scale(points: np.ndarray, model: str, tier: str = "video") -> np.ndarray:
     """z-up cloud with the model's horizontal and vertical bias divided out."""
-    h, v = SCALE_BIAS[model]
+    h, v = SCALE_BIAS[(tier, model)]
     return points / np.array([h, h, v])
 
 

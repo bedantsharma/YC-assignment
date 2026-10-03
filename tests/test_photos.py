@@ -1,8 +1,10 @@
+from pathlib import Path
+
 import numpy as np
 from PIL import Image
 
 from floorplan.output import Measurement, Room
-from floorplan.photos import PHOTO_LONG_SIDE, label_rooms, load_images
+from floorplan.photos import PHOTO_LONG_SIDE, few_photo_warnings, label_rooms, load_images
 
 
 def _room(rid, x0, y0, x1, y1):
@@ -73,3 +75,8 @@ def test_photo_tier_end_to_end_names_rooms_from_folders(photo_capture, monkeypat
     labels = sorted(r.label for r in result.rooms)
     assert labels == ["Room 1 Kitchen", "Room 2 Hallway"]
     assert all(r.floor_area.lo < r.floor_area.value < r.floor_area.hi for r in result.rooms)
+
+
+def test_warns_about_folders_with_too_few_photos():
+    w = few_photo_warnings({"hall": [Path("a")] * 3, "kitchen": [Path("b")] * 6})
+    assert len(w) == 1 and "'hall': 3 photos" in w[0]

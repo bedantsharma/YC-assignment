@@ -20,6 +20,18 @@ from floorplan.output import Room
 from floorplan.plan2d import Grid
 
 PHOTO_LONG_SIDE = 960
+# Rooms with fewer photos than this came out 10-35% small in tests (part of the room never
+# seen; docs/photo_tier.md); with 5-7 protocol-style photos, within 3-5% on sqrt(area)
+MIN_PHOTOS_GOOD = 5
+
+
+def few_photo_warnings(rooms: dict[str, list[Path]]) -> list[str]:
+    return [
+        f"folder {name!r}: {len(photos)} photos; rooms with fewer than {MIN_PHOTOS_GOOD} came "
+        "out 10-35% small in tests (parts of the room never seen): take 5-8 per room"
+        for name, photos in rooms.items()
+        if len(photos) < MIN_PHOTOS_GOOD
+    ]
 
 
 def load_images(paths: list[Path]) -> list[Image.Image]:

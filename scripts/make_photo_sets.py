@@ -11,8 +11,13 @@ slots and the sharpest frame of each slot (variance of the Laplacian) is kept, l
 person taking K photos while walking around. Frames are upright (same orientation rule as
 the video tier), 960 px on the long side.
 
-Output: data/home_c/photos_sim/<capture>/k<K>/<room>/<NN>.jpg + manifest.json.
-Usage: uv run scripts/make_photo_sets.py c_home_01 c_damage_01 --k 8
+`--protocol` selects like a person following docs/capture_protocol.md instead (stand near
+a corner or wall, point across the room): per room, sharp frames taken away from the
+room's middle and facing towards it, with headings spread round the room. Uses the same
+ARKit poses, again only to build the test input. Output folder k<K>p.
+
+Output: data/home_c/photos_sim/<capture>/k<K>[p]/<room>/<NN>.jpg + manifest.json.
+Usage: uv run scripts/make_photo_sets.py c_home_01 c_damage_01 --k 8 [--protocol]
 """
 
 import argparse
@@ -32,6 +37,9 @@ PROBE_FPS = 4
 PROBE_W, PROBE_H = 160, 120
 LABEL_ROTATION_DEG = 89.55  # plan frame the room labels were drawn in (see the labels file)
 MIN_ROOM_S = 3.0  # rooms the camera passed through for less than this get no folder
+MIN_TURN = np.radians(20)  # protocol picks: no two within 20 deg of heading ...
+MIN_STEP = 0.5  # ... and 0.5 m of position
+MAX_TILT = np.radians(30)  # protocol picks: camera within 30 deg of level
 
 
 def probe(video: Path) -> np.ndarray:
@@ -82,6 +90,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("captures", nargs="+")
     ap.add_argument("--k", type=int, default=8, help="photos per room")
+    ap.add_argument("--protocol", action="store_true", help="corner/wall shots facing in")
     ap.add_argument("--out", type=Path, default=Path("data/home_c/photos_sim"))
     args = ap.parse_args()
 
@@ -98,6 +107,11 @@ def main() -> None:
         if gt["capture"] == cap:
             labels = {"rooms": gt["rooms"], "plan_rotation_deg": LABEL_ROTATION_DEG}
         room = np.array(rooms_at(src, times, labels))
+        poses = load_lidar(src).poses
+        pidx = np.clip((times * FPS).round().astype(int), 0, len(poses) - 1)
+        cam_xy, view_xy = poses[pidx, :2, 3], poses[pidx, :2, 2]  # OpenCV: column 2 = forward
+        level = np.abs(poses[pidx, 2, 2]) < np.sin(MAX_TILT)  # protocol photos are held level
+        tag = f"k{args.k}" + ("p" if args.protocol else "")
 
         manifest = {"capture": cap, "k": args.k, "up_side": up, "rooms": {}}
         for r in sorted(set(room) - {""}):
@@ -105,13 +119,44 @@ def main() -> None:
             if len(ts) / PROBE_FPS < MIN_ROOM_S:
                 continue
             sh = sharp[room == r]
-            picks = [int(np.argmax(s)) + int(sl[0]) for sl, s in _slots(sh, args.k)]
+            if args.protocol:
+                m = room == r
+                picks = _protocol_picks(cam_xy[m], view_xy[m], np.where(level[m], sh, 0.0), args.k)
+            else:
+                picks = [int(np.argmax(s)) + int(sl[0]) for sl, s in _slots(sh, args.k)]
             chosen = sorted(float(ts[i]) for i in picks)
             for j, t in enumerate(chosen):
-                save_frame(video, t, up, args.out / cap / f"k{args.k}" / r / f"{j:02d}.jpg")
+                save_frame(video, t, up, args.out / cap / tag / r / f"{j:02d}.jpg")
             manifest["rooms"][r] = {"seconds_in_room": len(ts) / PROBE_FPS, "times": chosen}
             print(f"{cap} {r}: {len(ts) / PROBE_FPS:.0f} s in room, {len(chosen)} photos")
-        (args.out / cap / f"k{args.k}" / "manifest.json").write_text(json.dumps(manifest, indent=2))
+        (args.out / cap / tag / "manifest.json").write_text(json.dumps(manifest, indent=2))
+
+
+def _protocol_picks(cam: np.ndarray, view: np.ndarray, sharp: np.ndarray, k: int) -> list[int]:
+    """Frames taken away from the room's middle, facing into it, headings spread out."""
+    centre = cam.mean(axis=0)
+    out = centre - cam
+    dist = np.linalg.norm(out, axis=1)
+    facing = np.einsum("ij,ij->i", view, out) / (np.linalg.norm(view, axis=1) * dist + 1e-9)
+    ok = (facing > 0.3) & (sharp > 0) & (sharp >= np.median(sharp[sharp > 0]))
+    score = np.where(ok, dist * facing, -np.inf)
+    heading = np.arctan2(view[:, 1], view[:, 0])
+    picks: list[int] = []
+    # headings spread round the room; relaxed if the walk gives too few, but never a near
+    # duplicate (within MIN_TURN of heading and MIN_STEP of position of an earlier pick)
+    for gap in (0.7 * 2 * np.pi / k, 0.35 * 2 * np.pi / k, MIN_TURN):
+        for i in np.argsort(-score):
+            if len(picks) == k or not np.isfinite(score[i]):
+                break
+            if picks:
+                turn = np.abs(np.angle(np.exp(1j * (heading[i] - heading[picks]))))
+                step = np.linalg.norm(cam[picks] - cam[i], axis=1)
+                if turn.min() < gap or ((turn < MIN_TURN) & (step < MIN_STEP)).any():
+                    continue
+            picks.append(int(i))
+        if len(picks) == k:
+            break
+    return picks
 
 
 def _slots(values: np.ndarray, k: int):
