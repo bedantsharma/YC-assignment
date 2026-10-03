@@ -21,3 +21,4 @@ outputs/
 .gitnexus/
 .idea/
 .DS_Store
+.ruff_cache/
