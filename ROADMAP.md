@@ -180,9 +180,13 @@ Sleep: Sun 01:00–08:00.
 
 Why: Cozmo expects all three tiers working, and the walk-in tier is chosen on the day.
 
-- [ ] **1 h spike:** run a pretrained multi-view reconstruction model (candidates: VGGT,
+- [x] **1 h spike:** run a pretrained multi-view reconstruction model (candidates: VGGT,
       MASt3R, MapAnything) on 30 frames from a provided `rgb.mp4`; check it runs on this Mac
-      and compare its geometry to LiDAR. Pick the model by result, not reputation
+      and compare its geometry to LiDAR. Pick the model by result, not reputation.
+      **Done Sat 21:45 ([docs/model_spike.md](docs/model_spike.md)):** MapAnything runs
+      (52 s / 30 frames, 12.8 GB peak); with upright frames scale 1.03 vs ARKit, cloud 5.8 cm
+      median from LiDAR, but room 11.1 vs 13.1 m². Sideways frames collapse it. VGGT and
+      MASt3R not tried
 - [ ] Metric scale: model's metric output, or a monocular metric-depth model, cross-checked
       against ceiling height priors
 - [ ] Video tier: sample frames → reconstruction → same backend as Phase 2
