@@ -20,6 +20,9 @@ CORNER_TRIM_M = 0.1  # ignore points this close to the edge's corners
 FACE_MIN_FRACTION = 0.3
 FACE_BIN_M = 0.01
 MIN_FACE_POINTS = 100
+FACE_TOP_PERCENTILE = 95
+OCCLUDER_MIN_RISE_M = 0.3  # a face behind reaching this much higher: the near one is furniture
+CEILING_CLEARANCE_M = 0.15  # face tops are measured below this distance under the ceiling
 UNSUPPORTED_SIGMA_M = 0.05  # edge with no wall behind it (open side, cut by segmentation)
 
 
@@ -72,20 +75,42 @@ def measure_room(
     shape = rectilinear_outline(mask, grid)
     h = points[:, 2] - floor_z
     ij = grid.cells(points[:, :2])
-    on_wall = walls[ij[:, 0], ij[:, 1]] & (h > WALL_BAND_M[0]) & (h < WALL_BAND_M[1])
-    wall_uv = grid.to_plan(points[on_wall, :2])
-    for k, edge in enumerate(shape.edges):
-        _snap_to_surface(edge, shape.polygon[k], shape.polygon[(k + 1) % len(shape.edges)], wall_uv)
-    shape = _shape(shape.edges)
-
     z = points[mask[ij[:, 0], ij[:, 1]], 2]
     if len(z):
         shape.floor = floor_level(z)
         shape.ceiling = ceiling_level(z, shape.floor.z)
-    return shape
+
+    # faces are found in the wall band; their tops are measured up to just under the
+    # ceiling, where furniture has stopped and only the wall continues
+    in_wall = walls[ij[:, 0], ij[:, 1]] & (h > WALL_BAND_M[0])
+    top = shape.ceiling.z - floor_z - CEILING_CLEARANCE_M if shape.ceiling else np.inf
+    tall = in_wall & (h < max(top, WALL_BAND_M[1]))
+    in_band = h[tall] < WALL_BAND_M[1]
+    wall_uv = grid.to_plan(points[tall, :2])
+    for k, edge in enumerate(shape.edges):
+        p, q = shape.polygon[k], shape.polygon[(k + 1) % len(shape.edges)]
+        _snap_to_surface(edge, p, q, wall_uv, h[tall], in_band)
+    snapped = _shape(shape.edges)
+    snapped.floor, snapped.ceiling = shape.floor, shape.ceiling
+    return snapped
 
 
-def _snap_to_surface(edge: Edge, p: np.ndarray, q: np.ndarray, wall_uv: np.ndarray) -> None:
+def _snap_to_surface(
+    edge: Edge,
+    p: np.ndarray,
+    q: np.ndarray,
+    wall_uv: np.ndarray,
+    wall_h: np.ndarray,
+    in_band: np.ndarray | None = None,
+) -> None:
+    """Move the edge onto the nearest wall face behind it (wall_h: heights above the floor).
+
+    Faces are found among the in_band points (default all); their tops use every point.
+
+    A face is skipped when a face behind it reaches OCCLUDER_MIN_RISE_M higher: it is
+    furniture standing in front of the wall. On a scan that stops low, both faces stop at
+    the same height and the nearest is kept.
+    """
     along = 1 - edge.axis
     lo, hi = sorted((p[along], q[along]))
     # counter-clockwise polygon: outward normal is the edge direction turned clockwise
@@ -98,13 +123,23 @@ def _snap_to_surface(edge: Edge, p: np.ndarray, q: np.ndarray, wall_uv: np.ndarr
         & (offset > -SEARCH_IN_M)
         & (offset < SEARCH_OUT_M)
     )
-    d = offset[near]
+    band = near & (True if in_band is None else in_band)
+    d = offset[band]
     if len(d) < MIN_FACE_POINTS:
         return
     counts, bins = np.histogram(d, bins=np.arange(-SEARCH_IN_M, SEARCH_OUT_M, FACE_BIN_M))
     counts = np.convolve(counts, np.ones(3) / 3, mode="same")
-    first = np.flatnonzero(counts >= FACE_MIN_FRACTION * counts.max())[0]
-    face = d[np.abs(d - (bins[first] + FACE_BIN_M / 2)) < 0.025]
+    dense = counts >= FACE_MIN_FRACTION * counts.max()
+    starts = np.flatnonzero(dense & ~np.r_[False, dense[:-1]])  # first bin of each dense run
+    centres = bins[starts] + FACE_BIN_M / 2
+    tops = [
+        np.percentile(wall_h[near & (np.abs(offset - c) < 0.025)], FACE_TOP_PERCENTILE)
+        for c in centres
+    ]
+    k = next(
+        k for k in range(len(centres)) if all(t < tops[k] + OCCLUDER_MIN_RISE_M for t in tops[k:])
+    )
+    face = d[np.abs(d - centres[k]) < 0.025]
     med = float(np.median(face))
     edge.coord += outward * med
     edge.sigma = max(float(1.4826 * np.median(np.abs(face - med))), 1e-3)
