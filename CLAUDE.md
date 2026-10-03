@@ -2,7 +2,8 @@
 
 Phone captures of a home → dimensioned floor plan (walls, wall lengths, floor area, ceiling
 height) with a confidence interval on every measurement. Built for the Cozmo AI "Applied AI"
-take-home (brief: `Applied AI.pdf`, gitignored). Current scope: the LiDAR tier only.
+take-home (brief: `Applied AI.pdf`, gitignored). All three input tiers (LiDAR, video, photos)
+are required. Scope: `requirements.md`; plan: `ROADMAP.md`; datasets: `docs/data_plan.md`.
 
 ## Commands
 
@@ -10,12 +11,15 @@ take-home (brief: `Applied AI.pdf`, gitignored). Current scope: the LiDAR tier o
 - `uv add <pkg>` / `uv add --dev <pkg>`: add dependencies
 - `uv run ruff check --fix . && uv run ruff format .`: run before every commit
 - `uv run scripts/fuse_topdown.py`: fuse all captures, write `outputs/topdown_overview.png`
+- `scripts/fetch_arkitscenes.sh [visit_id] [n_laser]`: download an ARKitScenes venue
 
 ## Layout
 
 - `src/floorplan/`: the pipeline package
 - `scripts/`: exploration and one-off analysis scripts
-- `data/raw/<capture-id>/`: Stray Scanner captures (gitignored, ~0.1–0.5 GB each)
+- `data/raw/<capture-id>/`: Cozmo's Stray Scanner captures, dataset A (gitignored)
+- `data/arkitscenes/`: ARKitScenes venue 421337 + laser scan, dataset B (gitignored)
+- `data/gt/`: hand-measured ground truth files (committed)
 - `outputs/`: generated plots and results (gitignored)
 
 ## Data conventions (verified against the captures)
@@ -30,8 +34,11 @@ take-home (brief: `Applied AI.pdf`, gitignored). Current scope: the LiDAR tier o
 - Scale `camera_matrix.csv` intrinsics from 1920x1440 down to the 256x192 depth resolution.
 - The three captures walk the **same multi-room apartment**. `c7d28f72c6` is the most
   complete and the only one with the ceiling visible (~3.07 m, tentative).
-- There is no tape or laser ground truth, so state accuracy claims as "consistent with
-  LiDAR", not "correct".
+- Dataset A has no ground truth, so state accuracy claims on it as "consistent with LiDAR".
+- ARKitScenes (B) differs from Stray Scanner: `.traj` poses are axis-angle + translation,
+  intrinsics are per-frame `.pincam` files, and video is a separate `.mov`.
+- Never measure ground truth with our own detection code: hand-measure into `data/gt/`.
+- Keep one room of the friend's capture (C) untouched until the walk-in rehearsal.
 
 ## Working rules
 

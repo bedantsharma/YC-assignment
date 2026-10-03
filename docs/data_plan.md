@@ -1,0 +1,66 @@
+# Data plan: which data feeds which experiment
+
+Three data sources, each covering gaps the others leave. Scoring weights refer to
+[requirements.md](../requirements.md).
+
+## Datasets
+
+| ID | Source | Device | What it contains | Ground truth | Limits |
+|---|---|---|---|---|---|
+| **A** | Cozmo's 3 Stray Scanner captures (`data/raw/`) | iPhone Pro (unknown model) | One multi-room apartment walked 3 times: LiDAR depth, confidence, poses, intrinsics, RGB video, IMU | None | No absolute accuracy; ceiling visible in only one capture |
+| **B** | ARKitScenes venue 421337 (`data/arkitscenes/`) | 2020 iPad Pro | One room captured 3 times: LiDAR depth, confidence, poses, intrinsics, RGB video | Faro laser scan (mm-accurate point cloud) | Single room; iPad, not iPhone; ground truth is a point cloud, not measured dimensions |
+| **C** | Friend's home ([checklist](friend_capture_checklist.md)) | iPhone 16 Pro | Multi-room home at all three tiers, staged damage, repeat captures, Polycam export | Tape measurements | Tape precision ~0.5 cm; depends on the friend's time |
+
+### How B's ground truth is used
+
+The laser point cloud is not a list of wall lengths, and measuring it with our own wall
+detector would grade our code with itself. Instead we measure B's walls, ceiling height, and
+openings **once, by hand**, from the laser cloud (picking corner points in a viewer), and
+store them in `data/gt/arkitscenes_421337.yaml`. That file is then ground truth like any tape
+sheet.
+
+## Experiments
+
+| # | Experiment | Data | Measures / gate | Score it feeds |
+|---|---|---|---|---|
+| E1 | Build the LiDAR geometry backend (floor, ceiling, walls, rooms) | **A** (develop), B | Plans look right; code runs on every capture | Walk-in 30% |
+| E2 | LiDAR absolute accuracy | **B** (laser), **C** (tape) | Wall length, ceiling height ≤ 1.5 cm, floor area error | Benchmark 15% |
+| E3 | Repeatability | **B** (3 captures of one room), **A** (3 of one apartment), **C** (damaged room ×2 per tier) | Same wall within 1 cm or 0.5%; ceiling spread ≤ 1 cm; bias vs noise | Benchmark 15% |
+| E4 | Drift correction + on/off ablation | **A** (100 m multi-room walk), **C** whole-home scan | Stitched footprint with correction on vs off | Benchmark 15% (auto-fail without it) |
+| E5 | Multi-room stitching and adjacency | **A** (LiDAR), **C** (all tiers) | Correct adjacency, no overlapping rooms | Walk-in, Benchmark |
+| E6 | Video tier | **A** `rgb.mp4` vs A's LiDAR result; **B** `.mov` vs laser; **C** native video vs tape | Wall lengths ±3%, calibrated intervals | Benchmark, Walk-in |
+| E7 | Photo tier | Stills from A and B videos (development); **C** real per-room photo folders (evaluation) | Wall lengths ±8%; stitched footprint ±8%, no overlaps | Benchmark, Walk-in |
+| E8 | Interval calibration | Every capture with ground truth: **B**, **C** | Share of true values inside our 90% intervals, per tier | Avoids the "confident garbage" score cap |
+| E9 | Openings | **C** (tape widths for every door and window), **B** (laser) | ≤ 2 cm on ≥ 85%, missed/phantom counted | Benchmark, Walk-in |
+| E10 | Damage, concealed-damage flags, scope | **C** staged-damage room | Both damage classes found, metric extent vs tape, flags name their rule | Compliance, Walk-in |
+| E11 | Head-to-head vs Polycam | **C** (our LiDAR result vs Polycam on the same 2 rooms, both vs tape) | Beat or tie on ≥ 70% of dimensions | Head-to-head 10% |
+| E12 | Fix loop | Whichever dataset shows our worst gate (likely B or C) | Before → after on that gate | Fix loop 25% |
+| E13 | Walk-in rehearsal | **One room of C held out** from all tuning | Cold run, scored against its tape numbers | Rehearsal for the 30% |
+
+## Why this combination works
+
+- **A** is the cleanest multi-room LiDAR data, so the geometry code is built and debugged on
+  it. Its `rgb.mp4` is recorded alongside the depth, so running the video tier on it (with
+  depth ignored) and comparing to the LiDAR result from the same capture isolates exactly
+  what is lost when depth is removed.
+- **B** is the only source of mm-accurate ground truth and gives three captures of one room,
+  covering the strict LiDAR gates (ceiling height, repeatability) and the error budget. It is
+  available now, before the friend's data arrives.
+- **C** is what Cozmo asked for ("your own captures with real truth measurements"). It is
+  the only source covering photo-folder stitching, damage, openings with measured widths,
+  and the Polycam comparison, and it uses the same phone class as the walk-in test.
+
+## Avoiding overfitting
+
+Develop and tune on A and B. Evaluate on C. Keep one room of C completely untouched until
+the walk-in rehearsal, so at least one result shows how the pipeline does on a space it has
+never seen, which is exactly what the walk-in test measures.
+
+## If the friend's data is late or incomplete
+
+| Missing from C | Fallback | Cost |
+|---|---|---|
+| Tape measurements | Use B (laser) as the only absolute ground truth | Photo/video gates measured on one room only |
+| Photo folders | Stills sampled from C's or A's videos | Not a real "2–8 photos" test; stated in report |
+| Polycam export | Head-to-head marked as not done | 10% at risk |
+| Staged damage | Damage pipeline demonstrated on A's frames without metrics | Damage gate unscored |
