@@ -16,7 +16,7 @@ Work top to bottom. Every fix must leave all 9 LiDAR captures no worse
 | 01a | Hall and room 2 merged through a 1.2 m doorway | C `c_home_01` | Rooms split only at openings < 0.9 m | Door lintels split rooms (kept out of the enclosure test) | **Done** (`fix01-after`) |
 | 01b | Kitchen cut off at the counter front | C `c_home_01` | Counter front (0.1–1.1 m) passes the wall test | First try, "walls reach 1.5 m", **broke A** (low scans); replaced by the counter's shape (face capped by a hollow-under top at 0.82–1.05 m) | **Done** (`fix01-after`) |
 | 01c | Hall's north-west corner cut off as its own room | C `c_home_01` | 2.7 m of the hall's west wall has **zero points at any height**; rays leak west, the strip fails enclosure (0.62 < 0.75) and the hall splits in two | Seen floor that fails enclosure is attached (≤ 1 m deep) to the room it borders as a **low-confidence zone**; rooms touching along > 2 m with no wall or lintel merge | **Done** (`fix01c-after`) |
-| 02 | Two scans of the damaged room disagree: short side by 21 cm, ceiling by 11 cm | C `c_damage_01/02` | (1) wall snap takes the nearest surface ≥ 30% of the peak: furniture (top ≈ 2.1 m) in front of a full-height wall passes in one scan (41%), fails in the other (25%); (2) ceiling = highest local max ≥ 5% of the floor peak: ripples on the real peak's upper tail qualify | (1) skip a face when a face behind it reaches > 0.3 m higher; (2) ceiling peaks must be separated (dip < 50%) from stronger peaks below | In progress (declared below) |
+| 02 | Two scans of the damaged room disagree: short side by 21 cm, ceiling by 11 cm | C `c_damage_01/02` | (1) ceiling = highest local max ≥ 5% of the floor peak: ripples on the real peak's upper tail qualify; (2) the wall next to the notch is a window wall with three surfaces (shelves +0.04 m, plaster/frame +0.12 m, reveal/glass +0.21 m) and the snap picks a different one per scan | (1) ceiling peaks must be separated (dip < 50%) from stronger peaks below; (2) height rule tried twice, prediction wrong both times, parked on branch `fix02-wall-occluder` | **Ceiling done** (`fix02-after`); wall open: belongs with openings (window reveal = opening, not wall), or decided by B's laser |
 | 02b | B's three scans of one room: extents 5.01 / 4.16 / 4.32 m (long), 4.02 / 4.01 / 3.76 m (short) | B | Free-space outline differs before any snapping (longest raw edge 4.91 / 4.00 / 4.24 m): segmentation or coverage | Trace first | Open |
 | 03 | Intervals overconfident: ±3 cm ranges that don't overlap between repeat scans | C damage room | Intervals from surface spread only, no capture-to-capture error | Calibrate against repeats and ground truth (Phase 6) | Open |
 | 04 | Wardrobes, fridges, bookshelves count as walls; rooms shrink | A, C | Tall furniture passes the wall test | Detector boxes (Phase 5 shared detector) remove them from walls | Open |
@@ -99,6 +99,36 @@ The long side agrees to 2 cm, so this is not a scale error.
 | c_damage_01 | 1 | 13.1 | 3.36 |
 | c_damage_02 | 1 | 12.4 | 3.47 |
 | c_home_01 | 4 | 23.8 7.8 14.9 13.3 | 3.33 3.36 3.17 3.47 |
+
+### Result (after: tag `fix02-after`)
+
+**Ceiling: as predicted.** `c_damage_02` 3.47 → **3.35 m**; `c_damage_01` 3.36 m
+unchanged; `c_home_01`'s r4 (the same room, in the whole-home walk) 3.47 → **3.36 m**. The
+room's three scans now agree within 1 cm (gate: 1 cm). No other capture changed: the
+9-capture table is identical to the baseline except those two ceilings.
+
+**Wall: prediction wrong, not shipped.** The face-height rule was tried twice:
+
+1. Face tops measured inside the 0.1–2.3 m wall band: the wall's top there is ≈ 2.2 m,
+   the shelves' 2.1 m, so the 0.3 m rise never fired. Nothing moved (a unit test that
+   called `_snap_to_surface` directly with full heights passed and hid this; a
+   `measure_room`-level test reproduced it).
+2. Face tops measured up to 0.15 m under the room's ceiling: the shelves are skipped,
+   but a third, near-full-height surface at +0.12 m (top 2.9 m vs the far surface's 3.0 m)
+   stops the snap. Short side 3.08 → **3.18 m**, not the predicted 3.25–3.30 m. The same
+   rule moved B's walls 11–24 cm and `c_home_01`'s kitchen 7.8 → 9.9 m², none verified.
+
+The RGB frames explain the third surface: the wall next to the notch is the **window
+wall** (deep reveal with grilles, black shelf units at both ends, loft above). So which
+surface is "the wall" (plaster face vs window frame vs glass) is a question about the
+window opening, not furniture, and `c_damage_01`'s original +0.21 m snap may itself be
+wrong. C has no tape to settle it. The wall rule is kept on branch `fix02-wall-occluder`
+to be judged against B's laser measurements; the likely real fix is in openings
+(NEXT-SESSION step 4): a window reveal is an opening in the wall, measured at the
+plaster face.
+
+Remaining repeatability failures (after): short side 21 cm, notch 15 / 9 cm, far segment
+6 cm; B's extents (02b).
 
 ## Fix 01c: hall cut off at an unscanned wall (declared before fixing)
 

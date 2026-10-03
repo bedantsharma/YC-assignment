@@ -37,13 +37,16 @@ Read this first when resuming (after [HANDOVER.md](HANDOVER.md) and
   and each entry. Fix 01 shipped (`fix01-before` → `fix01-after`): `c_home_01` rooms found
   2/4 → 4/4 (door lintels split rooms; counter fronts no longer walls). Fix 01c
   shipped (`fix01c-after`): the hall's unscanned strip is kept as a flagged low-confidence
-  zone (2.9 m²), hall IoU 0.79. Next on the map: 02 (damage-room repeatability)
+  zone (2.9 m²), hall IoU 0.79. Fix 02 (`fix02-after`): ceiling tail ripples no longer
+  picked; the damage room's three scans agree on the ceiling within 1 cm (3.35–3.36 m).
+  Its wall part failed its prediction twice and is parked (window wall; see the entry)
 - **Not yet validated:** no LiDAR number has been compared with ground truth yet; intervals
   are provisional (±1.645σ from surface spreads) until Phase 6 calibrates them
-- **First repeatability look (C damage room, two scans, by eye, before Phase 3):** walls
-  differ 3–15 cm (worst: the 3.23 vs 3.08 m wall), area 12.93 vs 12.44 m², ceiling 3.364 vs
-  3.452 m. The ±3 cm intervals do not overlap, so they are overconfident. Gate is 1 cm /
-  0.5% (walls) and 1 cm (ceiling): **failing, a fix-loop candidate**
+- **Repeatability (C damage room, two scans):** ceiling **passes** after fix 02 (3.36 vs
+  3.35 m). Walls **fail**: short side 3.30 vs 3.08 m (window wall, three candidate
+  surfaces), notch 15 / 9 cm. B's three scans: ceilings 3.046–3.052 m (pass), extents
+  differ up to 0.9 m (fix map 02b, outline/segmentation, untraced). Intervals (±3 cm) are
+  overconfident (fix map 03)
 - **Next, in order**
   1. Openings (doors, windows) in the LiDAR backend: gaps in wall faces → `rooms[].openings`
      and adjacency (O4, O5)

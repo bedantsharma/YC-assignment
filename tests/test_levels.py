@@ -32,3 +32,17 @@ def test_ceiling_is_highest_dense_level_at_least_2m_above_floor():
 def test_no_ceiling_when_it_was_never_scanned():
     z = np.concatenate([_plane(0.0, 20_000), rng.uniform(0.0, 1.8, 20_000)])
     assert ceiling_level(z, floor_z=0.0) is None
+
+
+def test_ceiling_ignores_ripples_on_the_ceiling_peaks_upper_tail():
+    # c_damage_02: a broad ceiling peak at 3.35 m whose upper tail has small local maxima
+    tail = np.concatenate([_plane(z, n, 0.012) for z, n in [(3.40, 5_000), (3.445, 3_500)]])
+    ripple = _plane(3.48, 1_800, 0.008)
+    z = np.concatenate([_plane(0.0, 20_000), _plane(3.35, 15_000, 0.012), tail, ripple])
+    assert abs(ceiling_level(z, floor_z=0.0).z - 3.35) < 0.01
+
+
+def test_ceiling_keeps_a_separate_higher_plane():
+    # a dense shelf top at 2.2 m and a thinner, clearly separate ceiling above it
+    z = np.concatenate([_plane(0.0, 20_000), _plane(2.2, 9_000), _plane(2.8, 2_000)])
+    assert abs(ceiling_level(z, floor_z=0.0).z - 2.8) < 0.003
