@@ -21,10 +21,17 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="re-align poses on the walls (experimental, off by default: docs/drift_ablation.md)",
     )
+    p_run.add_argument("--frames", type=int, default=30, help="video tier: frames to use")
+    p_run.add_argument(
+        "--up",
+        choices=["auto", "top", "right", "bottom", "left"],
+        default="auto",
+        help="video tier: side of the stored frame that is up (default: metadata or brightness)",
+    )
     args = parser.parse_args(argv)
 
     try:
-        result = run(args.capture, args.tier, drift=args.drift)
+        result = run(args.capture, args.tier, args.drift, args.frames, args.up)
     except ValueError as err:
         print(f"floorplan: {err}", file=sys.stderr)
         return 2
