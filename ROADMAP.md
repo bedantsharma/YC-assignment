@@ -168,8 +168,11 @@ Why: two benchmark gates that need no ground truth, using the three provided cap
   but single-room scans already show 4–6 cm and ±1–2° per chunk (probe noise: partial
   views, furniture). So drift here is at most ~5–10 cm and the probe cannot resolve it;
   the ablation needs a sharper measure (wall-face spread before/after)
-- [ ] Drift handling: plane-anchored correction (snap walls to the dominant axes, re-solve
-      poses) with an on/off flag; ablation figure of the stitched footprint
+- [~] Drift handling: **built, off by default** (`--drift`; chunked 2D ICP on wall points,
+      not the planned plane snap). Ablation on all 9 captures in
+      [docs/drift_ablation.md](docs/drift_ablation.md): damage-room repeat scans agree to
+      1 cm on the short side (was 21 cm), but A `c00a170fe1` walls lose support. Still to
+      do: trace that regression; ablation figure of the stitched footprint
 - [ ] **Tag `fixloop-before`** once the first full benchmark numbers exist
 
 Exit: `scripts/benchmark_lidar.py` prints the repeatability table and drift ablation.

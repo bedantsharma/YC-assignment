@@ -16,10 +16,15 @@ def main(argv: list[str] | None = None) -> int:
     p_run.add_argument("capture", type=Path, help="capture folder or video file")
     p_run.add_argument("--tier", choices=TIERS, help="default: inferred from the capture")
     p_run.add_argument("--out", type=Path, default=Path("outputs"), help="output root")
+    p_run.add_argument(
+        "--drift",
+        action="store_true",
+        help="re-align poses on the walls (experimental, off by default: docs/drift_ablation.md)",
+    )
     args = parser.parse_args(argv)
 
     try:
-        result = run(args.capture, args.tier)
+        result = run(args.capture, args.tier, drift=args.drift)
     except ValueError as err:
         print(f"floorplan: {err}", file=sys.stderr)
         return 2
