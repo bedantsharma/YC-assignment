@@ -37,7 +37,8 @@ the interface every later phase writes to.
 - [x] Compliance matrix (`COMPLIANCE.md`): 64 requirements, statuses updated as work lands
 - [x] Capture protocol draft (`docs/capture_protocol.md`) for all three tiers, including
       the doorway-overlap photo rule (~15 photos per room, minimum 4)
-- [ ] Device matrix (`docs/device_matrix.md`)
+- [x] Device matrix skeleton (`docs/device_matrix.md`): hardware per tier fixed; accuracy
+      cells filled from the benchmark in Phase 6
 - [x] CLI skeleton: `floorplan run <capture_dir> --tier {lidar,video,photo} --out outputs/`
 - [x] Loaders for Stray Scanner and ARKitScenes (common z-up frame, verified on real data),
       video and photo folders (paths only: isolation rule enforced)

@@ -21,7 +21,7 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | C6 | LiDAR tier: depth, poses, intrinsics on Pro devices | `src/floorplan/capture.py`, `src/floorplan/tiers/lidar.py` *(planned)* | Plans from datasets A, B, C | In progress | Loader done for Stray Scanner and ARKitScenes (common z-up frame) |
 | C7 | Same output contract from every tier | `src/floorplan/output.py` | One result type for all tiers | In progress | |
 | C8 | Intervals widen honestly as sensor data thins | `src/floorplan/intervals.py` *(planned)* | Calibration table per tier | Not started | |
-| C9 | Device matrix: which tier runs on which hardware, and the accuracy each honestly delivers | `docs/device_matrix.md` *(planned)* | Table in technical report | Not started | |
+| C9 | Device matrix: which tier runs on which hardware, and the accuracy each honestly delivers | `docs/device_matrix.md` | Table in technical report | In progress | Skeleton: hardware per tier done; accuracy cells TBD until the benchmark |
 
 ## 2. Output contract, per capture (brief Part 2)
 
@@ -128,8 +128,8 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | Status | Count |
 |---|---|
 | Done | 2 |
-| In progress | 15 |
+| In progress | 16 |
 | Partial | 0 |
-| Not started | 47 |
+| Not started | 46 |
 | Not done | 0 |
 | **Total** | **64** |

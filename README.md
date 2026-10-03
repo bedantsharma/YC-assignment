@@ -125,4 +125,6 @@ uv run pytest               # tests
 - [requirements.md](requirements.md): scope, scoring, Cozmo's answers, open questions
 - [ROADMAP.md](ROADMAP.md): time-boxed plan and current status
 - [docs/data_plan.md](docs/data_plan.md): which dataset feeds which experiment
+- [docs/device_matrix.md](docs/device_matrix.md): which tier runs on which iPhone, and its
+  measured accuracy
 - [docs/friend_capture_checklist.md](docs/friend_capture_checklist.md): capture instructions
