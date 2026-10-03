@@ -45,18 +45,11 @@ def run(
     if tier == "video":
         return _run_video(path, capture, frames, up, model)
 
-    start = time.perf_counter()
-    rooms = load_photos(path).rooms
-    summary = f"{len(rooms)} rooms, {sum(map(len, rooms.values()))} photos"
-    timing = {"load": round(time.perf_counter() - start, 3)}
-    warnings = [f"loaded {summary}; photo geometry not implemented yet"]
-    return Result(capture=capture, rooms=[], timing_s=timing, warnings=warnings)
+    return _run_photos(path, capture, model)
 
 
 def _run_video(path: Path, capture: Capture, n_frames: int, up: str, model: str) -> Result:
-    from floorplan.chunks import chain
-    from floorplan.mvs import reconstruct
-    from floorplan.video import Orientation, estimate_up, orientation, sample_frames, z_up
+    from floorplan.video import Orientation, orientation, sample_frames
 
     timing = {}
     video = load_video(path).path
@@ -64,22 +57,58 @@ def _run_video(path: Path, capture: Capture, n_frames: int, up: str, model: str)
     orient = orientation(video) if up == "auto" else Orientation(up, "--up", 0.0)
     frames = sample_frames(video, n_frames, orient.up_side)
     timing["frames"] = round(time.perf_counter() - start, 3)
+    how = f"{orient.source}, margin {orient.margin:.1f}" if orient.margin else orient.source
+    note = (
+        f"used {len(frames)} frames of {video.name}; up = stored frame's {orient.up_side} ({how})"
+    )
+    return _from_images(capture, frames, model, "video", timing, note)
+
+
+def _run_photos(path: Path, capture: Capture, model: str) -> Result:
+    from floorplan.photos import load_images
+
+    timing = {}
+    start = time.perf_counter()
+    rooms = load_photos(path).rooms
+    folders = [room for room, photos in rooms.items() for _ in photos]
+    images = load_images([p for photos in rooms.values() for p in photos])
+    timing["load"] = round(time.perf_counter() - start, 3)
+    note = (
+        f"used {len(images)} photos in {len(rooms)} folders "
+        f"({', '.join(f'{r}: {len(p)}' for r, p in rooms.items())}), reconstructed jointly"
+    )
+    return _from_images(capture, images, model, "photo", timing, note, folders)
+
+
+def _from_images(
+    capture: Capture,
+    images: list,
+    model: str,
+    tier: str,
+    timing: dict,
+    note: str,
+    folders: list[str] | None = None,
+) -> Result:
+    """Shared geometry of the video and photo tiers: images -> metric cloud -> plan."""
+    from floorplan.chunks import chain
+    from floorplan.mvs import reconstruct
+    from floorplan.video import estimate_up, z_up
 
     start = time.perf_counter()
     links = []
-    if len(frames) <= VIDEO_WINDOW:
-        rec = reconstruct(frames, model)
-        joint = "none needed: all frames reconstructed jointly in one pass"
+    if len(images) <= VIDEO_WINDOW:
+        rec = reconstruct(images, model)
+        joint = f"none needed: all {tier} images reconstructed jointly in one pass"
     else:
         rec, links = chain(
-            len(frames),
-            lambda idx: reconstruct([frames[i] for i in idx], model),
+            len(images),
+            lambda idx: reconstruct([images[i] for i in idx], model),
             VIDEO_WINDOW,
             VIDEO_OVERLAP,
         )
         joint = (
-            f"{len(links) + 1} windows of {VIDEO_WINDOW} frames ({VIDEO_OVERLAP} shared), "
-            "chained by similarity fits on the shared frames' point maps"
+            f"{len(links) + 1} windows of {VIDEO_WINDOW} images ({VIDEO_OVERLAP} shared), "
+            "chained by similarity fits on the shared images' point maps"
         )
     timing["reconstruction"] = round(time.perf_counter() - start, 3)
 
@@ -87,7 +116,13 @@ def _run_video(path: Path, capture: Capture, n_frames: int, up: str, model: str)
     vertical = estimate_up(rec.points, rec.cam_poses)
     points = voxel_downsample(correct_scale(z_up(rec.points, vertical), model), VIDEO_VOXEL_M)
     plan = build_plan(points)
-    rel_h, rel_v = RESIDUAL_REL[model]
+    labels = []
+    if folders is not None:
+        from floorplan.photos import label_rooms
+
+        cams = correct_scale(z_up(rec.cam_poses[:, :3, 3], vertical), model)
+        labels = label_rooms(plan.rooms, plan.rotation_deg, cams[:, :2], folders)
+    rel_h, rel_v = RESIDUAL_REL[(tier, model)]
     rooms = [widen_room(r, rel_h, rel_v, VIDEO_SURFACE_M) for r in plan.rooms]
     timing["geometry"] = round(time.perf_counter() - start, 3)
 
@@ -98,9 +133,8 @@ def _run_video(path: Path, capture: Capture, n_frames: int, up: str, model: str)
         footprint = Measurement(
             round(total, 4), round(total - half, 4), round(total + half, 4), "m2"
         )
-    how = f"{orient.source}, margin {orient.margin:.1f}" if orient.margin else orient.source
     warnings = [
-        f"used {len(frames)} frames of {video.name}; up = stored frame's {orient.up_side} ({how})",
+        note,
         f"reconstruction: {MODEL_NAMES[rec.model]}, {rec.seconds:.0f} s",
         f"scale corrected by the model's measured bias (horizontal x{1 / SCALE_BIAS[model][0]:.3f},"
         f" vertical x{1 / SCALE_BIAS[model][1]:.3f}; damage room vs LiDAR); intervals widened by"
@@ -111,6 +145,7 @@ def _run_video(path: Path, capture: Capture, n_frames: int, up: str, model: str)
             f"{100 * k.residual_m:.1f} cm over {k.pairs} points"
             for k in links
         ],
+        *labels,
         *plan.warnings,
     ]
     return Result(

@@ -23,7 +23,13 @@ from floorplan.output import Measurement, Room
 Z90 = 1.645
 # (horizontal, vertical), video / LiDAR
 SCALE_BIAS = {"pi3x": (0.964, 0.914), "mapanything": (0.935, 1.035)}
-RESIDUAL_REL = {"pi3x": (0.05, 0.02), "mapanything": (0.06, 0.04)}  # 1 sigma
+# 1 sigma, per (tier, model). Photo: provisional copy of video until measured
+RESIDUAL_REL = {
+    ("video", "pi3x"): (0.05, 0.02),
+    ("video", "mapanything"): (0.06, 0.04),
+    ("photo", "pi3x"): (0.05, 0.02),
+    ("photo", "mapanything"): (0.06, 0.04),
+}
 VIDEO_SURFACE_M = 0.05
 
 
