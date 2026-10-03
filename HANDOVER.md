@@ -1,4 +1,4 @@
-# Handover (Sat Oct 3, ~19:15 IST)
+# Handover (Sat Oct 3, ~18:35 IST)
 
 Cozmo AI take-home: iPhone captures → dimensioned floor plans with intervals. Deadline
 **Mon Oct 5, 10:00 IST**. Read in this order: this file, [NEXT-SESSION.md](NEXT-SESSION.md),
