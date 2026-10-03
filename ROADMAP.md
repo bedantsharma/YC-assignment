@@ -3,10 +3,28 @@
 Deadline: **Mon Oct 5, 10:00 IST**. Start: Sat Oct 3, ~12:30 IST. About 45 working hours
 including sleep. Scope and scoring are in [requirements.md](requirements.md).
 
-## Status (Sat Oct 3, 23:40 IST)
+## Status (Sun Oct 4, ~01:15 IST)
 
 Read this first when resuming (after [HANDOVER.md](HANDOVER.md) and
 [NEXT-SESSION.md](NEXT-SESSION.md)). Details are in the phase sections below.
+
+### Progress at a glance (~33 h to the deadline)
+
+| Phase | Planned for | State |
+|---|---|---|
+| 0 Scaffolding | Sat 12:30 | **Done**, except device-matrix numbers (need the benchmark) |
+| 1 Data | Sat 12:30 | **Mostly done**: A, B, C's LiDAR + video in; ground truth (architect, friend's plan) not in |
+| 2 LiDAR backend | Sat 17:00 | **Done**: 9 captures run end to end |
+| 3 Repeatability, drift | Sat 23:00 | **Half**: drift built + ablated (off); repeatability table and `fixloop-before` tag not done |
+| 4 Video, photo | Sun 08:00 | **Video done early** (whole home, scale corrected); **photo not started** |
+| 5 Openings, damage, scope | Sun 14:00 | Not started |
+| 6 Benchmark, fix loop | Sun 18:00 | Not started (needs ground truth); three practice fixes done in `docs/fix_loop.md` |
+| 7 Reports, packaging | Mon 01:00 | Not started |
+
+By score weight: walk-in (30%) can run LiDAR and video but not photo yet; fix loop (25%)
+has the method rehearsed but the graded fix needs the benchmark; benchmark (15%) and
+head-to-head (10%) wait on ground truth and a Polycam export; compliance (10%), capture
+route (5%) and commit history (5%) are on track.
 
 - **Done**
   - Phase 0 scaffolding (output format, compliance matrix, capture protocol, CLI, loaders),
