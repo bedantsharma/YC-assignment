@@ -70,8 +70,10 @@ def main() -> None:
             mask = labels == k
             raw = rectilinear_outline(mask, grid)
             snapped = measure_room(mask, pts, grid, walls, floor.z)
-            print(f"  room {k}: floor {snapped.floor.z - floor.z:+.3f}, ceiling "
-                  f"{snapped.ceiling.z - snapped.floor.z if snapped.ceiling else None}")
+            print(
+                f"  room {k}: floor {snapped.floor.z - floor.z:+.3f}, ceiling "
+                f"{snapped.ceiling.z - snapped.floor.z if snapped.ceiling else None}"
+            )
             zr = pts[mask[ij[:, 0], ij[:, 1]], 2] - snapped.floor.z
             print("    room height peaks >2 m:", peaks(zr, 2.0, 4.0, top=6))
             n = len(raw.edges)
@@ -88,9 +90,11 @@ def main() -> None:
                     & (off > -0.15)
                     & (off < 0.6)
                 )
-                print(f"    edge {e} axis {edge.axis} len {hi - lo:.2f} snap "
-                      f"{(sn.coord - edge.coord) * outward:+.3f} sigma {sn.sigma:.3f} "
-                      f"| surfaces: {peaks(off[near], -0.15, 0.6)}")
+                print(
+                    f"    edge {e} axis {edge.axis} len {hi - lo:.2f} snap "
+                    f"{(sn.coord - edge.coord) * outward:+.3f} sigma {sn.sigma:.3f} "
+                    f"| surfaces: {peaks(off[near], -0.15, 0.6)}"
+                )
 
 
 if __name__ == "__main__":

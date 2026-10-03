@@ -163,6 +163,11 @@ Why: two benchmark gates that need no ground truth, using the three provided cap
 
 - [ ] Align the three captures (ICP on the 2D wall map) and match rooms and walls
 - [ ] Repeatability table: same wall across captures, spread in cm and %
+- Drift probe (`uv run scripts/drift_probe.py <capture>`, Sat 21:05): revisited walls
+  move between time chunks by up to 8.8 cm (`c_home_01`) and 12.9 cm (A `c7d28f72c6`),
+  but single-room scans already show 4–6 cm and ±1–2° per chunk (probe noise: partial
+  views, furniture). So drift here is at most ~5–10 cm and the probe cannot resolve it;
+  the ablation needs a sharper measure (wall-face spread before/after)
 - [ ] Drift handling: plane-anchored correction (snap walls to the dominant axes, re-solve
       poses) with an on/off flag; ablation figure of the stitched footprint
 - [ ] **Tag `fixloop-before`** once the first full benchmark numbers exist
