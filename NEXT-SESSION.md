@@ -10,25 +10,24 @@ Done Sat 20:40–22:20 IST (see each doc for numbers):
   built and ablated on all 9 captures. Mixed: damage-room repeat scans 21 → 1 cm on the
   short side, but A `c00a170fe1` loses wall support. **Off by default.**
 
-**Decision for the user:** brief G5 fails if the multi-room capture uses poses as-is. Ship
-`--drift` on for the multi-room run (accepting A's regression), or trace the regression
-first (below, step 1)?
+**Decided (user):** drift correction stays **off by default**; with `--drift` the
+`c_home_01` kitchen outline got much worse. Not tracing the A regression now.
 
 Work in this order. Each step ends with a commit and the ROADMAP status updated.
 
-1. **Drift regression on `c00a170fe1`**: why its walls lose support with `--drift` (low
-   scan, thin wall strips). Then decide the default and add the ablation figure.
-2. **Video tier** (Phase 4) with MapAnything: upright frames (rotation from video
+1. **Video tier** (Phase 4) with MapAnything: upright frames (rotation from video
    metadata; an RGB-only rule for Stray recordings, which have none), keyframes by view
    change within the 16 GB budget, then `build_plan`. Install as an optional dependency
    group, not a core one. Reference: the LiDAR result of the same recording.
-3. **Openings** (doors, windows): `lintel_mask` in `src/floorplan/plan2d.py` finds door
+2. **Openings** (doors, windows): `lintel_mask` in `src/floorplan/plan2d.py` finds door
    heads; the gap under a head gives the width. Fill `rooms[].openings` + adjacency.
-4. **Photo tier** with the same model.
-5. **Phase 5:** one open-vocabulary detector for damage and for furniture on walls
+3. **Photo tier** with the same model.
+4. **Phase 5:** one open-vocabulary detector for damage and for furniture on walls
    (fix map 04).
 
 Open from fix 02: notch long axis still 9–12 cm apart between scans; B's extents differ by
 up to 0.9 m (fix map 02b, segmentation, untraced).
 
 Waiting on the user: architect's laser measurements for B (first real accuracy numbers).
+
+Later, if time: a drift correction that does no harm (brief G5 wants a stated method).

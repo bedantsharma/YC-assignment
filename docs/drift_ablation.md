@@ -67,6 +67,13 @@ thin, low wall strips; the overlap and constraint checks pass anyway). Also, a 6
 single-room scan receiving 17 cm corrections is either real ARKit drift (~1% of its 15 m
 path) or ICP error; the repeatability result points to real drift, but this is not proven.
 
-Brief requirement (COMPLIANCE G5): "poses used as-is" fails. The default is off for now
-because of the regressions above; whether the submitted multi-room run uses `--drift` is
-an open decision.
+**Decision (user, Sat ~22:40 IST): off by default.** The plans settled it: with `--drift`
+the kitchen of `c_home_01` gets a ragged outline and A `c00a170fe1`'s north arm shortens
+by ≈ 0.5 m (left: off, right: on):
+
+![c_home_01 off vs on](drift_compare_c_home_01.png)
+![c00a170fe1 off vs on](drift_compare_c00a170fe1.png)
+
+Brief requirement (COMPLIANCE G5): "poses used as-is" fails. The report must therefore
+state the method, this ablation and why it is off; a correction that does no harm on
+these plans is still open work.

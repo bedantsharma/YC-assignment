@@ -11,7 +11,8 @@ Cozmo AI take-home: iPhone captures → dimensioned floor plans with intervals. 
   model for them is chosen (MapAnything, `docs/model_spike.md`), installed only in a
   scratch venv so far.
 - **Drift correction** exists but is **opt-in** (`--drift`): mixed ablation
-  (`docs/drift_ablation.md`); the default is an open decision (brief G5).
+  (`docs/drift_ablation.md`); **off by default, decided by the user** (it made the
+  `c_home_01` kitchen much worse).
 - **Room segmentation** (`src/floorplan/plan2d.py`) now: counter fronts are not walls
   (shape rule); door lintels split rooms; seen floor bounded by an unscanned wall is
   attached ≤ 1 m deep as a low-confidence zone (`rooms[].low_confidence_area`, warning,
