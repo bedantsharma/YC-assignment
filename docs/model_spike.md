@@ -53,6 +53,15 @@ Run time: 52 s for 30 frames (model load excluded); peak memory 12.8 GB.
    calibration) **barely changed anything**; the model's output focal stays at ≈ 291 vs
    ≈ 362 px true at its input size. Not explained yet.
 
+## Follow-up on the video tier (Sat ~23:55)
+
+- Same 30 frames through the real tier (`floorplan run ... --tier video`, RGB-only gravity
+  from wall normals): 11.87 m² vs 13.13 m², long side 3.89 vs 4.24 m, short 3.22 vs 3.30.
+- Hypothesis "walls are short because the model's focal is ~20% low": **wrong**.
+  Re-projecting the model's depth with the known 24 mm focal made it worse (10.39 /
+  9.54 m², broken outlines), with or without the focal given as input.
+- The candidate list was then researched properly: [model_research.md](model_research.md).
+
 ## Decision
 
 Use **MapAnything** for the video and photo tiers. It is the only candidate measured: VGGT
