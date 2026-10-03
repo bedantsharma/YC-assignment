@@ -15,7 +15,7 @@ Work top to bottom. Every fix must leave all 9 LiDAR captures no worse
 |---|---|---|---|---|---|
 | 01a | Hall and room 2 merged through a 1.2 m doorway | C `c_home_01` | Rooms split only at openings < 0.9 m | Door lintels split rooms (kept out of the enclosure test) | **Done** (`fix01-after`) |
 | 01b | Kitchen cut off at the counter front | C `c_home_01` | Counter front (0.1–1.1 m) passes the wall test | First try, "walls reach 1.5 m", **broke A** (low scans); replaced by the counter's shape (face capped by a hollow-under top at 0.82–1.05 m) | **Done** (`fix01-after`) |
-| 01c | Hall's north-west corner cut off as its own room | C `c_home_01` | Traced: 2.7 m of the hall's west wall (v -2.3 to 0.4) has **zero points at any height**, so rays leak west, the strip fails the enclosure test (0.62 < 0.75) and the leak splits the hall in two | None in code: there is no wall to measure. Capture lesson: walk the full perimeter, sweeping each wall floor to ceiling | **Won't fix** (capture gap) |
+| 01c | Hall's north-west corner cut off as its own room | C `c_home_01` | 2.7 m of the hall's west wall has **zero points at any height** (no ceiling either); the hall floor stops on a straight line at u ≈ -1.15 m. Rays leak west, the strip fails enclosure (0.62 < 0.75), and the fragment `r1` touches the hall along ~2 m with no wall or lintel between (a watershed artefact) | (1) merge rooms sharing > 1.2 m of boundary with no wall or lintel; (2) attach observed-but-unenclosed floor that borders a room, reported as a **low-confidence zone** (warning, area interval widened by the zone) | In progress (declared below) |
 | 02 | Two scans of the damaged room disagree: walls by 3–15 cm, ceiling by 8.8 cm | C `c_damage_01/02` | Not traced yet | Trace first (Phase 3) | Open (repeatability gate) |
 | 03 | Intervals overconfident: ±3 cm ranges that don't overlap between repeat scans | C damage room | Intervals from surface spread only, no capture-to-capture error | Calibrate against repeats and ground truth (Phase 6) | Open |
 | 04 | Wardrobes, fridges, bookshelves count as walls; rooms shrink | A, C | Tall furniture passes the wall test | Detector boxes (Phase 5 shared detector) remove them from walls | Open |
@@ -23,6 +23,16 @@ Work top to bottom. Every fix must leave all 9 LiDAR captures no worse
 | 06 | Open-plan spaces split arbitrarily | A | Watershed meets wherever the seeds touch | Trace first; lintels (01a) may cover part | Open |
 | 07 | Floor-to-ceiling opening into unscanned space notches a room | synthetic | Outline follows the observed edge | Trace first | Open |
 | 08 | Ceilings of 2.3–2.4 m in two A rooms | A `c7d28f72c6` | Real lowered ceiling, or a cabinet top? | Check against the video | Open |
+
+## Fix 01c: hall cut off at an unscanned wall (declared before fixing)
+
+Before: `fix01-after` (= tag `fix01c-before`). `c_home_01`: 5 rooms; hall r3 16.7 m²,
+IoU 0.59; fragment r1 4.2 m² unmatched. Evidence and fix: fix map row 01c.
+
+Predicted after: `c_home_01` **4 rooms**, no fragment; hall ≈ 21–25 m², IoU ≥ 0.7, with a
+low-confidence zone of ≈ 2–4 m² named in the warnings and the hall's area interval
+widened by it. Other 8 captures: B and C damage unchanged; A may merge rooms that touch
+along > 1.2 m with no wall (open plan), each to be checked by eye.
 
 ## Fix 01: room segmentation on the friend's whole-home scan (C, `c_home_01`)
 
