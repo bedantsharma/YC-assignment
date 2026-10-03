@@ -15,7 +15,7 @@ Work top to bottom. Every fix must leave all 9 LiDAR captures no worse
 |---|---|---|---|---|---|
 | 01a | Hall and room 2 merged through a 1.2 m doorway | C `c_home_01` | Rooms split only at openings < 0.9 m | Door lintels split rooms (kept out of the enclosure test) | **Done** (`fix01-after`) |
 | 01b | Kitchen cut off at the counter front | C `c_home_01` | Counter front (0.1–1.1 m) passes the wall test | First try, "walls reach 1.5 m", **broke A** (low scans); replaced by the counter's shape (face capped by a hollow-under top at 0.82–1.05 m) | **Done** (`fix01-after`) |
-| 01c | Hall's north-west corner cut off as its own room | C `c_home_01` | Strip never scanned below ~2 m (capture) | Treat ceiling-seen cells as observed, or report the side as unobserved | Open |
+| 01c | Hall's north-west corner cut off as its own room | C `c_home_01` | Traced: 2.7 m of the hall's west wall (v -2.3 to 0.4) has **zero points at any height**, so rays leak west, the strip fails the enclosure test (0.62 < 0.75) and the leak splits the hall in two | None in code: there is no wall to measure. Capture lesson: walk the full perimeter, sweeping each wall floor to ceiling | **Won't fix** (capture gap) |
 | 02 | Two scans of the damaged room disagree: walls by 3–15 cm, ceiling by 8.8 cm | C `c_damage_01/02` | Not traced yet | Trace first (Phase 3) | Open (repeatability gate) |
 | 03 | Intervals overconfident: ±3 cm ranges that don't overlap between repeat scans | C damage room | Intervals from surface spread only, no capture-to-capture error | Calibrate against repeats and ground truth (Phase 6) | Open |
 | 04 | Wardrobes, fridges, bookshelves count as walls; rooms shrink | A, C | Tall furniture passes the wall test | Detector boxes (Phase 5 shared detector) remove them from walls | Open |
@@ -67,10 +67,11 @@ the floor is fitted once for the whole home, so counters cannot move it.
    front at u ≈ 1.3–1.4 m has points in 0.1–1.1 m (10 slices): it passes. The tiled wall
    behind the counter (seen in the video) is at u ≈ 2.0 m, with points from 0.8 to 2.3 m.
    The kitchen's east wall is drawn at the counter front, ~0.7 m inside the real wall.
-3. **Hall west strip not captured below ~2 m (capture).** From u ≈ -1.2 to -0.6 m there
-   are 20–180 floor points per column (vs ~1,800 mid-hall) and nothing at 0.3–2.0 m, only
-   ceiling. The wall exists at u ≈ -1.5 m but the floor in front of it was never seen,
-   so that strip is "unobserved" and the hall's north-west corner is cut off as `r1`. The
+3. **Hall west strip not captured (capture).** From u ≈ -1.2 to -0.6 m there are 20–180
+   floor points per column (vs ~1,800 mid-hall) and nothing at 0.3–2.0 m, only ceiling.
+   *Corrected after a closer trace (fix map 01c):* the west wall itself has no points at
+   any height for 2.7 m, so the strip fails the enclosure test, not the observed test, and
+   the hall's north-west corner is cut off as `r1`. The
    friend's walk did not sweep that side down to the floor, which the capture checklist
    asks for ("sweep each wall top to bottom"). Causes 1 and 2 are independent of this:
    no capture would fix them.
