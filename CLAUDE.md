@@ -76,6 +76,36 @@ code only ever sees this frame. Raw-format notes below are for the loaders only.
 - Every reported number must be regenerable by a single command from `data/raw/`.
 - Prefer numpy/scipy; justify any heavy dependency (e.g. open3d) before adding it.
 
+## Remote GPU runs (Kaggle)
+
+Big models (multi-GB weights) run on Kaggle, not on the user's laptop: `kaggle/<job>/`
+holds the script + `kernel-metadata.json`; `uvx kaggle kernels push -p kaggle/<job>
+--accelerator NvidiaTeslaT4`, then `kernels status` / `kernels output`. Data goes up only as
+a **private** dataset, and only with the user's OK (C's videos are approved). The legacy
+token in `~/.kaggle/kaggle.json` works.
+
+Each failed push costs ~5–10 min. The bake-off took 6 pushes because of setup mistakes
+that a local dry run would have caught. **Before every push:**
+
+1. **Dry-run the setup locally** in a throwaway venv (`uv venv`, same installs, then the
+   imports and model-config loading the script does). Only the GPU step may be untested.
+2. **Never install a package inside the running script and then import it**, especially
+   `pip install -e`: the process scanned `site-packages` at startup and won't see it.
+   Install, then `sys.path.insert(0, <clone>)`, or install in a first cell/process and
+   run the work in a second `subprocess` (cleanest).
+3. **GPU:** request `NvidiaTeslaT4`. `NvidiaL4` silently ran on **CPU** for this account
+   (no `nvidia-smi`, CPU-only torch). Check for the GPU first and exit with a clear message.
+4. **Precision on T4 (pre-Ampere):** use **fp16**, not bf16. With bf16, PyTorch's attention
+   falls back to the full matrix (86 GB for 30 views). Pick by
+   `torch.cuda.get_device_capability()[0] >= 8`.
+5. **Kaggle's Python is new (3.13.15):** packages capped at `<=3.13` refuse to install;
+   install them separately with `--ignore-requires-python`, never in the same
+   `pip install` as the essentials.
+6. **Packages that load configs from the repo** (MapAnything's `init_model_from_config`
+   reads `configs/`): install from a git clone, not from PyPI/git+URL.
+7. Wrap each model run in try/except and log the traceback, so one failure doesn't hide
+   the others, and read the **whole** log before the next push.
+
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
