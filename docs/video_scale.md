@@ -87,3 +87,20 @@ Limits, stated plainly: the fit and the check are the same home, phone and perso
 damage room is 3 recordings of one room; LiDAR is the reference, not a tape. The brief's
 ±3% video target is met for ceilings on the held-out rooms, not for walls. Next checks:
 the friend's measured plan (C), and B's video against the laser scan (an independent home).
+
+## Result: `floorplan run data/home_c/lidar/c_home_01 --tier video --frames 90`
+
+Pi3X, 4 chained windows, scale corrected; 434 s of model time on the M4. Values with 90%
+intervals; LiDAR of the same walk for comparison (rooms paired by hand from the plans).
+
+| Room | Video area (m²) | LiDAR area (m²) | Video ceiling (m) | LiDAR ceiling (m) |
+|---|---|---|---|---|
+| Living | 21.6 [18.0, 25.2] | 23.8 (incl. 2.9 low confidence) | 3.33 [3.19, 3.47] | 3.33 |
+| Bedroom | 15.8 [13.1, 18.4] | 14.9 | 3.30 [3.16, 3.44] | 3.17 |
+| Damage room | 12.7 [10.5, 14.8] | 13.3 | 3.37 [3.23, 3.51] | 3.36 |
+| Kitchen | 7.3 [6.0, 8.6] | 7.8 | 3.30 [3.16, 3.43] | 3.36 |
+| **Footprint** | **57.3 [52.2, 62.5]** | **59.8** | | |
+
+Every LiDAR area and ceiling falls inside the video interval. The intervals are wide
+(±16% on area) because the horizontal residual is 5%; they narrow only with better
+geometry or ground truth to calibrate against.
