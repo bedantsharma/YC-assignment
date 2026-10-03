@@ -9,7 +9,7 @@ including sleep. Scope and scoring are in [requirements.md](requirements.md).
   data plan, datasets A and B downloaded, friend's capture checklist sent
 - **Waiting on:** friend's capture (dataset C), ETA 1–2 h
 - **Open in Phase 0:** device matrix is scaffolding only (accuracy numbers wait on Phase 6)
-- **Next:** Phase 2, starting Phase 2 on datasets A and B while C arrives
+- **Next:** Phase 2 on datasets A and B while C arrives
 
 ## Principles
 
