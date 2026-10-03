@@ -4,6 +4,7 @@ import pytest
 from floorplan.plan2d import (
     dominant_angle,
     enclosure,
+    lintel_mask,
     make_grid,
     observed_mask,
     segment_rooms,
@@ -77,3 +78,13 @@ def test_segment_rooms_splits_at_the_door(apartment):
 def _rot(xy, deg):
     t = np.radians(deg)
     return xy @ np.array([[np.cos(t), np.sin(t)], [-np.sin(t), np.cos(t)]])
+
+
+def test_segment_rooms_splits_at_a_wide_door_under_a_lintel():
+    pts = two_rooms(angle_deg=30.0, door=(0.9, 2.1), lintel=2.0)  # 1.2 m wide
+    grid = make_grid(pts, dominant_angle(pts), RES)
+    walls = wall_mask(pts, grid, floor_z=0.0)
+    labels = segment_rooms(
+        walls, observed_mask(pts, grid, floor_z=0.0), RES, lintel_mask(pts, grid, floor_z=0.0)
+    )
+    assert labels.max() == 2

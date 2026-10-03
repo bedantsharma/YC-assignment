@@ -6,6 +6,24 @@ The before and after runs are regenerable from git tags. The entry submitted as 
 single fix-loop declaration is chosen in Phase 6 (worst gate); entries here are the full
 record.
 
+## Fix map
+
+Work top to bottom. Every fix must leave all 9 LiDAR captures no worse
+(`uv run scripts/lidar_summary.py`), not just the capture it targets.
+
+| # | Problem | Seen on | Cause | Fix | Status |
+|---|---|---|---|---|---|
+| 01a | Hall and room 2 merged through a 1.2 m doorway | C `c_home_01` | Rooms split only at openings < 0.9 m | Door lintels split rooms (kept out of the enclosure test) | Works on synthetic; in progress on real data |
+| 01b | Kitchen cut off at the counter front | C `c_home_01` | Counter front (0.1–1.1 m) passes the wall test | First try, "walls reach 1.5 m", **broke A** (low scans): replace with the counter's shape (face capped by a hollow-under top at 0.82–1.05 m) | In progress |
+| 01c | Hall's north-west corner cut off as its own room | C `c_home_01` | Strip never scanned below ~2 m (capture) | Treat ceiling-seen cells as observed, or report the side as unobserved | Open |
+| 02 | Two scans of the damaged room disagree: walls by 3–15 cm, ceiling by 8.8 cm | C `c_damage_01/02` | Not traced yet | Trace first (Phase 3) | Open (repeatability gate) |
+| 03 | Intervals overconfident: ±3 cm ranges that don't overlap between repeat scans | C damage room | Intervals from surface spread only, no capture-to-capture error | Calibrate against repeats and ground truth (Phase 6) | Open |
+| 04 | Wardrobes, fridges, bookshelves count as walls; rooms shrink | A, C | Tall furniture passes the wall test | Detector boxes (Phase 5 shared detector) remove them from walls | Open |
+| 05 | Spurious 0.3–0.5 m steps in walls | A | Clutter touching a wall bends the outline | Trace first | Open |
+| 06 | Open-plan spaces split arbitrarily | A | Watershed meets wherever the seeds touch | Trace first; lintels (01a) may cover part | Open |
+| 07 | Floor-to-ceiling opening into unscanned space notches a room | synthetic | Outline follows the observed edge | Trace first | Open |
+| 08 | Ceilings of 2.3–2.4 m in two A rooms | A `c7d28f72c6` | Real lowered ceiling, or a cabinet top? | Check against the video | Open |
+
 ## Fix 01: room segmentation on the friend's whole-home scan (C, `c_home_01`)
 
 Status: **declared, fix not yet shipped.** Before: tag `fix01-before`.

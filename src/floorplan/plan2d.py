@@ -14,6 +14,8 @@ WALL_BAND_M = (0.1, 2.3)  # heights above floor that count as wall evidence
 WALL_SLICE_M = 0.1
 WALL_MIN_EXTENT_M = 0.8  # a wall cell has points across at least this much height
 WALL_MIN_TOP_M = 1.5  # ...and some above this: counters, sofa backs and desks stop lower
+LINTEL_BAND_M = (1.95, 2.3)  # underside of a door head
+LINTEL_CLEAR_M = (0.5, 1.8)  # a doorway is empty at body height
 ENCLOSED_FRACTION = 0.75
 DOOR_HALF_WIDTH_M = 0.45  # free space narrower than 2x this does not seed a room
 MIN_SEED_AREA_M2 = 0.2
@@ -86,6 +88,20 @@ def wall_mask(points: np.ndarray, grid: Grid, floor_z: float) -> np.ndarray:
     return tall & occupied[:, :, high:].any(axis=2)
 
 
+def lintel_mask(points: np.ndarray, grid: Grid, floor_z: float) -> np.ndarray:
+    """Cells with points at door-head height but none at body height: the lintel over a
+    doorway. Rooms are split there whatever the door's width; open-plan junctions have no
+    lintel and stay joined."""
+    h = points[:, 2] - floor_z
+    head = np.zeros(grid.shape, bool)
+    clear = np.ones(grid.shape, bool)
+    ij = grid.cells(points[(h > LINTEL_BAND_M[0]) & (h < LINTEL_BAND_M[1]), :2])
+    head[ij[:, 0], ij[:, 1]] = True
+    ij = grid.cells(points[(h > LINTEL_CLEAR_M[0]) & (h < LINTEL_CLEAR_M[1]), :2])
+    clear[ij[:, 0], ij[:, 1]] = False
+    return head & clear
+
+
 def observed_mask(points: np.ndarray, grid: Grid, floor_z: float) -> np.ndarray:
     """Cells where anything was seen between the floor and wall-top height, holes filled."""
     h = points[:, 2] - floor_z
@@ -115,10 +131,15 @@ def enclosure(walls: np.ndarray, res: float, rays: int = 16, max_range: float = 
     return hits / rays
 
 
-def segment_rooms(walls: np.ndarray, observed: np.ndarray, res: float) -> np.ndarray:
-    """Label enclosed free space by room (0 = not a room), split at doorway constrictions."""
+def segment_rooms(
+    walls: np.ndarray, observed: np.ndarray, res: float, lintels: np.ndarray | None = None
+) -> np.ndarray:
+    """Label enclosed free space by room (0 = not a room), split at doorway constrictions
+    and under door lintels."""
     free = observed & ~ndi.binary_dilation(walls)
-    free &= enclosure(walls, res) >= ENCLOSED_FRACTION
+    free &= enclosure(walls, res) >= ENCLOSED_FRACTION  # lintels play no part in enclosure
+    if lintels is not None:
+        free &= ~ndi.binary_dilation(lintels)
     dist = ndi.distance_transform_edt(free) * res
     seeds, n = ndi.label(dist > DOOR_HALF_WIDTH_M)
     seed_area = ndi.sum(np.ones_like(dist), seeds, np.arange(1, n + 1)) * res**2

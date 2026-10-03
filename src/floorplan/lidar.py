@@ -11,7 +11,14 @@ import numpy as np
 
 from floorplan.levels import floor_level
 from floorplan.output import Measurement, Room, Wall
-from floorplan.plan2d import dominant_angle, make_grid, observed_mask, segment_rooms, wall_mask
+from floorplan.plan2d import (
+    dominant_angle,
+    lintel_mask,
+    make_grid,
+    observed_mask,
+    segment_rooms,
+    wall_mask,
+)
 from floorplan.rooms import RoomShape, measure_room
 
 GRID_RES_M = 0.03
@@ -37,7 +44,8 @@ def build_plan(points: np.ndarray) -> Plan:
     angle = dominant_angle(band)
     grid = make_grid(points, angle, GRID_RES_M)
     walls = wall_mask(points, grid, floor.z)
-    labels = segment_rooms(walls, observed_mask(points, grid, floor.z), GRID_RES_M)
+    observed = observed_mask(points, grid, floor.z)
+    labels = segment_rooms(walls, observed, GRID_RES_M, lintel_mask(points, grid, floor.z))
     shapes = [
         measure_room(labels == k, points, grid, walls, floor.z) for k in range(1, labels.max() + 1)
     ]

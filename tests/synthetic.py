@@ -24,21 +24,32 @@ def slab(x0, x1, y0, y1, z):
     return np.column_stack([x.ravel(), y.ravel(), np.full(x.size, z)])
 
 
-def two_rooms(angle_deg=30.0, noise=0.004, ceiling=2.5):
-    """Room A [0,3.95]x[0,3] and room B [4.05,7]x[0,3]: a 10 cm partition, door at y 1-1.9.
+def two_rooms(angle_deg=30.0, noise=0.004, ceiling=2.5, door=(1.0, 1.9), lintel=None):
+    """Room A [0,3.95]x[0,3] and room B [4.05,7]x[0,3]: a 10 cm partition with a door at
+    y in `door`, open to the ceiling, or under a lintel at height `lintel` if given.
 
     Also a 1.2 x 0.8 table (top at 0.75 m) in room A, and floor seen through an open
     window beyond room B's east wall (x 7.2-9), which must not become a room.
     """
+    top = lintel or ceiling
+    partition = [
+        wall((3.95, 0), (3.95, 3), z1=top, gap=door),  # room A face
+        wall((4.05, 0), (4.05, 3), z1=top, gap=door),  # room B face
+    ]
+    if lintel:
+        partition += [
+            wall((3.95, 0), (3.95, 3), z0=lintel, z1=ceiling),
+            wall((4.05, 0), (4.05, 3), z0=lintel, z1=ceiling),
+            slab(3.95, 4.05, door[0], door[1], lintel),  # lintel underside
+        ]
     parts = [
+        *partition,
         wall((0, 0), (7, 0), z1=ceiling),
         wall((7, 0), (7, 3), z1=0.9),  # window: sill below 0.9 m, head above 2.1 m
         wall((7, 0), (7, 3), z0=0.9, z1=2.1, gap=(1.0, 2.0)),
         wall((7, 0), (7, 3), z0=2.1, z1=ceiling),
         wall((7, 3), (0, 3), z1=ceiling),
         wall((0, 3), (0, 0), z1=ceiling),
-        wall((3.95, 0), (3.95, 3), z1=ceiling, gap=(1.0, 1.9)),  # partition, room A face
-        wall((4.05, 0), (4.05, 3), z1=ceiling, gap=(1.0, 1.9)),  # partition, room B face
         slab(0, 3.95, 0, 3, 0.0),
         slab(4.05, 7, 0, 3, 0.0),
         slab(0, 3.95, 0, 3, ceiling),

@@ -60,3 +60,9 @@ def test_kitchen_is_measured_to_the_wall_behind_the_counter():
     room = plan.rooms[0]
     assert room.floor_area.value == pytest.approx(4.0 * 3.0, rel=0.03)
     assert max(w.length.value for w in room.walls) == pytest.approx(4.0, abs=0.03)
+
+
+def test_rooms_joined_by_a_wide_door_under_a_lintel_stay_separate():
+    plan = build_plan(two_rooms(angle_deg=30.0, door=(0.9, 2.1), lintel=2.0))
+    areas = sorted(r.floor_area.value for r in plan.rooms)
+    assert areas == pytest.approx([2.95 * 3, 3.95 * 3], rel=0.05)
