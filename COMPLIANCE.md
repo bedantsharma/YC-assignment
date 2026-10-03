@@ -20,16 +20,16 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | C5 | Video tier: handheld walkthrough clip, any iPhone 15+ | `src/floorplan/tiers/video.py` *(planned)* | Plan from C native video | Not started | |
 | C6 | LiDAR tier: depth, poses, intrinsics on Pro devices | `src/floorplan/capture.py`, `src/floorplan/tiers/lidar.py` *(planned)* | Plans from datasets A, B, C | In progress | Loader done for Stray Scanner and ARKitScenes (common z-up frame) |
 | C7 | Same output contract from every tier | `src/floorplan/output.py` | One result type for all tiers | In progress | |
-| C8 | Intervals widen honestly as sensor data thins | `src/floorplan/intervals.py` *(planned)* | Calibration table per tier | Not started | |
+| C8 | Intervals widen honestly as sensor data thins | `src/floorplan/lidar.py` (provisional) | Calibration table per tier | In progress | LiDAR: ±1.645σ from measured surface spreads, unobserved walls 5 cm σ. Uncalibrated until Phase 6 |
 | C9 | Device matrix: which tier runs on which hardware, and the accuracy each honestly delivers | `docs/device_matrix.md` | Table in technical report | In progress | Skeleton: hardware per tier done; accuracy cells TBD until the benchmark |
 
 ## 2. Output contract, per capture (brief Part 2)
 
 | ID | Requirement | File path | Artifact | Status | Notes |
 |---|---|---|---|---|---|
-| O1 | Per-room plan with walls (dimensioned) | `src/floorplan/geometry/` *(planned)* | `rooms[].walls[]` in JSON + rendered plan | Not started | |
-| O2 | Ceiling height per room | `src/floorplan/geometry/` *(planned)* | `rooms[].ceiling_height` | Not started | |
-| O3 | Floor area per room | `src/floorplan/geometry/` *(planned)* | `rooms[].floor_area` | Not started | |
+| O1 | Per-room plan with walls (dimensioned) | `src/floorplan/plan2d.py`, `rooms.py`, `lidar.py` | `rooms[].walls[]` in JSON + `plan.png` | In progress | LiDAR tier works on datasets A and B; not yet checked against ground truth |
+| O2 | Ceiling height per room | `src/floorplan/levels.py`, `rooms.py` | `rooms[].ceiling_height` | In progress | Per-room floor and ceiling planes (LiDAR); `null` + warning when the ceiling was never scanned |
+| O3 | Floor area per room | `src/floorplan/rooms.py`, `lidar.py` | `rooms[].floor_area` | In progress | LiDAR tier; polygon snapped to wall faces |
 | O4 | Openings (doors, windows) per room | `src/floorplan/geometry/openings.py` *(planned)* | `rooms[].openings[]` | Not started | |
 | O5 | Stitched multi-room plan: every room placed, connected, dimensioned, correct adjacency | `src/floorplan/geometry/stitch.py` *(planned)* | `property.adjacency` + stitched plan image | Not started | |
 | O6 | Stitched plan produced from **every** tier, including photos | `src/floorplan/tiers/` *(planned)* | Stitched plans for A/C at each tier | Not started | |
@@ -37,9 +37,9 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | O8 | Concealed-damage flags naming the rule that fired | `src/floorplan/damage.py` *(planned)* | `flags[].rule_id`, `flags[].rule` | Not started | |
 | O9 | Scope line items keyed to surfaces | `src/floorplan/scope.py` *(planned)* | `scope[].surface_id` | Not started | |
 | O10 | Confidence interval on every measurement | `src/floorplan/output.py` | Every number is `{value, lo, hi, unit}` | Done | Enforced by the output types; lo ≤ value ≤ hi checked |
-| O11 | One command per capture | `src/floorplan/cli.py` | `uv run floorplan run <capture>` | In progress | Command works on all formats and writes plan.json; geometry stages still to add |
+| O11 | One command per capture | `src/floorplan/cli.py` | `uv run floorplan run <capture>` | In progress | LiDAR tier runs end to end (plan.json + plan.png, 8–23 s); video and photo tiers still stubs |
 | O12 | JSON output | `src/floorplan/output.py` | `outputs/<capture>/plan.json` | Done | Own format (no published schema, per Cozmo); fields in README |
-| O13 | Rendered plan a homeowner would recognise (as from Polycam / magicplan) | `src/floorplan/render.py` *(planned)* | `outputs/<capture>/plan.png` | Not started | |
+| O13 | Rendered plan a homeowner would recognise (as from Polycam / magicplan) | `src/floorplan/render.py` | `outputs/<capture>/plan.png` | In progress | Dimensioned walls with intervals, room areas and ceilings; no doors or furniture symbols yet |
 
 ## 3. Benchmark composition (brief Part 2)
 
@@ -128,8 +128,8 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | Status | Count |
 |---|---|
 | Done | 2 |
-| In progress | 16 |
+| In progress | 23 |
 | Partial | 0 |
-| Not started | 46 |
+| Not started | 39 |
 | Not done | 0 |
 | **Total** | **64** |

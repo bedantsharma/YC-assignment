@@ -12,7 +12,7 @@ land); datasets: `docs/data_plan.md`. Deadline: Mon Oct 5, 10:00 IST.
 - `uv add <pkg>` / `uv add --dev <pkg>`: add dependencies
 - `uv run ruff check --fix . && uv run ruff format . && uv run pytest`: run before every commit
 - `uv run floorplan run <capture> [--tier lidar|video|photo]`: process one capture into
-  `outputs/<id>_<tier>/plan.json`
+  `outputs/<id>_<tier>/plan.json` and `plan.png`
 - `uv run scripts/fuse_topdown.py`: fuse all captures, write `outputs/topdown_overview.png`
 - `scripts/fetch_arkitscenes.sh [visit_id] [n_laser]`: download an ARKitScenes venue
 - `uv run scripts/md_to_pdf.py <doc.md> [--skip "Section"]`: render a doc to PDF (PDFs are gitignored)
@@ -23,6 +23,12 @@ land); datasets: `docs/data_plan.md`. Deadline: Mon Oct 5, 10:00 IST.
   - `cli.py`: `floorplan run <capture> [--tier] [--out]` (one command per capture)
   - `pipeline.py`: `run()` chains the stages; add new stages here
   - `capture.py`: format detection + loaders; converts every LiDAR source to the common frame
+  - `cloud.py`: depth frames → fused, voxel-downsampled world point cloud
+  - `levels.py`: floor / ceiling heights from height histograms
+  - `plan2d.py`: wall orientation, wall / observed grids, enclosure test, room segmentation
+  - `rooms.py`: room outline → rectilinear polygon snapped to measured wall faces
+  - `lidar.py`: point cloud → output `Room`s with intervals (shared geometry backend)
+  - `render.py`: `Result` → dimensioned `plan.png`
   - `output.py`: result type and JSON writer (every number is a `Measurement` with an interval)
 - `tests/`: pytest tests
 - `COMPLIANCE.md`: requirement → file → artifact → status; update a row whenever work lands

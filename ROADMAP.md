@@ -9,7 +9,8 @@ including sleep. Scope and scoring are in [requirements.md](requirements.md).
   data plan, datasets A and B downloaded, friend's capture checklist sent
 - **Waiting on:** friend's capture (dataset C), ETA 1–2 h
 - **Open in Phase 0:** device matrix is scaffolding only (accuracy numbers wait on Phase 6)
-- **Next:** Phase 2 on datasets A and B while C arrives
+- **Done since:** Phase 2 LiDAR geometry runs end to end (see Phase 2 below)
+- **Next:** openings, then Phase 3 (repeatability, drift)
 
 ## Principles
 
@@ -76,15 +77,28 @@ Exit: all three datasets on disk, both ground-truth files complete.
 Why: the core of every tier and the walk-in test. LiDAR first because its data is cleanest,
 so bugs are in our code, not the input.
 
-- [ ] Loader → fused, voxel-downsampled, confidence-filtered point cloud (from
-      `scripts/fuse_topdown.py`)
-- [ ] Floor and ceiling planes (RANSAC on horizontal points) → ceiling height per room
-- [ ] Wall-height slice → 2D occupancy image → line segments (RANSAC / Hough) → Manhattan
-      snapping to the dominant orientation
-- [ ] Room segmentation of the 2D free-space map (watershed / connected components)
-- [ ] Per room: polygon, wall lengths, floor area, ceiling height
-- [ ] Intervals from plane-fit residuals and per-frame spread
-- [ ] Render the plan (matplotlib, dimensions on every wall) + write JSON
+- [x] Fused, voxel-downsampled, confidence-filtered point cloud (`cloud.py`)
+- [x] Floor and ceiling levels from height histograms, per room (`levels.py`)
+- [x] Wall evidence = vertical extent per grid cell (drops furniture); Manhattan orientation
+      from histogram sharpness (`plan2d.py`)
+- [x] Room segmentation: enclosure ray test (drops floor seen through windows) + watershed
+      split at doorways (`plan2d.py`)
+- [x] Per room: rectilinear polygon snapped to wall faces, wall lengths, floor area, ceiling
+      height (`rooms.py`, `lidar.py`)
+- [x] Provisional intervals from surface spreads (±1.645σ; calibrate in Phase 6)
+- [x] Render the plan (`render.py`) + write JSON; wired into `floorplan run`
+
+Result (Sat evening): dataset A gives 6 / 5 / 3 rooms, B one ~4 × 5 m room (ceiling 3.05 m),
+8–23 s per capture. Not yet compared with ground truth.
+
+Known issues found on real data (to address in Phases 3 and 6):
+- Open-plan spaces are split where the watershed happens to meet, not at a real boundary
+- Small spurious steps (0.3–0.5 m) where furniture or clutter touches a wall
+- Tall furniture against a wall (wardrobes) counts as wall, so the room shrinks
+- A floor-to-ceiling opening into unscanned space can notch the room outline
+- c7d28f72c6 r2 and r3 report ceilings of 2.3–2.4 m: possibly real lowered ceilings, or a
+  cabinet top; check against the video
+- No drift correction yet; openings (doors, windows) not detected yet
 
 Exit: all three provided captures produce a plan with recognisable rooms.
 Cut line: if room segmentation fights back, output a single whole-floor polygon plus walls.

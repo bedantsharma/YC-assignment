@@ -95,8 +95,8 @@ confidence interval (coverage given by `interval_coverage`, default 0.9).
 |---|---|
 | `format_version` | Output format version (currently `0.1`) |
 | `capture` | `id`, `tier` (`lidar` / `video` / `photo`), `source` path, `device` |
-| `rooms[]` | `id`, `label`, `polygon` (corner points), `floor_area`, `ceiling_height`, `walls[]`, `openings[]` |
-| `rooms[].walls[]` | `id`, `start`, `end` (points), `length`, `height` |
+| `rooms[]` | `id`, `label`, `polygon` (corner points, counter-clockwise), `floor_area`, `ceiling_height` (`null` if the ceiling was never captured), `walls[]`, `openings[]` |
+| `rooms[].walls[]` | `id`, `start`, `end` (points), `length`, `height`, `observed` (`false`: no wall surface seen, e.g. an open side; its interval is wide) |
 | `rooms[].openings[]` | `id`, `wall_id`, `kind` (`door` / `window` / `passage`), `width`, `height`, `connects_to` (room id) |
 | `adjacency[]` | `room_a`, `room_b`, `opening_id`: which rooms connect, and through which opening |
 | `surfaces[]` | `id`, `room_id`, `kind` (`wall` / `floor` / `ceiling`), `wall_id`, `area` |
@@ -104,6 +104,7 @@ confidence interval (coverage given by `interval_coverage`, default 0.9).
 | `flags[]` | Concealed-damage flags: `id`, `rule_id`, `rule` (text of the rule that fired), `surface_id`, `damage_ids` |
 | `scope[]` | Repair line items: `id`, `surface_id`, `action`, `quantity`, `reason_ids` (damage / flag ids) |
 | `footprint_area` | Whole-property floor area |
+| `plan_rotation_deg` | Plan frame = capture's world frame rotated about the vertical by minus this angle, so walls run along x and y |
 | `drift_correction` | Drift-correction method used (multi-room captures), or `null` |
 | `interval_coverage` | Target coverage of every interval (0.9 = 90%) |
 | `timing_s` | Seconds per pipeline stage |
