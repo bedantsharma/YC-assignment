@@ -87,8 +87,11 @@ token in `~/.kaggle/kaggle.json` works.
 Each failed push costs ~5–10 min. The bake-off took 6 pushes because of setup mistakes
 that a local dry run would have caught. **Before every push:**
 
-1. **Dry-run the setup locally** in a throwaway venv (`uv venv`, same installs, then the
-   imports and model-config loading the script does). Only the GPU step may be untested.
+1. **Dry-run the setup locally** in a throwaway scratch venv (`uv venv`, same installs,
+   then the script's imports and config composition), then delete the venv. **Never
+   build a model locally** (`from_pretrained`, `init_model_from_config`): that downloads
+   multi-GB weights onto the user's laptop, which the user does not want. Stop right
+   before model construction; only that step and the GPU work stay untested.
 2. **Never install a package inside the running script and then import it**, especially
    `pip install -e`: the process scanned `site-packages` at startup and won't see it.
    Install, then `sys.path.insert(0, <clone>)`, or install in a first cell/process and
