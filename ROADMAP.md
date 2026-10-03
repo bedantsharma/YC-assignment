@@ -3,6 +3,13 @@
 Deadline: **Mon Oct 5, 10:00 IST**. Start: Sat Oct 3, ~12:30 IST. About 45 working hours
 including sleep. Scope and scoring are in [requirements.md](requirements.md).
 
+## Status (Sat Oct 3, 13:35 IST)
+
+- **Done:** project setup (uv, ruff, GitNexus, GitHub), requirements and Cozmo's answers,
+  data plan, datasets A and B downloaded, friend's capture checklist sent
+- **Waiting on:** friend's capture (dataset C), ETA 1–2 h
+- **Next:** Phase 0 scaffolding, then Phase 2 on datasets A and B while C arrives
+
 ## Principles
 
 - **Data first.** Our own captures and tape measurements block benchmarking, the photo and
@@ -33,23 +40,25 @@ the interface every later phase writes to.
 
 Exit: `uv run floorplan run data/raw/c7d28f72c6` writes a valid (mostly empty) JSON.
 
-## Phase 1: Capture our own benchmark (Sat 14:00–17:00, 3 h, physical)
+## Phase 1: Data acquisition (Sat 12:30–16:00)
 
-Why now: everything from Phase 4 on needs it, and daylight matters for photos.
+Why now: everything from Phase 4 on needs ground truth, and daylight matters for photos.
+Sources and how each is used: [docs/data_plan.md](docs/data_plan.md).
 
-Follow our own protocol literally (it is graded on how a non-engineer would experience it):
+- [x] Dataset A: Cozmo's 3 Stray Scanner captures in `data/raw/` (verified, fuses cleanly)
+- [x] Dataset B: ARKitScenes venue 421337, 3 captures + 1 laser station (4.6 GB,
+      `scripts/fetch_arkitscenes.sh`)
+- [x] Capture checklist written and sent to the friend
+      ([md](docs/friend_capture_checklist.md), PDF)
+- [ ] **In progress:** Dataset C, friend's home on an iPhone 16 Pro (all three tiers, staged
+      damage, Polycam). Expected back ~15:00–16:00 IST Sat
+- [ ] Check B's laser station covers every wall; fetch a second station if not
+- [ ] Hand-measure B's walls, ceiling, openings from the laser cloud →
+      `data/gt/arkitscenes_421337.yaml`
+- [ ] Transcribe the friend's tape sketch → `data/gt/home_c.yaml`; put captures in
+      `data/home_c/`; pick the held-out room
 
-- [ ] Choose 3+ rooms plus a hallway in one home
-- [ ] Stage damage in one furnished room, two classes (e.g. tape "crack" + tea-stain "water
-      damage" on paper taped to a wall)
-- [ ] Video walkthrough of all rooms (native Camera, 1080p or 4K, steady walk)
-- [ ] Photo folders: 2–8 stills per room, plus one photo through each doorway
-- [ ] Repeat one room at the video tier and at the photo tier (repeatability)
-- [ ] Tape-measure ground truth into `data/gt/<home>.yaml`: every wall length, ceiling
-      height per room (2 spots), every door and window width, room-to-room adjacency
-- [ ] Photograph the tape readings as evidence
-
-Exit: raw captures in `data/raw/`, ground truth file complete.
+Exit: all three datasets on disk, both ground-truth files complete.
 
 ## Phase 2: LiDAR geometry backend (Sat 17:00–23:00, 6 h)
 

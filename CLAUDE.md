@@ -3,7 +3,8 @@
 Phone captures of a home → dimensioned floor plan (walls, wall lengths, floor area, ceiling
 height) with a confidence interval on every measurement. Built for the Cozmo AI "Applied AI"
 take-home (brief: `Applied AI.pdf`, gitignored). All three input tiers (LiDAR, video, photos)
-are required. Scope: `requirements.md`; plan: `ROADMAP.md`; datasets: `docs/data_plan.md`.
+are required. Scope: `requirements.md`; plan and status: `ROADMAP.md` (tick items off as they
+land); datasets: `docs/data_plan.md`. Deadline: Mon Oct 5, 10:00 IST.
 
 ## Commands
 
@@ -19,7 +20,9 @@ are required. Scope: `requirements.md`; plan: `ROADMAP.md`; datasets: `docs/data
 - `scripts/`: exploration and one-off analysis scripts
 - `data/raw/<capture-id>/`: Cozmo's Stray Scanner captures, dataset A (gitignored)
 - `data/arkitscenes/`: ARKitScenes venue 421337 + laser scan, dataset B (gitignored)
+- `data/home_c/`: friend's iPhone 16 Pro capture of a home, all tiers, dataset C (gitignored)
 - `data/gt/`: hand-measured ground truth files (committed)
+- `docs/`: data plan, capture checklist; later the capture protocol and reports
 - `outputs/`: generated plots and results (gitignored)
 
 ## Data conventions (verified against the captures)
@@ -50,7 +53,7 @@ are required. Scope: `requirements.md`; plan: `ROADMAP.md`; datasets: `docs/data
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **YC-assignment** (51 symbols, 48 relationships, 0 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **YC-assignment** (95 symbols, 88 relationships, 0 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
