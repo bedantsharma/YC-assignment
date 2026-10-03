@@ -33,8 +33,8 @@ def test_run_honours_explicit_tier(stray_capture, tmp_path, monkeypatch):
 
     seen = {}
 
-    def fake_video(path, capture, n_frames, up):
-        seen["path"] = path
+    def fake_video(path, capture, n_frames, up, model):
+        seen["path"], seen["model"] = path, model
         return Result(capture=capture, rooms=[])
 
     monkeypatch.setattr(pipeline, "_run_video", fake_video)
@@ -43,6 +43,7 @@ def test_run_honours_explicit_tier(stray_capture, tmp_path, monkeypatch):
     plan = json.loads((out / "stray01_video" / "plan.json").read_text())
     assert plan["capture"]["tier"] == "video"
     assert seen["path"] == stray_capture
+    assert seen["model"] == "pi3x"
 
 
 def test_run_reports_bad_input_without_traceback(tmp_path, capsys):

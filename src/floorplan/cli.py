@@ -28,10 +28,16 @@ def main(argv: list[str] | None = None) -> int:
         default="auto",
         help="video tier: side of the stored frame that is up (default: metadata or brightness)",
     )
+    p_run.add_argument(
+        "--model",
+        choices=["pi3x", "mapanything"],
+        default="pi3x",
+        help="video tier: pi3x (more accurate, CC BY-NC weights) or mapanything (Apache 2.0)",
+    )
     args = parser.parse_args(argv)
 
     try:
-        result = run(args.capture, args.tier, args.drift, args.frames, args.up)
+        result = run(args.capture, args.tier, args.drift, args.frames, args.up, args.model)
     except ValueError as err:
         print(f"floorplan: {err}", file=sys.stderr)
         return 2

@@ -16,7 +16,10 @@ from floorplan.output import Capture, Measurement, Result
 
 MAX_LIDAR_FRAMES = 3000  # more adds run time, not accuracy (depth frames overlap heavily)
 VIDEO_FRAMES = 30  # 12.8 GB peak on a 16 GB Mac (docs/model_spike.md)
+VIDEO_WINDOW = 30  # frames per model pass; more frames are reconstructed in chained windows
+VIDEO_OVERLAP = 10  # frames shared by consecutive windows (src/floorplan/chunks.py)
 VIDEO_VOXEL_M = 0.02
+MODEL_NAMES = {"pi3x": "Pi3X (CC BY-NC weights)", "mapanything": "MapAnything (Apache 2.0)"}
 
 
 def run(
@@ -25,6 +28,7 @@ def run(
     drift: bool = False,
     frames: int = VIDEO_FRAMES,
     up: str = "auto",
+    model: str = "pi3x",
 ) -> Result:
     path = Path(path)
     fmt = detect_format(path)
@@ -33,7 +37,7 @@ def run(
     if tier == "lidar":
         return _run_lidar(path, capture, drift)
     if tier == "video":
-        return _run_video(path, capture, frames, up)
+        return _run_video(path, capture, frames, up, model)
 
     start = time.perf_counter()
     rooms = load_photos(path).rooms
@@ -43,7 +47,8 @@ def run(
     return Result(capture=capture, rooms=[], timing_s=timing, warnings=warnings)
 
 
-def _run_video(path: Path, capture: Capture, n_frames: int, up: str) -> Result:
+def _run_video(path: Path, capture: Capture, n_frames: int, up: str, model: str) -> Result:
+    from floorplan.chunks import chain
     from floorplan.mvs import reconstruct
     from floorplan.video import Orientation, estimate_up, orientation, sample_frames, z_up
 
@@ -55,7 +60,21 @@ def _run_video(path: Path, capture: Capture, n_frames: int, up: str) -> Result:
     timing["frames"] = round(time.perf_counter() - start, 3)
 
     start = time.perf_counter()
-    rec = reconstruct(frames)
+    links = []
+    if len(frames) <= VIDEO_WINDOW:
+        rec = reconstruct(frames, model)
+        joint = "none needed: all frames reconstructed jointly in one pass"
+    else:
+        rec, links = chain(
+            len(frames),
+            lambda idx: reconstruct([frames[i] for i in idx], model),
+            VIDEO_WINDOW,
+            VIDEO_OVERLAP,
+        )
+        joint = (
+            f"{len(links) + 1} windows of {VIDEO_WINDOW} frames ({VIDEO_OVERLAP} shared), "
+            "chained by similarity fits on the shared frames' point maps"
+        )
     timing["reconstruction"] = round(time.perf_counter() - start, 3)
 
     start = time.perf_counter()
@@ -75,9 +94,14 @@ def _run_video(path: Path, capture: Capture, n_frames: int, up: str) -> Result:
     how = f"{orient.source}, margin {orient.margin:.1f}" if orient.margin else orient.source
     warnings = [
         f"used {len(frames)} frames of {video.name}; up = stored frame's {orient.up_side} ({how})",
-        f"reconstruction: MapAnything, {rec.seconds:.0f} s; intervals widened by "
+        f"reconstruction: {MODEL_NAMES[rec.model]}, {rec.seconds:.0f} s; intervals widened by "
         f"{100 * VIDEO_SCALE_REL:.0f}% scale and {100 * VIDEO_SURFACE_M:.0f} cm surface error "
         "(provisional, from the model spike)",
+        *[
+            f"window {k.window} chained: scale {k.scale:.3f}, residual "
+            f"{100 * k.residual_m:.1f} cm over {k.pairs} points"
+            for k in links
+        ],
         *plan.warnings,
     ]
     return Result(
@@ -85,7 +109,7 @@ def _run_video(path: Path, capture: Capture, n_frames: int, up: str) -> Result:
         rooms=rooms,
         footprint_area=footprint,
         plan_rotation_deg=plan.rotation_deg,
-        drift_correction="none needed: all frames reconstructed jointly in one pass",
+        drift_correction=joint,
         timing_s=timing,
         warnings=warnings,
     )

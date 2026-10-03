@@ -21,6 +21,7 @@ floorplan = "floorplan.cli:main"
 [project.optional-dependencies]
 video = [
     "mapanything",
+    "pi3",
     "torch>=2.14.1",
     "torchvision>=0.29.1",
 ]
@@ -45,3 +46,4 @@ select = ["E", "F", "W", "I", "B", "UP", "NPY", "SIM"]
 
 [tool.uv.sources]
 mapanything = { git = "https://github.com/facebookresearch/map-anything", rev = "3d10cf7a3016fc0f9bb13a071ee66c47b10be0d9" }
+pi3 = { git = "https://github.com/yyfz/Pi3", rev = "9fa3ddb3f8d53041f8b2738df404f62223bbaa7b" }
