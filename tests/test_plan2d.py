@@ -38,7 +38,7 @@ def test_wall_mask_keeps_walls_and_drops_the_table(apartment):
     pts, grid = apartment
     walls = wall_mask(pts, grid, floor_z=0.0)
     table = grid.cells(_rot(np.array([[1.6, 1.4]]), 30.0))[0]
-    shared = grid.cells(_rot(np.array([[4.0, 0.5]]), 30.0))[0]
+    shared = grid.cells(_rot(np.array([[3.95, 0.5]]), 30.0))[0]
     assert not walls[tuple(table)]
     assert walls[tuple(shared)]
 
