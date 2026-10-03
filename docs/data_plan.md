@@ -38,14 +38,14 @@ data/home_c/
 data/gt/home_c.yaml  tape measurements, transcribed from the sketch (committed)
 ```
 
-| Item from the checklist | Status (Sat Oct 3, ~17:15 IST) |
+| Item from the checklist | Status (Sat Oct 3, ~17:30 IST) |
 |---|---|
 | LiDAR whole-home walk | **Received:** `lidar/c_home_01` (167 s, 9,995 frames, 1920x1440 RGB, 256x192 depth). Runs: 4 rooms, ~56 m², ceilings ~3.3–3.5 m (unverified) |
-| LiDAR damaged room x2 | Not received |
-| Camera-app video (whole home, damaged room x2) | Not received |
-| Photo folders per room + doorway shots | Not received |
-| Polycam export (2 rooms) | Not received |
-| Tape sketch (walls, ceilings, openings, damage, adjacency) | Not received: **no ground truth for C yet** |
+| LiDAR damaged room x2 | **Coming:** the staged-damage capture is the one item still expected |
+| Camera-app video (whole home, damaged room x2) | Not in hand, not currently expected → fallback: C's `rgb.mp4` |
+| Photo folders per room + doorway shots | Not in hand, not currently expected → fallback: stills sampled from video |
+| Polycam export (2 rooms) | Not in hand, not currently expected → head-to-head at risk |
+| Tape sketch (walls, ceilings, openings, damage, adjacency) | Not in hand, not currently expected: **no ground truth for C**; B's laser is the only absolute reference |
 
 `c_home_01` was renamed from the friend's `firendsScan` folder (the original Stray Scanner
 id was not kept). The held-out room is chosen when the sketch arrives; nothing has been
