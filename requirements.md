@@ -13,7 +13,7 @@ time-boxed plan lives in [ROADMAP.md](ROADMAP.md).
 | Deadline | Oct 5, 10:00 AM IST | ~46 hours from Sat 12:00 IST |
 | Provided captures | Build our own pipeline with **real ground-truth measurements**; send our captures and sample results | We must capture and tape-measure real rooms ourselves |
 | No iPhone Pro | Provided data may be used for the LiDAR tier | LiDAR tier uses the three Stray Scanner captures |
-| JSON schema / Round 1 gates | Ignore the Round 1 references | We define and document our own JSON schema; only the gates in the brief apply |
+| JSON schema / Round 1 gates | Ignore the Round 1 references | No published schema exists: we output JSON in our own format, documented in the README; only the gates in the brief apply |
 | Walk-in test | In person, on **our laptop**, no limits | Pipeline must run cold on this Mac (Apple Silicon); no time limit |
 | Scope | **All three tiers working** is expected | Video and photo tiers are core, not optional |
 
@@ -29,7 +29,7 @@ capture**:
 - concealed-damage flags, each naming the rule that fired
 - repair scope line items tied to surfaces
 - a confidence interval on **every** measurement
-- JSON in **our own documented schema**, plus a rendered plan image
+- JSON in **our own format** (fields documented in the README), plus a rendered plan image
 
 Three input tiers, all required, each producing the same output with honestly wider
 intervals as data gets thinner:
@@ -92,7 +92,8 @@ regenerable before/after = 0.
    is what lets per-room folders stitch into one plan.
 4. **Intervals come from measured spread**, not guesses: plane-fit residuals and spread across
    frames for LiDAR, widened by tier-specific error measured against our tape ground truth.
-5. **Own JSON schema**, versioned and documented in the repo (JSON Schema file).
+5. **Own JSON output format**, documented as a field list in the README. No formal JSON
+   Schema file: Cozmo said to ignore the published-schema reference, so it earns no marks.
 
 ## 5. Still open
 

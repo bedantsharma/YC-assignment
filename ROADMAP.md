@@ -28,11 +28,12 @@ including sleep. Scope and scoring are in [requirements.md](requirements.md).
 
 ## Phase 0: Scaffolding (Sat 12:30–14:00, 1.5 h)
 
-Why first: cheap, guaranteed marks (compliance 10%, capture route 5%), and the schema fixes
+Why first: cheap, guaranteed marks (compliance 10%, capture route 5%), and the output format fixes
 the interface every later phase writes to.
 
-- [ ] Output JSON schema (`schema/floorplan.schema.json`): rooms, walls, openings, surfaces,
-      damage, flags, scope items; every number as `{value, lo, hi, unit}`
+- [ ] JSON output format (our own; no published schema, and no formal JSON Schema file):
+      rooms, walls, openings, surfaces, damage, flags, scope items; every number as
+      `{value, lo, hi, unit}`. Fields documented in the README
 - [ ] Compliance matrix skeleton (`COMPLIANCE.md`), every row "not started"
 - [ ] Capture protocol draft (`docs/capture_protocol.md`) for all three tiers, including
       the doorway-overlap photo rule, plus the device matrix
