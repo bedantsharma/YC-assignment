@@ -35,8 +35,9 @@ the interface every later phase writes to.
       rooms, walls, openings, surfaces, damage, flags, scope items; every number as
       `{value, lo, hi, unit}`. Fields documented in the README; `src/floorplan/output.py`
 - [x] Compliance matrix (`COMPLIANCE.md`): 64 requirements, statuses updated as work lands
-- [ ] Capture protocol draft (`docs/capture_protocol.md`) for all three tiers, including
-      the doorway-overlap photo rule, plus the device matrix
+- [x] Capture protocol draft (`docs/capture_protocol.md`) for all three tiers, including
+      the doorway-overlap photo rule (~15 photos per room, minimum 4)
+- [ ] Device matrix (`docs/device_matrix.md`)
 - [ ] CLI skeleton: `floorplan run <capture_dir> --tier {lidar,video,photo} --out outputs/`
 
 Exit: `uv run floorplan run data/raw/c7d28f72c6` writes a valid (mostly empty) JSON.

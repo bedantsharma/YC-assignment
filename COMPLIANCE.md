@@ -13,9 +13,9 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 
 | ID | Requirement | File path | Artifact | Status | Notes |
 |---|---|---|---|---|---|
-| C1 | Choose a capture route: own iOS app (Route 1) or stock app + protocol (Route 2) | `docs/capture_protocol.md` *(planned)* | The protocol page | In progress | Route 2 chosen: Stray Scanner (LiDAR), native Camera (video, photos) |
-| C2 | One-page protocol a non-engineer follows: what to install, how to walk, how long, what to avoid, how to hand over files | `docs/capture_protocol.md` *(planned)* | The protocol page | Not started | Draft exists as [docs/friend_capture_checklist.md](docs/friend_capture_checklist.md); tested on a real non-engineer (dataset C) |
-| C3 | Photo tier: 2–8 stills per room, any iPhone 15+, no depth or poses | `src/floorplan/tiers/photo.py` *(planned)* | Plan from dataset C photo folders | Not started | |
+| C1 | Choose a capture route: own iOS app (Route 1) or stock app + protocol (Route 2) | `docs/capture_protocol.md` | The protocol page | In progress | Route 2 chosen: Stray Scanner (LiDAR), native Camera (video, photos) |
+| C2 | One-page protocol a non-engineer follows: what to install, how to walk, how long, what to avoid, how to hand over files | `docs/capture_protocol.md` | The protocol | In progress | Draft covers all five points; runs ~2 pages by choice (clarity over cramming). Built from Polycam, magicplan and Apple RoomPlan guidance. To be tested on a non-engineer |
+| C3 | Photo tier: 2–8 stills per room, any iPhone 15+, no depth or poses | `src/floorplan/tiers/photo.py` *(planned)* | Plan from dataset C photo folders | Not started | **Deliberate deviation:** protocol asks ~15 photos per room (minimum 4) for a reliable first result; pipeline must still accept 2–8, with wider intervals. Accuracy vs photo count to be reported |
 | C4 | Photo tier: one folder per room → the same stitched whole-property plan | `src/floorplan/tiers/photo.py` *(planned)* | Stitched plan from C photo folders | Not started | Protocol requires one photo through each doorway to link rooms |
 | C5 | Video tier: handheld walkthrough clip, any iPhone 15+ | `src/floorplan/tiers/video.py` *(planned)* | Plan from C native video | Not started | |
 | C6 | LiDAR tier: depth, poses, intrinsics on Pro devices | `src/floorplan/tiers/lidar.py` *(planned)* | Plans from datasets A, B, C | In progress | Fusion prototype: `scripts/fuse_topdown.py` |
@@ -117,7 +117,7 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 
 | ID | Requirement | File path | Artifact | Status | Notes |
 |---|---|---|---|---|---|
-| K1 | Handheld consumer capture only | `docs/capture_protocol.md` *(planned)* | Protocol | In progress | iPhone only, no tripods or rigs |
+| K1 | Handheld consumer capture only | `docs/capture_protocol.md` | Protocol | In progress | iPhone only, no tripods or rigs |
 | K2 | Pretrained models, datasets, APIs allowed with disclosure | `docs/technical_report.md` *(planned)* | Disclosure section | In progress | ARKitScenes disclosed in data plan |
 | K3 | Runs without calling our own infrastructure | `src/floorplan/` | Code review | In progress | Hosted-API use still awaiting Cozmo's answer |
 | K4 | Weights and large binaries fetched by script, not committed | `scripts/fetch_*` | Fetch scripts | In progress | `scripts/fetch_arkitscenes.sh` |

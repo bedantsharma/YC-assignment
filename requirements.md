@@ -85,11 +85,14 @@ regenerable before/after = 0.
    runs on it. LiDAR gets this from depth + odometry; video and photos get it from a
    pretrained multi-view reconstruction model. This is what makes three tiers feasible in
    two days.
-2. **Capture route 2 (stock apps + one-page protocol).** LiDAR: Stray Scanner (matches the
+2. **Capture route 2 (stock apps + protocol, ~2 pages: clarity over cramming).** LiDAR: Stray Scanner (matches the
    provided data). Video: native Camera app. Photos: native Camera app. No custom iOS app.
-3. **The photo protocol requires one photo through each doorway** into the next room. The
-   brief lets the protocol dictate capture ("we follow your page literally"), and the overlap
-   is what lets per-room folders stitch into one plan.
+3. **The photo protocol asks for ~15 photos per room (minimum 4), including one through each
+   doorway** into the next room. The brief specifies 2–8; we ask for more to get a reliable
+   first result this weekend, the pipeline still accepts 2–8 with wider intervals, and the
+   report shows accuracy against photo count. The brief lets the protocol dictate capture
+   ("we follow your page literally"), and the doorway photo's overlap with the next room is
+   what lets per-room folders stitch into one plan.
 4. **Intervals come from measured spread**, not guesses: plane-fit residuals and spread across
    frames for LiDAR, widened by tier-specific error measured against our tape ground truth.
 5. **Own JSON output format**, documented as a field list in the README. No formal JSON
