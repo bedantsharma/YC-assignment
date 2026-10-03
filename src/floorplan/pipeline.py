@@ -19,12 +19,13 @@ from floorplan.intervals import (
 )
 from floorplan.lidar import build_plan
 from floorplan.output import Capture, Measurement, Result
-from floorplan.plan2d import ENCLOSED_FRACTION, ENCLOSED_FRACTION_SPARSE
+from floorplan.plan2d import ENCLOSED_FRACTION_SPARSE, Sightlines
 
 MAX_LIDAR_FRAMES = 3000  # more adds run time, not accuracy (depth frames overlap heavily)
 VIDEO_FRAMES = 30  # 12.8 GB peak on a 16 GB Mac (docs/model_spike.md)
 VIDEO_WINDOW = 30  # frames per model pass; more frames are reconstructed in chained windows
 VIDEO_OVERLAP = 10  # frames shared by consecutive windows (src/floorplan/chunks.py)
+SIGHT_POINTS = 3000  # per photo, for carving free space
 PHOTO_WINDOW = 32  # photos per model pass: 8 per room x 4 rooms; 11.4 GB on the M4
 VIDEO_VOXEL_M = 0.02
 MODEL_NAMES = {"pi3x": "Pi3X (CC BY-NC weights)", "mapanything": "MapAnything (Apache 2.0)"}
@@ -67,20 +68,67 @@ def _run_video(path: Path, capture: Capture, n_frames: int, up: str, model: str)
 
 
 def _run_photos(path: Path, capture: Capture, model: str) -> Result:
-    from floorplan.photos import few_photo_warnings, load_images
+    """Each folder reconstructed on its own; its main room kept and named after it. Rooms
+    are laid out side by side: their relative positions are not measured."""
+    from floorplan.photos import few_photo_warnings, load_images, shift_room
 
-    timing = {}
-    start = time.perf_counter()
-    rooms = load_photos(path).rooms
-    folders = [room for room, photos in rooms.items() for _ in photos]
-    images = load_images([p for photos in rooms.values() for p in photos])
-    timing["load"] = round(time.perf_counter() - start, 3)
-    note = (
-        f"used {len(images)} photos in {len(rooms)} folders "
-        f"({', '.join(f'{r}: {len(p)}' for r, p in rooms.items())}), reconstructed jointly"
+    folders = load_photos(path).rooms
+    timing: dict[str, float] = {}
+    rooms, warnings, x = [], [], 0.0
+    for name, photos in folders.items():
+        start = time.perf_counter()
+        images = load_images(photos)
+        timing["load"] = round(timing.get("load", 0.0) + time.perf_counter() - start, 3)
+        sub_timing: dict[str, float] = {}
+        res = _from_images(
+            capture, images, model, "photo", sub_timing, [], [name] * len(photos), True
+        )
+        for k, v in sub_timing.items():
+            timing[k] = round(timing.get(k, 0.0) + v, 3)
+        warnings += [
+            f"{name}: {w}" for w in res.warnings if not w.startswith(("scale", "reconstruction"))
+        ]
+        if not res.rooms:
+            warnings.append(f"{name}: no room found from its {len(photos)} photos")
+            continue
+        room = res.rooms[0]
+        poly = np.asarray(room.polygon)
+        shift_room(room, x - poly[:, 0].min(), -poly[:, 1].min())
+        x += float(np.ptp(poly[:, 0])) + 1.0
+        rooms.append(room)
+    rel_h, rel_v = RESIDUAL_REL[("photo", model)]
+    bias_h, bias_v = SCALE_BIAS[("photo", model)]
+    header = [
+        f"used {sum(map(len, folders.values()))} photos in {len(folders)} folders "
+        f"({', '.join(f'{r}: {len(p)}' for r, p in folders.items())}); each folder "
+        f"reconstructed on its own with {MODEL_NAMES[model]}",
+        *few_photo_warnings(folders),
+        f"scale corrected by the model's measured bias (horizontal x{1 / bias_h:.3f},"
+        f" vertical x{1 / bias_v:.3f}); intervals widened by {100 * rel_h:.0f}% horizontal,"
+        f" {100 * rel_v:.0f}% vertical and {100 * VIDEO_SURFACE_M:.0f} cm surface error"
+        " (provisional until ground truth)",
+    ]
+    if len(folders) > 1:
+        header.append(
+            "rooms are NOT stitched: each is measured on its own and laid out side by side; "
+            "joint reconstruction placed rooms 1-2 m wrong (docs/photo_tier.md)"
+        )
+    return Result(
+        capture=capture,
+        rooms=rooms,
+        footprint_area=_footprint(rooms),
+        drift_correction="none needed: each room's photos reconstructed jointly in one pass",
+        timing_s=timing,
+        warnings=header + warnings,
     )
-    notes = [note, *few_photo_warnings(rooms)]
-    return _from_images(capture, images, model, "photo", timing, notes, folders)
+
+
+def _footprint(rooms: list) -> Measurement | None:
+    if not rooms:
+        return None
+    total = sum(r.floor_area.value for r in rooms)
+    half = math.sqrt(sum((r.floor_area.hi - r.floor_area.value) ** 2 for r in rooms))
+    return Measurement(round(total, 4), round(total - half, 4), round(total + half, 4), "m2")
 
 
 def _from_images(
@@ -91,6 +139,7 @@ def _from_images(
     timing: dict,
     notes: list[str],
     folders: list[str] | None = None,
+    single_room: bool = False,
 ) -> Result:
     """Shared geometry of the video and photo tiers: images -> metric cloud -> plan."""
     from floorplan.chunks import chain
@@ -120,26 +169,34 @@ def _from_images(
     vertical = estimate_up(rec.points, rec.cam_poses)
     points = voxel_downsample(correct_scale(z_up(rec.points, vertical), model, tier), VIDEO_VOXEL_M)
     # photos see walls only in parts: accept rooms enclosed by fewer observed walls
-    sparse = ENCLOSED_FRACTION_SPARSE if tier == "photo" else ENCLOSED_FRACTION
-    plan = build_plan(points, sparse)
+    cams = correct_scale(z_up(rec.cam_poses[:, :3, 3], vertical), model, tier)
+    if tier == "photo":
+        # photos see walls and floor only in parts: fewer walls enclose a room, and the
+        # space each camera looked across counts as seen (docs/photo_tier.md)
+        sight = _sightlines(rec, cams, vertical, model, tier)
+        plan = build_plan(points, ENCLOSED_FRACTION_SPARSE, sight)
+    else:
+        plan = build_plan(points)
     labels = []
-    if folders is not None:
+    if single_room and plan.rooms:  # one folder = one room: keep the room it was shot from
+        from floorplan.photos import main_room
+
+        k = main_room(plan.rooms, plan.rotation_deg, cams[:, :2])
+        dropped = sum(r.floor_area.value for i, r in enumerate(plan.rooms) if i != k)
+        if dropped:
+            labels.append(f"dropped {dropped:.1f} m2 seen through doorways (other rooms)")
+        plan.rooms = [plan.rooms[k]]
+        plan.rooms[0].label = folders[0] if folders else plan.rooms[0].label
+    elif folders is not None:
         from floorplan.photos import label_rooms
 
-        cams = correct_scale(z_up(rec.cam_poses[:, :3, 3], vertical), model, tier)
         labels = label_rooms(plan.rooms, plan.rotation_deg, cams[:, :2], folders)
     rel_h, rel_v = RESIDUAL_REL[(tier, model)]
     bias_h, bias_v = SCALE_BIAS[(tier, model)]
     rooms = [widen_room(r, rel_h, rel_v, VIDEO_SURFACE_M) for r in plan.rooms]
     timing["geometry"] = round(time.perf_counter() - start, 3)
 
-    footprint = None
-    if rooms:
-        total = sum(r.floor_area.value for r in rooms)
-        half = math.sqrt(sum((r.floor_area.hi - r.floor_area.value) ** 2 for r in rooms))
-        footprint = Measurement(
-            round(total, 4), round(total - half, 4), round(total + half, 4), "m2"
-        )
+    footprint = _footprint(rooms)
     warnings = [
         *notes,
         f"reconstruction: {MODEL_NAMES[rec.model]}, {rec.seconds:.0f} s",
@@ -164,6 +221,19 @@ def _from_images(
         timing_s=timing,
         warnings=warnings,
     )
+
+
+def _sightlines(rec, cams: np.ndarray, vertical: np.ndarray, model: str, tier: str) -> Sightlines:
+    """Up to SIGHT_POINTS points per view (every n-th kept pixel), in the plan's frame."""
+    from floorplan.video import z_up
+
+    pts, view = [], []
+    for v in range(len(rec.view_points)):
+        p = rec.view_points[v][rec.view_keep[v]]
+        p = p[:: max(1, len(p) // SIGHT_POINTS)]
+        pts.append(correct_scale(z_up(p.astype(float), vertical), model, tier))
+        view.append(np.full(len(p), v))
+    return Sightlines(cams[:, :2], np.concatenate(pts), np.concatenate(view))
 
 
 def _run_lidar(path: Path, capture: Capture, drift: bool) -> Result:

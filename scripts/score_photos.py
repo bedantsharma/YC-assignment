@@ -26,8 +26,11 @@ from video_scale import overlap, place, world  # noqa: E402
 from floorplan.capture import load_lidar  # noqa: E402
 from floorplan.chunks import umeyama  # noqa: E402
 from floorplan.lidar import build_plan  # noqa: E402
-from floorplan.pipeline import run  # noqa: E402
-from floorplan.plan2d import ENCLOSED_FRACTION_SPARSE  # noqa: E402
+from floorplan.pipeline import (
+    SIGHT_POINTS,  # noqa: E402
+    run,  # noqa: E402
+)
+from floorplan.plan2d import ENCLOSED_FRACTION_SPARSE, Sightlines  # noqa: E402
 
 FPS = 60
 SIM = Path("data/home_c/photos_sim")
@@ -62,7 +65,12 @@ def main() -> None:
         c, c_ref = poses[:, :3, 3], ref[idx, :3, 3]
         s, r, t = umeyama(c, c_ref)
         ate = np.linalg.norm(s * c @ r.T + t - c_ref, axis=1)
-        plan = build_plan(place(pts, poses, c_ref), ENCLOSED_FRACTION_SPARSE)  # as the tier
+        placed, cams = place(pts, poses, c_ref, cams=True)
+        sight = None  # carve free space along lines of sight, as the tier does
+        if "view" in d:
+            step = max(1, len(placed) // (SIGHT_POINTS * len(poses)))
+            sight = Sightlines(cams[:, :2], placed[::step], d["view"][::step])
+        plan = build_plan(placed, ENCLOSED_FRACTION_SPARSE, sight)
         ref_plan = lidar[cap]
         video = [(vr, world(vr, plan.rotation_deg)) for vr in plan.rooms]
         side, ceil = [], []

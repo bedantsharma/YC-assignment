@@ -136,3 +136,17 @@ def test_low_confidence_zone_reaches_at_most_one_metre_past_the_room():
     depth = low.any(axis=0).sum() * RES
     assert depth == pytest.approx(1.0, abs=2 * RES)
     assert (out[:, 100:] == 0).all()
+
+
+def test_carving_marks_the_space_a_camera_looked_across():
+    from floorplan.plan2d import Grid, Sightlines, carved_mask
+
+    grid = Grid(0.0, np.zeros(2), 0.1, (50, 50))
+    sight = Sightlines(
+        cams=np.array([[1.0, 1.0]]),
+        points=np.array([[4.0, 1.0, 1.0], [1.0, 4.0, 5.0]]),  # second point above wall top
+        view=np.array([0, 0]),
+    )
+    seen = carved_mask(sight, grid, floor_z=0.0)
+    assert seen[10:40, 10].all()  # the line of sight to the wall point
+    assert not seen[10, 15:40].any()  # nothing towards the point above the wall band

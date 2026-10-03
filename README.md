@@ -15,7 +15,9 @@ Status: LiDAR tier works end to end; drift correction is opt-in (`--drift`); the
 works end to end on a whole home (`uv sync --extra video`; Pi3X by default, whose weights
 are **CC BY-NC (non-commercial)**, or `--model mapanything` for Apache 2.0 weights; model
 comparison in [docs/model_research.md](docs/model_research.md), whole home and scale in
-[docs/video_scale.md](docs/video_scale.md)); the photo tier is a stub. See
+[docs/video_scale.md](docs/video_scale.md)); the photo tier runs end to end on room folders
+(same model; single rooms with 5+ photos work, the whole-home stitch is weak:
+[docs/photo_tier.md](docs/photo_tier.md)). See
 [ROADMAP.md](ROADMAP.md) for progress and [requirements.md](requirements.md) for the full
 scope.
 
@@ -76,6 +78,8 @@ uv run floorplan run data/raw/c7d28f72c6
 uv run floorplan run data/raw/c7d28f72c6 --tier video
 # Video of a whole home: more frames, reconstructed in chained windows of 30
 uv run floorplan run data/home_c/lidar/c_home_01 --tier video --frames 90
+# Photos: one folder per room (2-8 photos each), folder name = room label
+uv run floorplan run data/home_c/photos_sim/c_damage_01/k8p
 
 # Fuse every Stray Scanner capture and plot top-down views to outputs/topdown_overview.png
 uv run scripts/fuse_topdown.py

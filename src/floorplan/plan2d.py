@@ -145,6 +145,38 @@ def observed_mask(points: np.ndarray, grid: Grid, floor_z: float) -> np.ndarray:
     return ndi.binary_fill_holes(ndi.binary_closing(seen, iterations=5))
 
 
+@dataclass
+class Sightlines:
+    """What each camera saw: free space lies between a camera and every point it saw."""
+
+    cams: np.ndarray  # (V, 2) camera positions, world xy
+    points: np.ndarray  # (M, 3) a sample of the points the cameras saw, world
+    view: np.ndarray  # (M,) index of the camera that saw each point
+
+
+SIGHT_STEPS = 64  # samples along each camera-to-point segment
+
+
+def carved_mask(sight: Sightlines, grid: Grid, floor_z: float) -> np.ndarray:
+    """Cells crossed by a line of sight to a point between floor and wall-top height.
+
+    Sparse photos leave most of a room's floor unseen; the observed mask then depends on
+    whether a one-cell gap happens to close (c_damage_01, 7 photos: 7.3 vs 11.1 m2 for the
+    same cloud turned 180 deg). The space a camera looked across is free and observed
+    whatever the grid: with carving, 10.9 vs 11.1 m2.
+    """
+    h = sight.points[:, 2] - floor_z
+    keep = (h > -0.08) & (h < WALL_BAND_M[1])
+    pts, view = sight.points[keep, :2], sight.view[keep]
+    t = np.linspace(0.0, 1.0, SIGHT_STEPS)[:, None, None]
+    seg = sight.cams[view][None] * (1 - t) + pts[None] * t
+    ij = grid.cells(seg.reshape(-1, 2))
+    ok = (ij[:, 0] >= 0) & (ij[:, 0] < grid.shape[0]) & (ij[:, 1] >= 0) & (ij[:, 1] < grid.shape[1])
+    seen = np.zeros(grid.shape, bool)
+    seen[ij[ok, 0], ij[ok, 1]] = True
+    return seen
+
+
 def enclosure(walls: np.ndarray, res: float, rays: int = 16, max_range: float = 8.0) -> np.ndarray:
     """Fraction of rays from each cell that hit a wall within max_range."""
     gi, gj = np.indices(walls.shape)

@@ -52,19 +52,20 @@ def test_load_images_applies_exif_rotation_and_resizes(tmp_path):
 
 
 def test_photo_tier_end_to_end_names_rooms_from_folders(photo_capture, monkeypatch):
-    # the model is replaced by a synthetic two-room cloud; everything after it is real
+    # the model is replaced by a synthetic two-room cloud; everything after it is real.
+    # Folders (sorted): "Room 1 Kitchen" (3 photos) shot in room A, "Room 2 Hallway" (2) in B
     from floorplan import mvs
     from floorplan.pipeline import run
     from tests.synthetic import two_rooms
 
     pts = two_rooms(angle_deg=0.0)
-    cams = [(1, 1), (2, 2), (3, 1), (5, 1), (6, 2)]  # folders sorted: Kitchen x3, Hallway x2
+    cams = {3: [(1, 1), (2, 2), (3, 1)], 2: [(5, 1), (6, 2)]}
 
     def fake(images, model):
-        assert len(images) == 5
-        poses = np.tile(np.eye(4), (5, 1, 1))
+        n = len(images)
+        poses = np.tile(np.eye(4), (n, 1, 1))
         poses[:, :3, :3] = [[1, 0, 0], [0, 0, 1], [0, -1, 0]]  # image down = world -z
-        poses[:, :2, 3] = cams
+        poses[:, :2, 3] = cams[n]
         poses[:, 2, 3] = 1.5
         keep = np.ones((1, len(pts), 1), bool)
         return mvs.Reconstruction(pts[None, :, None, :], keep, poses, 0.1, model)
@@ -72,9 +73,13 @@ def test_photo_tier_end_to_end_names_rooms_from_folders(photo_capture, monkeypat
     monkeypatch.setattr(mvs, "reconstruct", fake)
     result = run(photo_capture)
     assert result.capture.tier == "photo"
-    labels = sorted(r.label for r in result.rooms)
-    assert labels == ["Room 1 Kitchen", "Room 2 Hallway"]
+    area = {r.label: r.floor_area.value for r in result.rooms}
+    assert sorted(area) == ["Room 1 Kitchen", "Room 2 Hallway"]
+    assert area["Room 1 Kitchen"] > area["Room 2 Hallway"]  # room A 3.95 x 3, room B 2.95 x 3
+    assert any("NOT stitched" in w for w in result.warnings)
     assert all(r.floor_area.lo < r.floor_area.value < r.floor_area.hi for r in result.rooms)
+    xs = [np.asarray(r.polygon)[:, 0] for r in result.rooms]  # laid out without overlap
+    assert xs[0].max() < xs[1].min() or xs[1].max() < xs[0].min()
 
 
 def test_warns_about_folders_with_too_few_photos():

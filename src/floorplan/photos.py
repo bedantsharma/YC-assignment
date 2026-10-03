@@ -1,8 +1,11 @@
 """Photo tier front end: room folders of stills in, plan rooms named after the folders out.
 
-Input contract (brief): 2-8 stills per room, one folder per room, no depth or poses. All
-folders are reconstructed jointly (photos through doorways tie the rooms together), so the
-geometry is the video tier's: same model, same scale correction, same plan backend.
+Input contract (brief): 2-8 stills per room, one folder per room, no depth or poses. Each
+folder is reconstructed on its own (same model, scale correction and plan backend as the
+video tier, plus line-of-sight carving) and gives the room its photos were taken from.
+Reconstructing all folders jointly was tried first and placed rooms 1-2 m wrong
+(docs/photo_tier.md), so rooms are measured but not stitched: the plan lays them side by
+side and says so.
 
 Naming. A photo is taken from inside a room, so each plan room is named after the folder
 whose photos' camera positions fall inside it most often. A room no photo was taken from
@@ -48,6 +51,21 @@ def load_images(paths: list[Path]) -> list[Image.Image]:
         img.thumbnail((PHOTO_LONG_SIDE, PHOTO_LONG_SIDE), Image.Resampling.LANCZOS)
         out.append(img)
     return out
+
+
+def main_room(rooms: list[Room], angle_deg: float, cams_xy: np.ndarray) -> int:
+    """Index of the room the photos were taken from (most cameras inside; else largest)."""
+    uv = Grid(angle_deg, np.zeros(2), 1.0, (1, 1)).to_plan(cams_xy)
+    inside = [int(Poly(np.asarray(r.polygon)).contains_points(uv).sum()) for r in rooms]
+    return max(range(len(rooms)), key=lambda k: (inside[k], rooms[k].floor_area.value))
+
+
+def shift_room(room: Room, dx: float, dy: float) -> Room:
+    room.polygon = [(round(x + dx, 4), round(y + dy, 4)) for x, y in room.polygon]
+    for w in room.walls:
+        w.start = (round(w.start[0] + dx, 4), round(w.start[1] + dy, 4))
+        w.end = (round(w.end[0] + dx, 4), round(w.end[1] + dy, 4))
+    return room
 
 
 def label_rooms(

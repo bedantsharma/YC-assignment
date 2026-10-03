@@ -50,7 +50,7 @@ def overlap(pa: np.ndarray, pb: np.ndarray) -> float:
     return float((Poly(pa).contains_points(g) & Poly(pb).contains_points(g)).sum() * CELL**2)
 
 
-def place(pts: np.ndarray, poses: np.ndarray, c_ref: np.ndarray) -> np.ndarray:
+def place(pts: np.ndarray, poses: np.ndarray, c_ref: np.ndarray, cams: bool = False):
     """Level the cloud the way the tier does (vertical from wall normals), then turn and
     shift it in the floor plane onto the reference cameras (ARKit, evaluation only). No
     scale and no tilt from the reference: a 3D fit to a few cameras at one height can tilt
@@ -62,7 +62,11 @@ def place(pts: np.ndarray, poses: np.ndarray, c_ref: np.ndarray) -> np.ndarray:
     r = u @ np.diag([1.0, np.sign(np.linalg.det(u @ vt))]) @ vt
     out = p.copy()
     out[:, :2] = (p[:, :2] - c[:, :2].mean(0)) @ r.T + c_ref[:, :2].mean(0)
-    return out
+    if not cams:
+        return out
+    c_out = c.copy()
+    c_out[:, :2] = (c[:, :2] - c[:, :2].mean(0)) @ r.T + c_ref[:, :2].mean(0)
+    return out, c_out
 
 
 def aligned_plan(path: Path, src: Path):
