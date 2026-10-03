@@ -16,13 +16,89 @@ Work top to bottom. Every fix must leave all 9 LiDAR captures no worse
 | 01a | Hall and room 2 merged through a 1.2 m doorway | C `c_home_01` | Rooms split only at openings < 0.9 m | Door lintels split rooms (kept out of the enclosure test) | **Done** (`fix01-after`) |
 | 01b | Kitchen cut off at the counter front | C `c_home_01` | Counter front (0.1–1.1 m) passes the wall test | First try, "walls reach 1.5 m", **broke A** (low scans); replaced by the counter's shape (face capped by a hollow-under top at 0.82–1.05 m) | **Done** (`fix01-after`) |
 | 01c | Hall's north-west corner cut off as its own room | C `c_home_01` | 2.7 m of the hall's west wall has **zero points at any height**; rays leak west, the strip fails enclosure (0.62 < 0.75) and the hall splits in two | Seen floor that fails enclosure is attached (≤ 1 m deep) to the room it borders as a **low-confidence zone**; rooms touching along > 2 m with no wall or lintel merge | **Done** (`fix01c-after`) |
-| 02 | Two scans of the damaged room disagree: walls by 3–15 cm, ceiling by 8.8 cm | C `c_damage_01/02` | Not traced yet | Trace first (Phase 3) | Open (repeatability gate) |
+| 02 | Two scans of the damaged room disagree: short side by 21 cm, ceiling by 11 cm | C `c_damage_01/02` | (1) wall snap takes the nearest surface ≥ 30% of the peak: furniture (top ≈ 2.1 m) in front of a full-height wall passes in one scan (41%), fails in the other (25%); (2) ceiling = highest local max ≥ 5% of the floor peak: ripples on the real peak's upper tail qualify | (1) skip a face when a face behind it reaches > 0.3 m higher; (2) ceiling peaks must be separated (dip < 50%) from stronger peaks below | In progress (declared below) |
+| 02b | B's three scans of one room: extents 5.01 / 4.16 / 4.32 m (long), 4.02 / 4.01 / 3.76 m (short) | B | Free-space outline differs before any snapping (longest raw edge 4.91 / 4.00 / 4.24 m): segmentation or coverage | Trace first | Open |
 | 03 | Intervals overconfident: ±3 cm ranges that don't overlap between repeat scans | C damage room | Intervals from surface spread only, no capture-to-capture error | Calibrate against repeats and ground truth (Phase 6) | Open |
 | 04 | Wardrobes, fridges, bookshelves count as walls; rooms shrink | A, C | Tall furniture passes the wall test | Detector boxes (Phase 5 shared detector) remove them from walls | Open |
 | 05 | Spurious 0.3–0.5 m steps in walls | A | Clutter touching a wall bends the outline | Trace first | Open |
 | 06 | Open-plan spaces split arbitrarily | A | Watershed meets wherever the seeds touch | Trace first; lintels (01a) may cover part | Open |
 | 07 | Floor-to-ceiling opening into unscanned space notches a room | synthetic | Outline follows the observed edge | Trace first | Open |
 | 08 | Ceilings of 2.3–2.4 m in two A rooms | A `c7d28f72c6` | Real lowered ceiling, or a cabinet top? | Check against the video | Open |
+
+## Fix 02: repeat scans of the damaged room disagree (declared before fixing)
+
+Before: tag `fix02-before` (= `626b852`). Diagnostic: `uv run scripts/diag_repeat.py
+data/home_c/lidar/c_damage_01 data/home_c/lidar/c_damage_02` (surfaces behind each room
+edge; height peaks per room).
+
+### Failing numbers
+
+Same room, two scans (walls matched by position in the L-shape):
+
+| Dimension | `c_damage_01` | `c_damage_02` | Δ |
+|---|---|---|---|
+| long side | 4.242 | 4.263 | 2 cm |
+| short side | 3.296 | 3.084 | **21 cm** |
+| notch, short axis | 0.655 | 0.505 | 15 cm |
+| notch, long axis | 1.298 | 1.388 | 9 cm |
+| far segment | 2.640 | 2.578 | 6 cm |
+| ceiling | 3.363 | 3.473 | **11 cm** |
+
+The long side agrees to 2 cm, so this is not a scale error.
+
+### Root cause and evidence
+
+1. **Wall face (short side, notch short axis).** Behind the wall next to the notch both
+   scans see two surfaces, ≈ 0.04 m and ≈ 0.22 m behind the free-space edge. The near
+   one is furniture: its points stop at ≈ 2.1 m and lie only at the two ends of the wall
+   (height bins 0–2.1 m, along-wall bins 1–2 and 7–8 of 8); the far one is full height
+   (to 3.3 m) along the whole wall. `_snap_to_surface` takes the nearest histogram bin
+   with ≥ 30% of the peak count. In `c_damage_01` the furniture reaches 25% → wall chosen
+   (+0.209 m); in `c_damage_02` it reaches 41% → furniture chosen (+0.030 m). That flip is
+   ≈ 18 of the 21 cm.
+2. **Ceiling.** Both scans' room histograms have their dominant ceiling peak at 3.36 /
+   3.35 m (1 cm apart). `ceiling_level` takes the *highest* local maximum with ≥ 5% of
+   the floor peak's count. `c_damage_02`'s ceiling peak has a long upper tail with
+   ripples (3.42: 2892 vs 3.41: 2471; 3.44; 3.48) above the 731-point threshold, so the
+   last ripple, 3.47 m, wins. `c_damage_01`'s tail drops under the threshold by 3.44 m.
+
+### Fix
+
+1. Wall: a candidate face is skipped when a face behind it (within the search window)
+   reaches > 0.3 m higher (95th percentile of point heights). A shape rule, no absolute
+   heights: on a low scan (A's `c00a170fe1` stops at 1.7 m) both faces stop at the same
+   height and the nearest face is kept.
+2. Ceiling: a candidate peak must be separated from every stronger peak below it by a
+   dip under 50% of its own count; the highest such peak wins (keeps the intent of
+   "highest", e.g. a ceiling above a shelf top, without picking ripples).
+
+### Predicted numbers
+
+- `c_damage_02`: short side 3.08 → 3.25–3.30 m; notch short axis 0.51 → 0.66–0.70 m;
+  ceiling 3.47 → 3.34–3.36 m. `c_damage_01` unchanged (its snap already took the wall;
+  ceiling already the dominant peak).
+- After the fix the damage room still **fails the 1 cm / 0.5% gate**: predicted
+  residuals ≈ 3 cm (short side), 9 cm (notch long axis, a 0.5 m wall with a smeared
+  surface) and 6 cm (far segment). Not addressed here.
+- B ceilings unchanged (3.05 m). B walls: may change where a near partial-height surface
+  stands before a full-height one (candidate: `42444946` edge 6). B's extent spread
+  (02b) is a different cause and stays.
+- A: ceilings unchanged except possibly where a tail ripple was picked; walls may move
+  out where furniture stood in front of a full-height wall (judged by eye).
+
+### Baseline on every LiDAR capture (before)
+
+| Capture | Rooms | Areas (m²) | Ceilings (m) |
+|---|---|---|---|
+| 1a8384c3f6 | 6 | 11.9 7.9 3.3 16.0 7.0 5.8 | - - - - - - |
+| c00a170fe1 | 2 | 12.8 3.9 | - - |
+| c7d28f72c6 | 5 | 11.2 7.0 13.5 10.9 10.6 | 2.98 2.35 3.09 3.08 3.07 |
+| 42444946 | 1 | 15.0 | 3.05 |
+| 42444949 | 1 | 15.0 | 3.05 |
+| 42444950 | 1 | 14.8 | 3.05 |
+| c_damage_01 | 1 | 13.1 | 3.36 |
+| c_damage_02 | 1 | 12.4 | 3.47 |
+| c_home_01 | 4 | 23.8 7.8 14.9 13.3 | 3.33 3.36 3.17 3.47 |
 
 ## Fix 01c: hall cut off at an unscanned wall (declared before fixing)
 
