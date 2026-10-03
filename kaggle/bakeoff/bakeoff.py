@@ -45,6 +45,8 @@ subprocess.run(
     ["git", "-C", str(REPO), "checkout", "-q", MAPANYTHING.rsplit("@", 1)[1]], check=True
 )
 subprocess.run([*pip, "-e", f"{REPO}[pi3]"], check=True)
+# an editable install made inside this process is not on its import path yet
+sys.path.insert(0, str(REPO))
 # DA3's package declares python <= 3.13; Kaggle runs 3.13.15. Not fatal: run without DA3.
 DA3_OK = (
     subprocess.run([*pip, "--ignore-requires-python", f"depth-anything-3 @ {DA3}"]).returncode == 0
