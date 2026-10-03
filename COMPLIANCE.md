@@ -18,7 +18,7 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | C3 | Photo tier: 2–8 stills per room, any iPhone 15+, no depth or poses | `src/floorplan/tiers/photo.py` *(planned)* | Plan from dataset C photo folders | Not started | **Deliberate deviation:** protocol asks ~15 photos per room (minimum 4) for a reliable first result; pipeline must still accept 2–8, with wider intervals. Accuracy vs photo count to be reported |
 | C4 | Photo tier: one folder per room → the same stitched whole-property plan | `src/floorplan/tiers/photo.py` *(planned)* | Stitched plan from C photo folders | Not started | Protocol requires one photo through each doorway to link rooms |
 | C5 | Video tier: handheld walkthrough clip, any iPhone 15+ | `src/floorplan/tiers/video.py` *(planned)* | Plan from C native video | Not started | |
-| C6 | LiDAR tier: depth, poses, intrinsics on Pro devices | `src/floorplan/tiers/lidar.py` *(planned)* | Plans from datasets A, B, C | In progress | Fusion prototype: `scripts/fuse_topdown.py` |
+| C6 | LiDAR tier: depth, poses, intrinsics on Pro devices | `src/floorplan/capture.py`, `src/floorplan/tiers/lidar.py` *(planned)* | Plans from datasets A, B, C | In progress | Loader done for Stray Scanner and ARKitScenes (common z-up frame) |
 | C7 | Same output contract from every tier | `src/floorplan/output.py` | One result type for all tiers | In progress | |
 | C8 | Intervals widen honestly as sensor data thins | `src/floorplan/intervals.py` *(planned)* | Calibration table per tier | Not started | |
 | C9 | Device matrix: which tier runs on which hardware, and the accuracy each honestly delivers | `docs/device_matrix.md` *(planned)* | Table in technical report | Not started | |
@@ -37,7 +37,7 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | O8 | Concealed-damage flags naming the rule that fired | `src/floorplan/damage.py` *(planned)* | `flags[].rule_id`, `flags[].rule` | Not started | |
 | O9 | Scope line items keyed to surfaces | `src/floorplan/scope.py` *(planned)* | `scope[].surface_id` | Not started | |
 | O10 | Confidence interval on every measurement | `src/floorplan/output.py` | Every number is `{value, lo, hi, unit}` | Done | Enforced by the output types; lo ≤ value ≤ hi checked |
-| O11 | One command per capture | `src/floorplan/cli.py` *(planned)* | `uv run floorplan run <capture>` | Not started | |
+| O11 | One command per capture | `src/floorplan/cli.py` | `uv run floorplan run <capture>` | In progress | Command works on all formats and writes plan.json; geometry stages still to add |
 | O12 | JSON output | `src/floorplan/output.py` | `outputs/<capture>/plan.json` | Done | Own format (no published schema, per Cozmo); fields in README |
 | O13 | Rendered plan a homeowner would recognise (as from Polycam / magicplan) | `src/floorplan/render.py` *(planned)* | `outputs/<capture>/plan.png` | Not started | |
 

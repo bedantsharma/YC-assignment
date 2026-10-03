@@ -11,7 +11,7 @@ Three input tiers produce the same output, with wider intervals as the input get
 | Video | a handheld walkthrough clip from any iPhone 15 or newer |
 | Photos | 2–8 stills per room, one folder per room |
 
-Status: data acquisition and scaffolding. See [ROADMAP.md](ROADMAP.md) for progress and
+Status: scaffolding done (CLI, loaders, output format); geometry stages next. See [ROADMAP.md](ROADMAP.md) for progress and
 [requirements.md](requirements.md) for the full scope.
 
 ## Setup
@@ -65,6 +65,10 @@ data/arkitscenes/laser/<visit-id>/<id>.ply   Faro laser-scanner point cloud (gro
 ## Usage
 
 ```bash
+# Process one capture (tier inferred from the folder; --tier to override)
+uv run floorplan run data/raw/c7d28f72c6
+uv run floorplan run data/raw/c7d28f72c6 --tier video
+
 # Fuse every Stray Scanner capture and plot top-down views to outputs/topdown_overview.png
 uv run scripts/fuse_topdown.py
 

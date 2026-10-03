@@ -11,14 +11,19 @@ land); datasets: `docs/data_plan.md`. Deadline: Mon Oct 5, 10:00 IST.
 - `uv sync`: install dependencies (Python 3.12, managed by uv; never use pip directly)
 - `uv add <pkg>` / `uv add --dev <pkg>`: add dependencies
 - `uv run ruff check --fix . && uv run ruff format . && uv run pytest`: run before every commit
+- `uv run floorplan run <capture> [--tier lidar|video|photo]`: process one capture into
+  `outputs/<id>_<tier>/plan.json`
 - `uv run scripts/fuse_topdown.py`: fuse all captures, write `outputs/topdown_overview.png`
 - `scripts/fetch_arkitscenes.sh [visit_id] [n_laser]`: download an ARKitScenes venue
 - `uv run scripts/md_to_pdf.py <doc.md> [--skip "Section"]`: render a doc to PDF (PDFs are gitignored)
 
 ## Layout
 
-- `src/floorplan/`: the pipeline package; `output.py` defines the result type and JSON writer
-  (every number is a `Measurement` with an interval)
+- `src/floorplan/`: the pipeline package
+  - `cli.py`: `floorplan run <capture> [--tier] [--out]` (one command per capture)
+  - `pipeline.py`: `run()` chains the stages; add new stages here
+  - `capture.py`: format detection + loaders; converts every LiDAR source to the common frame
+  - `output.py`: result type and JSON writer (every number is a `Measurement` with an interval)
 - `tests/`: pytest tests
 - `COMPLIANCE.md`: requirement → file → artifact → status; update a row whenever work lands
 - `scripts/`: exploration and one-off analysis scripts
@@ -31,6 +36,11 @@ land); datasets: `docs/data_plan.md`. Deadline: Mon Oct 5, 10:00 IST.
 
 ## Data conventions (verified against the captures)
 
+**Common frame** (what `capture.load_lidar` returns for every source): metres, **z up**,
+poses camera-to-world on OpenCV camera coordinates, intrinsics at depth resolution. Geometry
+code only ever sees this frame. Raw-format notes below are for the loaders only.
+
+
 - `depth/*.png` is 16-bit depth in **millimetres** at 256x192; `confidence/*.png` is 0/1/2.
   Use only confidence 2 for geometry.
 - `odometry.csv` holds camera-to-world poses; quaternion order is `qx, qy, qz, qw`
@@ -42,8 +52,10 @@ land); datasets: `docs/data_plan.md`. Deadline: Mon Oct 5, 10:00 IST.
 - The three captures walk the **same multi-room apartment**. `c7d28f72c6` is the most
   complete and the only one with the ceiling visible (~3.07 m, tentative).
 - Dataset A has no ground truth, so state accuracy claims on it as "consistent with LiDAR".
-- ARKitScenes (B) differs from Stray Scanner: `.traj` poses are axis-angle + translation,
-  intrinsics are per-frame `.pincam` files, and video is a separate `.mov`.
+- ARKitScenes (B) differs from Stray Scanner: `.traj` poses are axis-angle + translation and
+  **world-to-camera** (invert them; verified by fusion sharpness), sampled at ~12 Hz vs 60 Hz
+  depth (matched by timestamp, 10 ms tolerance); world is already z-up; intrinsics are
+  per-frame `.pincam` files; video is a separate `.mov`.
 - Never measure ground truth with our own detection code: hand-measure into `data/gt/`.
 - Video/photo tiers on a LiDAR recording read **only the RGB video**: never its depth, poses,
   intrinsics or IMU (see `docs/data_plan.md`). Video-tier benchmark numbers use Camera-app video.
