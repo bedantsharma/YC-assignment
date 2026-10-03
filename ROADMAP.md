@@ -8,7 +8,8 @@ including sleep. Scope and scoring are in [requirements.md](requirements.md).
 - **Done:** project setup (uv, ruff, GitNexus, GitHub), requirements and Cozmo's answers,
   data plan, datasets A and B downloaded, friend's capture checklist sent
 - **Waiting on:** friend's capture (dataset C), ETA 1–2 h
-- **Next:** Phase 0 scaffolding, then Phase 2 on datasets A and B while C arrives
+- **Open in Phase 0:** device matrix is scaffolding only (accuracy numbers wait on Phase 6)
+- **Next:** Phase 2, starting Phase 2 on datasets A and B while C arrives
 
 ## Principles
 
@@ -37,8 +38,13 @@ the interface every later phase writes to.
 - [x] Compliance matrix (`COMPLIANCE.md`): 64 requirements, statuses updated as work lands
 - [x] Capture protocol draft (`docs/capture_protocol.md`) for all three tiers, including
       the doorway-overlap photo rule (~15 photos per room, minimum 4)
-- [x] Device matrix skeleton (`docs/device_matrix.md`): hardware per tier fixed; accuracy
-      cells filled from the benchmark in Phase 6
+- [x] Device matrix scaffolding (`docs/device_matrix.md`): hardware per tier fixed
+- [ ] Device matrix accuracy numbers: filled from the benchmark in Phase 6
+
+> **Warning: Phase 0 is not complete.** `docs/device_matrix.md` is scaffolding only, not the
+> deliverable. Every accuracy cell is `TBD`, and nothing in it has been measured yet. It
+> becomes the real device matrix only once the Phase 6 benchmark fills those cells from
+> ground truth. Do not cite it as done in the compliance matrix or the report until then.
 - [x] CLI skeleton: `floorplan run <capture_dir> --tier {lidar,video,photo} --out outputs/`
 - [x] Loaders for Stray Scanner and ARKitScenes (common z-up frame, verified on real data),
       video and photo folders (paths only: isolation rule enforced)
