@@ -13,6 +13,7 @@ land); datasets: `docs/data_plan.md`. Deadline: Mon Oct 5, 10:00 IST.
 - `uv run ruff check --fix . && uv run ruff format . && uv run pytest`: run before every commit
 - `uv run scripts/fuse_topdown.py`: fuse all captures, write `outputs/topdown_overview.png`
 - `scripts/fetch_arkitscenes.sh [visit_id] [n_laser]`: download an ARKitScenes venue
+- `uv run scripts/md_to_pdf.py <doc.md> [--skip "Section"]`: render a doc to PDF (PDFs are gitignored)
 
 ## Layout
 
