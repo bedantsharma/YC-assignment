@@ -45,6 +45,8 @@ land); datasets: `docs/data_plan.md`. Deadline: Mon Oct 5, 10:00 IST.
 - ARKitScenes (B) differs from Stray Scanner: `.traj` poses are axis-angle + translation,
   intrinsics are per-frame `.pincam` files, and video is a separate `.mov`.
 - Never measure ground truth with our own detection code: hand-measure into `data/gt/`.
+- Video/photo tiers on a LiDAR recording read **only the RGB video**: never its depth, poses,
+  intrinsics or IMU (see `docs/data_plan.md`). Video-tier benchmark numbers use Camera-app video.
 - Keep one room of the friend's capture (C) untouched until the walk-in rehearsal.
 
 ## Working rules

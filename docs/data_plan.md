@@ -28,7 +28,7 @@ sheet.
 | E3 | Repeatability | **B** (3 captures of one room), **A** (3 of one apartment), **C** (damaged room ×2 per tier) | Same wall within 1 cm or 0.5%; ceiling spread ≤ 1 cm; bias vs noise | Benchmark 15% |
 | E4 | Drift correction + on/off ablation | **A** (100 m multi-room walk), **C** whole-home scan | Stitched footprint with correction on vs off | Benchmark 15% (auto-fail without it) |
 | E5 | Multi-room stitching and adjacency | **A** (LiDAR), **C** (all tiers) | Correct adjacency, no overlapping rooms | Walk-in, Benchmark |
-| E6 | Video tier | **A** `rgb.mp4` vs A's LiDAR result; **B** `.mov` vs laser; **C** native video vs tape | Wall lengths ±3%, calibrated intervals | Benchmark, Walk-in |
+| E6 | Video tier | **Development / ablation:** A and C Stray `rgb.mp4` vs the LiDAR result from the same recording; B `.mov` vs laser. **Benchmark:** C native Camera video vs tape | Wall lengths ±3%, calibrated intervals; depth-removal ablation | Benchmark, Walk-in |
 | E7 | Photo tier | Stills from A and B videos (development); **C** real per-room photo folders (evaluation) | Wall lengths ±8%; stitched footprint ±8%, no overlaps | Benchmark, Walk-in |
 | E8 | Interval calibration | Every capture with ground truth: **B**, **C** | Share of true values inside our 90% intervals, per tier | Avoids the "confident garbage" score cap |
 | E9 | Openings | **C** (tape widths for every door and window), **B** (laser) | ≤ 2 cm on ≥ 85%, missed/phantom counted | Benchmark, Walk-in |
@@ -50,6 +50,31 @@ sheet.
   the only source covering photo-folder stitching, damage, openings with measured widths,
   and the Polycam comparison, and it uses the same phone class as the walk-in test.
 
+## Video from LiDAR recordings: development only
+
+Stray Scanner (and ARKitScenes) record a video alongside the depth. It is useful, but it is
+an easier input than the walk-in video tier, which is a Camera-app clip from any iPhone 15:
+
+| | Stray / ARKitScenes video | Camera-app video (walk-in) |
+|---|---|---|
+| Lens intrinsics | Known exactly, per frame | Unknown, must be estimated |
+| Stabilisation | None, raw frames | On by default: frames cropped and warped |
+| Format | Fixed resolution, plain H.264 | 4K/1080p, often HDR, rotation flags, variable frame rate |
+| Exposure | Steady | Auto-exposure and focus changes |
+
+**Rules:**
+
+1. **Isolation.** When the video or photo tier runs on a LiDAR recording, it uses **only the
+   RGB video**. It never reads depth, confidence, poses, stored intrinsics or IMU from that
+   recording. This is enforced in code (the tier loaders only receive the video path), not by
+   convention.
+2. **Benchmark numbers come from Camera-app video only.** Video-tier gate results in the
+   benchmark report use dataset C's native Camera video. Stray/ARKitScenes video is used for
+   development and for the depth-removal ablation (same frames with and without depth),
+   and is labelled as such wherever it appears.
+3. **Ground-truth poses are for diagnosis only.** The recorded poses may be used offline to
+   check our estimated camera trajectory, never as input to the video or photo tier.
+
 ## Avoiding overfitting
 
 Develop and tune on A and B. Evaluate on C. Keep one room of C completely untouched until
@@ -62,5 +87,6 @@ never seen, which is exactly what the walk-in test measures.
 |---|---|---|
 | Tape measurements | Use B (laser) as the only absolute ground truth | Photo/video gates measured on one room only |
 | Photo folders | Stills sampled from C's or A's videos | Not a real "2–8 photos" test; stated in report |
+| Camera-app video | C's Stray `rgb.mp4` as the video-tier stand-in | Easier input than the walk-in; labelled as an approximation in the report |
 | Polycam export | Head-to-head marked as not done | 10% at risk |
 | Staged damage | Damage pipeline demonstrated on A's frames without metrics | Damage gate unscored |
