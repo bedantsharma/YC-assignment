@@ -29,6 +29,11 @@ land); datasets: `docs/data_plan.md`. Deadline: Mon Oct 5, 10:00 IST.
   - `plan2d.py`: wall orientation, wall / observed grids, enclosure test, room segmentation
   - `rooms.py`: room outline → rectilinear polygon snapped to measured wall faces
   - `lidar.py`: point cloud → output `Room`s with intervals (shared geometry backend)
+  - `drift.py`: opt-in pose drift correction (`--drift`, off by default)
+  - `video.py`: upright frames from a video (orientation), vertical from wall normals
+  - `mvs.py`: frames → metric cloud + camera poses (Pi3X default, MapAnything fallback)
+  - `chunks.py`: > 30 frames in overlapping windows, chained by similarity fits
+  - `intervals.py`: video scale-bias correction and per-axis interval widening
   - `render.py`: `Result` → dimensioned `plan.png`
   - `output.py`: result type and JSON writer (every number is a `Measurement` with an interval)
 - `tests/`: pytest tests
@@ -83,6 +88,10 @@ holds the script + `kernel-metadata.json`; `uvx kaggle kernels push -p kaggle/<j
 --accelerator NvidiaTeslaT4`, then `kernels status` / `kernels output`. Data goes up only as
 a **private** dataset, and only with the user's OK (C's videos are approved). The legacy
 token in `~/.kaggle/kaggle.json` works.
+
+**Laptop (16 GB M4): one model job at a time.** Two model runs at once pushed memory
+pressure into the red. Check `ps` for another `floorplan run` / model script first; use
+the wait for code or docs, never a second run.
 
 Each failed push costs ~5–10 min. The bake-off took 6 pushes because of setup mistakes
 that a local dry run would have caught. **Before every push:**

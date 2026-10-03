@@ -12,8 +12,10 @@ Three input tiers produce the same output, with wider intervals as the input get
 | Photos | 2–8 stills per room, one folder per room |
 
 Status: LiDAR tier works end to end; drift correction is opt-in (`--drift`); the video tier
-runs end to end on single rooms (`uv sync --extra video`; model comparison in
-[docs/model_research.md](docs/model_research.md)); the photo tier is a stub. See
+works end to end on a whole home (`uv sync --extra video`; Pi3X by default, whose weights
+are **CC BY-NC (non-commercial)**, or `--model mapanything` for Apache 2.0 weights; model
+comparison in [docs/model_research.md](docs/model_research.md), whole home and scale in
+[docs/video_scale.md](docs/video_scale.md)); the photo tier is a stub. See
 [ROADMAP.md](ROADMAP.md) for progress and [requirements.md](requirements.md) for the full
 scope.
 
@@ -72,6 +74,8 @@ data/arkitscenes/laser/<visit-id>/<id>.ply   Faro laser-scanner point cloud (gro
 # --drift re-aligns poses on the walls, see docs/drift_ablation.md)
 uv run floorplan run data/raw/c7d28f72c6
 uv run floorplan run data/raw/c7d28f72c6 --tier video
+# Video of a whole home: more frames, reconstructed in chained windows of 30
+uv run floorplan run data/home_c/lidar/c_home_01 --tier video --frames 90
 
 # Fuse every Stray Scanner capture and plot top-down views to outputs/topdown_overview.png
 uv run scripts/fuse_topdown.py

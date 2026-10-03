@@ -1,4 +1,4 @@
-# Handover (Sat Oct 3, 23:40 IST)
+# Handover (Sun Oct 4, ~01:00 IST)
 
 Cozmo AI take-home: iPhone captures → dimensioned floor plans with intervals. Deadline
 **Mon Oct 5, 10:00 IST**. Read in this order: this file, [NEXT-SESSION.md](NEXT-SESSION.md),
@@ -10,10 +10,10 @@ Cozmo AI take-home: iPhone captures → dimensioned floor plans with intervals. 
 | Tier | Status | Command |
 |---|---|---|
 | LiDAR | **Works** end to end, 9 captures | `uv run floorplan run <capture>` |
-| Video | **Works** end to end on one room; whole home fails (1 of 4 rooms) | `uv sync --extra video`, then `uv run floorplan run <capture or .mp4> --tier video` |
+| Video | **Works** on the whole home (Pi3X, chained windows, scale corrected) | `uv sync --extra video`, then `uv run floorplan run <capture or .mp4> --tier video [--frames 90] [--model mapanything]` |
 | Photo | **Stub** (warning only) | – |
 
-64 tests pass. Every output number is `{value, lo, hi, unit}`.
+69 tests pass. Every output number is `{value, lo, hi, unit}`.
 
 ### LiDAR tier
 
@@ -31,15 +31,27 @@ Cozmo AI take-home: iPhone captures → dimensioned floor plans with intervals. 
   not shipped (closed, unmerged: [PR #1](https://github.com/bedantsharma/YC-assignment/pull/1)); the cause is most likely drift. Tags
   `fix01-before/after`, `fix01c-before/after`, `fix02-before/after`.
 
-### Video tier (`src/floorplan/video.py`, `mvs.py`, `intervals.py`)
+### Video tier (`video.py`, `mvs.py`, `chunks.py`, `intervals.py`)
 
 RGB only (isolation rule). Up side of the frame from rotation metadata, else frame
-brightness (6/6 right on the Stray captures vs ARKit) → 30 upright frames → MapAnything →
-vertical from wall normals → shared `build_plan` → intervals widened by 3% scale + 5 cm
-(provisional). `c_damage_01`: 11.87 vs 13.13 m² LiDAR; long wall 3.89 vs 4.24 m;
-95 s and 12.3 GB peak on the M4.
+brightness → N upright frames → **Pi3X** (default; `--model mapanything` for the Apache
+fallback) → more than 30 frames go through **chained windows** (30 per window, 10 shared,
+trimmed similarity fit on the shared frames' point maps) → vertical from wall normals →
+**scale bias divided out** (per model, horizontal / vertical, fitted on the damage room)
+→ shared `build_plan` → intervals widened per axis (Pi3X 5% horizontal, 2% vertical, 1σ,
++ 5 cm). Full write-up: [docs/video_scale.md](docs/video_scale.md).
 
-## Model findings (the main result of this session)
+- Pi3X on the M4: 119 s / 10.9 GB per 30 frames, after one fix (its heads only disable
+  autocast on CUDA; on MPS the camera SVD got bf16 and failed). Matches the Kaggle T4 run.
+- `c_home_01`, 90 frames: **4 of 4 rooms, 57.3 [52.2, 62.5] m² vs 59.8 m² LiDAR**; every
+  room's LiDAR area and ceiling inside the video interval. ~8 min on the M4.
+- Scale is not a global error: Pi3X's camera path is metric (1.00 vs ARKit) but surfaces
+  come out short, more vertically (0.91) than horizontally (0.96). Held-out check on 3
+  other rooms: ceiling error 5.6–9.1% → within 3.3%; √area mean 5.4% → 3.8%; the kitchen
+  stays 8.5% short; longest walls differ by outline (up to −15.5%).
+- Limits: fitted and checked in one home, vs LiDAR not tape.
+
+## Model findings (bake-off round 1)
 
 Full write-ups: [docs/model_spike.md](docs/model_spike.md) (first local test),
 [docs/model_research.md](docs/model_research.md) (Firecrawl survey + bake-off round 1).
@@ -54,7 +66,7 @@ LiDAR of the same recording (`uv run scripts/score_bakeoff.py`):
 | Ceiling | MapAnything, narrowly | +2 to +7% vs Pi3X −9% |
 | Metric scale | neither | both 1–7% off ARKit, biased differently vertically and horizontally |
 | Whole home (30 frames) | neither | 1 room of 4 for both |
-| Runs on the M4 | MapAnything (proven) | Pi3X peaked 12.6 GB on the T4: probably fits, untested |
+| Runs on the M4 | both | Pi3X 119 s / 10.9 GB, MapAnything 95 s / 12.3 GB (30 frames) |
 | License | MapAnything (Apache 2.0) | Pi3X and DA3-nested are CC BY-NC |
 | Depth Anything 3 | not measured | failed on a missing `addict` dependency |
 
@@ -63,9 +75,8 @@ Other findings:
 - Giving the model the true focal length, or re-projecting its depth with it, did **not**
   fix the short walls (made them worse).
 - Same weights and frames: 11.43 m² (T4, fp16) vs 11.87 m² (M4, MPS): 4% from numerics.
-- **Recommendation (not yet adopted):** Pi3X for video/photo geometry, MapAnything as the
-  Apache fallback behind a flag; disclose the non-commercial license. Conditions: Pi3X
-  must run on the M4 for the walk-in, and a scale correction is needed either way.
+- **Adopted (user, Sun 00:00):** Pi3X for video/photo geometry, MapAnything as the Apache
+  fallback behind `--model`; the non-commercial license is disclosed in the README.
 
 ## Data and ground truth
 
@@ -78,8 +89,8 @@ Other findings:
 - Kaggle: private dataset `bedantsharma/floorplan-home-c` (C's three videos + the 30
   upright frames per recording); private notebook `bedantsharma/floorplan-model-bakeoff`
   (`kaggle/bakeoff/`). Legacy token works; request **T4** (L4 silently ran on CPU).
-- Disk: MapAnything weights (4.9 GB) are in the local HF cache; the user does not want
-  more multi-GB models on the laptop: big models run on Kaggle.
+- Disk: Pi3X (5.4 GB, approved) and MapAnything (4.9 GB) weights are in the local HF cache;
+  ~15 GB free. No further multi-GB models on the laptop: those run on Kaggle.
 
 ## Hard rules (from the user and the brief)
 
@@ -93,6 +104,8 @@ Other findings:
 - Don't blame the capture for code bugs in write-ups.
 - No model weights downloaded to the laptop without asking; Kaggle setups are dry-run
   locally (no model construction) before each push (CLAUDE.md).
+- **One model job at a time on the laptop** (16 GB): two at once pushed memory pressure
+  into the red. Check `ps` before starting one.
 
 ## Gotchas
 

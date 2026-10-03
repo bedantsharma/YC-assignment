@@ -22,10 +22,13 @@ Read this first when resuming (after [HANDOVER.md](HANDOVER.md) and
     overview, [measurement sheet](docs/laser_measurement_sheet.md) PDF)
   - Phase 4: model spike + Firecrawl survey + Kaggle bake-off round 1
     ([docs/model_research.md](docs/model_research.md)): Pi3X wins on geometry (cameras 5×
-    more accurate), MapAnything on license and proven M4 fit; neither handles the whole
-    home at 30 frames. Model choice pending the user
-  - **Video tier runs end to end** (`--tier video`, MapAnything, RGB-only orientation and
-    gravity): `c_damage_01` 11.87 vs 13.13 m² LiDAR
+    more accurate), MapAnything on license. **User chose Pi3X (Sun 00:00)**, MapAnything
+    kept behind `--model mapanything`
+  - **Video tier works on the whole home** ([docs/video_scale.md](docs/video_scale.md)):
+    Pi3X on the M4 (119 s / 10.9 GB per 30 frames), 90 frames in 4 chained windows, scale
+    bias divided out (fitted on the damage room, checked on 3 other rooms). `c_home_01`:
+    4 rooms, 57.3 [52.2, 62.5] m² vs 59.8 m² LiDAR; every room's LiDAR area and ceiling
+    inside the video interval
   - Drift correction built and ablated, **off by default (user decision)**
     ([docs/drift_ablation.md](docs/drift_ablation.md))
 - **Datasets: B stays (decided Sat 23:00).** B's laser scan is the only absolute ground
@@ -52,7 +55,8 @@ Read this first when resuming (after [HANDOVER.md](HANDOVER.md) and
   shipped (`fix01c-after`): the hall's unscanned strip is kept as a flagged low-confidence
   zone (2.9 m²), hall IoU 0.79. Fix 02 (`fix02-after`): ceiling tail ripples no longer
   picked; the damage room's three scans agree on the ceiling within 1 cm (3.35–3.36 m).
-  Its wall part failed its prediction twice and is parked (window wall; see the entry)
+  Its wall part failed its prediction twice and was not shipped (PR #1 closed unmerged;
+  most likely drift, see the entry)
 - **Not yet validated:** no LiDAR number has been compared with ground truth yet; intervals
   are provisional (±1.645σ from surface spreads) until Phase 6 calibrates them
 - **Repeatability (C damage room, two scans):** ceiling **passes** after fix 02 (3.36 vs
@@ -61,11 +65,10 @@ Read this first when resuming (after [HANDOVER.md](HANDOVER.md) and
   differ up to 0.9 m (fix map 02b, outline/segmentation, untraced). Intervals (±3 cm) are
   overconfident (fix map 03)
 - **Next, in order** (details: [NEXT-SESSION.md](NEXT-SESSION.md))
-  1. User decides the video model (recommendation: Pi3X, MapAnything as fallback)
-  2. Pi3X on the M4 (if agreed); whole-home video by chunked reconstruction
-  3. Video-tier scale correction; bake-off round 2 (DA3) if cheap
-  4. Openings in the LiDAR backend; photo tier; Phase 5 damage
-  5. When ground truth arrives (B laser; C measurement plan): accuracy numbers,
+  1. Photo tier (Pi3X on stills; folder = room label)
+  2. Openings in the LiDAR backend; Phase 5 damage
+  3. Video tier on B's `.mov` vs the laser scan (an independent home for the scale check)
+  4. When ground truth arrives (B laser; C measurement plan): accuracy numbers,
      `scripts/benchmark.py`, `fixloop-before` tag
 
 ## Principles
@@ -199,14 +202,17 @@ Why: Cozmo expects all three tiers working, and the walk-in tier is chosen on th
       (52 s / 30 frames, 12.8 GB peak); with upright frames scale 1.03 vs ARKit, cloud 5.8 cm
       median from LiDAR, but room 11.1 vs 13.1 m². Sideways frames collapse it. VGGT and
       MASt3R not tried
-- [ ] Metric scale: model's metric output, or a monocular metric-depth model, cross-checked
-      against ceiling height priors
-- [~] Video tier: sample frames → reconstruction → same backend as Phase 2. **Runs on one
-      room** (MapAnything, 30 frames); whole home fails (1 of 4 rooms): chunked
-      reconstruction next
+- [x] Metric scale: model's metric output, plus a per-model horizontal / vertical bias
+      fitted on the damage room and checked on 3 held-out rooms (ceiling within 3.3%,
+      √area mean error 3.8%; [docs/video_scale.md](docs/video_scale.md)). Provisional until
+      ground truth
+- [x] Video tier: sample frames → reconstruction → same backend as Phase 2. Pi3X default,
+      MapAnything fallback; > 30 frames go through chained windows (4 of 4 rooms on
+      `c_home_01`, 57.3 vs 59.8 m² LiDAR)
 - [ ] Photo tier: all folders reconstructed jointly (doorway photos link rooms); folder =
       room label → stitched plan
-- [ ] Tier-specific interval widening, calibrated against our tape ground truth
+- [~] Tier-specific interval widening: video done per axis from the held-out rooms (Pi3X 5%
+      horizontal, 2% vertical, 1σ); calibration against tape still to do
 - [ ] Run on the provided captures (LiDAR as reference) and on our own captures (tape as
       reference)
 
