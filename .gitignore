@@ -1,0 +1,23 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Captures and generated outputs (large; never commit)
+data/
+outputs/
+*.npy
+
+# Assignment brief (third-party document)
+*.pdf
+
+# Tooling
+.gitnexus/
+.idea/
+.DS_Store
