@@ -22,16 +22,12 @@ from pathlib import Path
 MAPANYTHING = (
     "git+https://github.com/facebookresearch/map-anything@3d10cf7a3016fc0f9bb13a071ee66c47b10be0d9"
 )
-subprocess.run(
-    [
-        sys.executable,
-        "-m",
-        "pip",
-        "install",
-        "-q",
-        f"mapanything[pi3,depth-anything-3] @ {MAPANYTHING}",
-    ],
-    check=True,
+DA3 = "git+https://github.com/Nik-V9/depth-anything-3.git@main"
+pip = [sys.executable, "-m", "pip", "install", "-q"]
+subprocess.run([*pip, f"mapanything[pi3] @ {MAPANYTHING}"], check=True)
+# DA3's package declares python <= 3.13; Kaggle runs 3.13.15. Not fatal: run without DA3.
+DA3_OK = (
+    subprocess.run([*pip, "--ignore-requires-python", f"depth-anything-3 @ {DA3}"]).returncode == 0
 )
 
 import numpy as np  # noqa: E402
@@ -188,7 +184,7 @@ def extract(video: Path, n: int, out: Path) -> list[Path]:
 
 
 def main() -> None:
-    log(f"torch {torch.__version__}, GPU {torch.cuda.get_device_name(0)}")
+    log(f"torch {torch.__version__}, GPU {torch.cuda.get_device_name(0)}, DA3 installed {DA3_OK}")
     info = json.loads(find("info.json").read_text())
     rows = []
     captures = ["c_damage_01", "c_damage_02", "c_home_01"]
