@@ -46,3 +46,32 @@ Pi3X are each another ~4–6 GB download (26 GB disk free).
 Only MapAnything ships a metric multi-view model under Apache 2.0. If DA3 or Pi3X wins, the
 submission must disclose that its weights are non-commercial (fine for a take-home demo,
 not for Cozmo's product without a license).
+
+## Bake-off, round 1 (Kaggle T4, fp16; Sat ~23:05 IST)
+
+`kaggle/bakeoff` version 6 → `uv run scripts/score_bakeoff.py`. Same 30 upright frames
+per recording; scored against the LiDAR plan of the same recording; ATE = camera-centre
+error vs ARKit after a similarity fit (evaluation only).
+
+| Recording | Model | Scale vs ARKit | ATE median | Area (LiDAR) | Area error | Ceiling (LiDAR) |
+|---|---|---|---|---|---|---|
+| c_damage_01 | MapAnything | 1.058 | 0.30 m | 11.43 (13.13) | −13.0% | 3.43 (3.36) |
+| c_damage_01 | **Pi3X** | 1.007 | **0.06 m** | 11.70 (13.13) | −10.9% | 3.04 (3.36) |
+| c_damage_02 | MapAnything | 1.067 | 0.31 m | 11.85 (12.44) | −4.7% | 3.58 (3.35) |
+| c_damage_02 | **Pi3X** | 1.051 | **0.07 m** | 12.54 (12.44) | +0.8% | 3.07 (3.35) |
+| c_home_01 | MapAnything | 0.920 | 0.94 m | 1 room, 11.4 (4 rooms, 59.8) | −81% | – |
+| c_home_01 | Pi3X | 1.052 | 0.40 m | 1 room, 10.8 (4 rooms, 59.8) | −82% | – |
+
+Long wall of the damage room: MapAnything 3.84 / 3.97 m, Pi3X 4.10 / 4.08 m, LiDAR 4.24 /
+4.26 m.
+
+Findings:
+1. **Pi3X's cameras are ~5× more accurate** (6–7 cm vs 30 cm median) and its walls are
+   closer (long wall −3.5% vs −7%), but its **ceiling is 9% low** (3.04–3.07 vs 3.35 m)
+   while MapAnything's is 2–7% high. Neither scale is reliable to the 3% we need.
+2. **Neither handles the whole home from 30 frames** (one frame every 5.5 s of a 166 s
+   walk): one room found of four. Multi-room needs more frames or chunked reconstruction.
+3. Same MapAnything weights and frames: 11.43 m² on the T4 (fp16) vs 11.87 m² on the M4
+   (MPS) — a 4% difference from numerics alone.
+4. Failed this round: DA3-nested (missing `addict` dependency) and MapAnything on 90 frames
+   (out of memory on the 16 GB T4).
