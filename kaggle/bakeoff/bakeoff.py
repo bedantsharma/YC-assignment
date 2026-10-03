@@ -22,9 +22,29 @@ from pathlib import Path
 MAPANYTHING = (
     "git+https://github.com/facebookresearch/map-anything@3d10cf7a3016fc0f9bb13a071ee66c47b10be0d9"
 )
+# Fail fast with a clear message when the session has no GPU (CPU image = CPU-only torch)
+subprocess.run("nvidia-smi -L || echo NO nvidia-smi", shell=True)
+subprocess.run(
+    [
+        sys.executable,
+        "-c",
+        "import torch; print('preinstalled torch', torch.__version__, torch.cuda.is_available())",
+    ]
+)
+
 DA3 = "git+https://github.com/Nik-V9/depth-anything-3.git@main"
 pip = [sys.executable, "-m", "pip", "install", "-q"]
-subprocess.run([*pip, f"mapanything[pi3] @ {MAPANYTHING}"], check=True)
+# Install from a clone: external models (DA3, Pi3X) load Hydra configs that live in the
+# repo's configs/ directory, which a plain pip install does not ship.
+REPO = Path("/kaggle/tmp/map-anything")
+subprocess.run(
+    ["git", "clone", "-q", "https://github.com/facebookresearch/map-anything", str(REPO)],
+    check=True,
+)
+subprocess.run(
+    ["git", "-C", str(REPO), "checkout", "-q", MAPANYTHING.rsplit("@", 1)[1]], check=True
+)
+subprocess.run([*pip, "-e", f"{REPO}[pi3]"], check=True)
 # DA3's package declares python <= 3.13; Kaggle runs 3.13.15. Not fatal: run without DA3.
 DA3_OK = (
     subprocess.run([*pip, "--ignore-requires-python", f"depth-anything-3 @ {DA3}"]).returncode == 0
@@ -38,6 +58,10 @@ INPUT = Path("/kaggle/input")
 LOG = OUT / "log.txt"
 VOXEL = 0.02
 CONF_PERCENTILE = 10  # same filter as the video tier (drop the least confident 10%)
+# T4 (sm75) has no memory-efficient attention for bf16: SDPA falls back to the full
+# attention matrix (86 GB for 30 views). fp16 keeps the efficient kernel there.
+AMP = "bf16" if torch.cuda.is_available() and torch.cuda.get_device_capability()[0] >= 8 else "fp16"
+AMP_DTYPE = torch.bfloat16 if AMP == "bf16" else torch.float16
 
 
 def log(msg: str) -> None:
@@ -98,7 +122,7 @@ def run_mapanything(frames: list[Path]):
         views,
         memory_efficient_inference=True,
         use_amp=True,
-        amp_dtype="bf16",
+        amp_dtype=AMP,
         apply_mask=True,
         mask_edges=True,
         apply_confidence_mask=True,
@@ -122,7 +146,7 @@ def run_external(name: str, frames: list[Path], resolution: int, norm: str):
             if torch.is_tensor(x):
                 v[k] = x.to("cuda")
     start = time.perf_counter()
-    with torch.no_grad(), torch.autocast("cuda", dtype=torch.bfloat16):
+    with torch.no_grad(), torch.autocast("cuda", dtype=AMP_DTYPE):
         preds = model(views)
     seconds = time.perf_counter() - start
     del model
@@ -184,7 +208,13 @@ def extract(video: Path, n: int, out: Path) -> list[Path]:
 
 
 def main() -> None:
-    log(f"torch {torch.__version__}, GPU {torch.cuda.get_device_name(0)}, DA3 installed {DA3_OK}")
+    if not torch.cuda.is_available():
+        log(f"NO GPU in this session (torch {torch.__version__}); nothing to run")
+        sys.exit(1)
+    log(
+        f"torch {torch.__version__}, GPU {torch.cuda.get_device_name(0)}, "
+        f"DA3 installed {DA3_OK}, amp {AMP}"
+    )
     info = json.loads(find("info.json").read_text())
     rows = []
     captures = ["c_damage_01", "c_damage_02", "c_home_01"]
