@@ -3,7 +3,7 @@
 Deadline: **Mon Oct 5, 10:00 IST**. Start: Sat Oct 3, ~12:30 IST. About 45 working hours
 including sleep. Scope and scoring are in [requirements.md](requirements.md).
 
-## Status (Sat Oct 3, ~17:30 IST)
+## Status (Sat Oct 3, ~17:45 IST)
 
 Read this first when resuming. Details are in the phase sections below.
 
@@ -11,8 +11,9 @@ Read this first when resuming. Details are in the phase sections below.
   - Phase 0 scaffolding (output format, compliance matrix, capture protocol, CLI, loaders),
     except the device matrix numbers (see warning in Phase 0)
   - Phase 1: datasets A and B on disk; friend's checklist sent; B's laser station checked
-    (covers all four walls); **dataset C whole-home LiDAR walk in**
-    (`data/home_c/lidar/c_home_01`: runs, 4 rooms, ~56 m², 22 s; unverified)
+    (covers all four walls); **dataset C LiDAR in**: whole-home walk
+    `data/home_c/lidar/c_home_01` (4 rooms, ~56 m², 22 s; unverified) and the staged-damage
+    room twice, `c_damage_01` / `c_damage_02` (one ~3 in hole in a wall; ~10 s each)
   - **Phase 2: LiDAR tier runs end to end.** `uv run floorplan run <capture>` writes
     `outputs/<id>_lidar/plan.json` + `plan.png` with an interval on every number. Dataset A
     6 / 5 / 3 rooms, B one ~4 x 5 m room; 8–23 s per capture. 46 tests pass
@@ -20,8 +21,7 @@ Read this first when resuming. Details are in the phase sections below.
     `outputs/laser_gt/` and `outputs/laser_scan_for_measuring.zip` (120 MB: E57, LAS, PLY,
     overview, [measurement sheet](docs/laser_measurement_sheet.md) PDF)
 - **Waiting on**
-  - Friend: only the **staged-damage room capture** is still to come (user forwards it on
-    arrival → `data/home_c/`). Not in hand and not currently expected: tape sketch,
+  - Friend: nothing more expected. Not in hand: tape sketch,
     Camera-app videos, photo folders, Polycam export, so the fallbacks in
     `docs/data_plan.md` apply (B's laser is the only absolute ground truth; C's `rgb.mp4`
     stands in for Camera-app video; stills sampled from video stand in for photo folders;
@@ -34,16 +34,21 @@ Read this first when resuming. Details are in the phase sections below.
     for the head-to-head too
 - **Not yet validated:** no LiDAR number has been compared with ground truth yet; intervals
   are provisional (±1.645σ from surface spreads) until Phase 6 calibrates them
+- **First repeatability look (C damage room, two scans, by eye, before Phase 3):** walls
+  differ 3–15 cm (worst: the 3.23 vs 3.08 m wall), area 12.93 vs 12.44 m², ceiling 3.364 vs
+  3.452 m. The ±3 cm intervals do not overlap, so they are overconfident. Gate is 1 cm /
+  0.5% (walls) and 1 cm (ceiling): **failing, a fix-loop candidate**
 - **Next, in order**
   1. Openings (doors, windows) in the LiDAR backend: gaps in wall faces → `rooms[].openings`
      and adjacency (O4, O5)
-  2. Phase 3: repeatability across the three A captures (same apartment) and B's three
-     captures; drift correction with on/off ablation; tag `fixloop-before`
+  2. Phase 3: repeatability across the three A captures (same apartment), B's three
+     captures and C's two damage-room scans; drift correction with on/off ablation; tag
+     `fixloop-before`
   3. Phase 4: video and photo tiers (1 h model spike first) on A, B and C's `rgb.mp4`,
      with the LiDAR result from the same recording as reference
   4. When the laser measurements arrive: first accuracy numbers on B (wall lengths,
      ceiling height, openings)
-  5. When the damage capture arrives: Phase 5 damage, flags and scope on it
+  5. Phase 5 damage, flags and scope on C's damage room (the hole)
 
 ## Principles
 
@@ -97,7 +102,8 @@ Sources and how each is used: [docs/data_plan.md](docs/data_plan.md).
       ([md](docs/friend_capture_checklist.md), PDF)
 - [ ] **In progress:** Dataset C, friend's home on an iPhone 16 Pro (all three tiers, staged
       damage, Polycam). LiDAR whole-home walk received (`data/home_c/lidar/c_home_01`);
-      staged-damage capture still to come; tape, videos, photos, Polycam not expected
+      staged-damage room twice (`c_damage_01`, `c_damage_02`); tape, videos, photos,
+      Polycam not expected
 - [x] Check B's laser station covers every wall: yes, all four walls are visible (some
       parts in furniture shadow at 1.1 m, visible at other heights); no second station needed
 - [x] Laser cloud prepared for hand measurement (`scripts/prepare_laser_gt.py`: cropped,

@@ -38,17 +38,18 @@ data/home_c/
 data/gt/home_c.yaml  tape measurements, transcribed from the sketch (committed)
 ```
 
-| Item from the checklist | Status (Sat Oct 3, ~17:30 IST) |
+| Item from the checklist | Status (Sat Oct 3, ~17:45 IST) |
 |---|---|
 | LiDAR whole-home walk | **Received:** `lidar/c_home_01` (167 s, 9,995 frames, 1920x1440 RGB, 256x192 depth). Runs: 4 rooms, ~56 m², ceilings ~3.3–3.5 m (unverified) |
-| LiDAR damaged room x2 | **Coming:** the staged-damage capture is the one item still expected |
+| LiDAR damaged room x2 | **Received:** `lidar/c_damage_01` (62 s, 3,701 frames) and `lidar/c_damage_02` (56 s, 3,380 frames), same L-shaped room. Staged damage: one hole in one wall, about 3 in (~7.6 cm) wide per the friend (not tape-measured; which wall not yet known) |
 | Camera-app video (whole home, damaged room x2) | Not in hand, not currently expected → fallback: C's `rgb.mp4` |
 | Photo folders per room + doorway shots | Not in hand, not currently expected → fallback: stills sampled from video |
 | Polycam export (2 rooms) | Not in hand, not currently expected → head-to-head at risk |
 | Tape sketch (walls, ceilings, openings, damage, adjacency) | Not in hand, not currently expected: **no ground truth for C**; B's laser is the only absolute reference |
 
-`c_home_01` was renamed from the friend's `firendsScan` folder (the original Stray Scanner
-id was not kept). The held-out room is chosen when the sketch arrives; nothing has been
+Folder names are descriptive; the original Stray Scanner ids (all recorded Oct 3, one
+session) are `c_home_01` = `bb6820aff7` (14:48), `c_damage_01` = `2a45337da0` (14:50),
+`c_damage_02` = `82720d462e` (14:52). The held-out room is chosen when the sketch arrives; nothing has been
 tuned on C so far.
 
 ## Experiments
