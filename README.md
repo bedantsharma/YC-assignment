@@ -74,9 +74,15 @@ scripts/fetch_arkitscenes.sh [visit_id] [n_laser_stations]
 
 ## Output format
 
-Each capture produces `plan.json` (our own format; there is no published schema), written by
-`floorplan.output.write_json`, which refuses to write a result with broken cross-references.
-Lengths are metres, areas m², plan coordinates are metres in a top-down frame.
+Each capture produces `plan.json`, written by `floorplan.output.write_json`, which refuses to
+write a result with broken cross-references. Lengths are metres, areas m², plan coordinates
+are metres in a top-down frame.
+
+> **Note on the schema.** The brief mentions "JSON to the published schema", but no schema was
+> published and Cozmo asked us to ignore that reference. There is therefore **no JSON Schema
+> file** in this repo. The format is defined in code by the dataclasses in
+> [`src/floorplan/output.py`](src/floorplan/output.py), tested in
+> [`tests/test_output.py`](tests/test_output.py), and documented by the table below.
 
 **Every measured number** is `{"value", "lo", "hi", "unit"}`: the estimate and its
 confidence interval (coverage given by `interval_coverage`, default 0.9).
@@ -109,6 +115,9 @@ uv run pytest               # tests
 
 ## Documents
 
+- [COMPLIANCE.md](COMPLIANCE.md): compliance matrix. Every requirement in the brief (64 rows)
+  mapped to the file that implements it, the artifact that proves it, and its status (done,
+  in progress, partial, not started, not done). Start here to check what is covered
 - [requirements.md](requirements.md): scope, scoring, Cozmo's answers, open questions
 - [ROADMAP.md](ROADMAP.md): time-boxed plan and current status
 - [docs/data_plan.md](docs/data_plan.md): which dataset feeds which experiment
