@@ -1,4 +1,4 @@
-# Handover (Sat Oct 3, ~18:35 IST)
+# Handover (Sat Oct 3, ~22:20 IST)
 
 Cozmo AI take-home: iPhone captures → dimensioned floor plans with intervals. Deadline
 **Mon Oct 5, 10:00 IST**. Read in this order: this file, [NEXT-SESSION.md](NEXT-SESSION.md),
@@ -7,7 +7,11 @@ Cozmo AI take-home: iPhone captures → dimensioned floor plans with intervals. 
 ## State
 
 - **LiDAR tier works** end to end: `uv run floorplan run <capture>` → `plan.json` +
-  `plan.png`. 56 tests pass. Video and photo tiers are **stubs** (warning only).
+  `plan.png`. 61 tests pass. Video and photo tiers are **stubs** (warning only); the
+  model for them is chosen (MapAnything, `docs/model_spike.md`), installed only in a
+  scratch venv so far.
+- **Drift correction** exists but is **opt-in** (`--drift`): mixed ablation
+  (`docs/drift_ablation.md`); the default is an open decision (brief G5).
 - **Room segmentation** (`src/floorplan/plan2d.py`) now: counter fronts are not walls
   (shape rule); door lintels split rooms; seen floor bounded by an unscanned wall is
   attached ≤ 1 m deep as a low-confidence zone (`rooms[].low_confidence_area`, warning,
@@ -23,7 +27,8 @@ Cozmo AI take-home: iPhone captures → dimensioned floor plans with intervals. 
 - **Fix loop:** `docs/fix_loop.md` has the fix map and the entries. Shipped: Fix 01
   (`fix01-before` → `fix01-after`, `c_home_01` rooms found 2/4 → 4/4) and Fix 01c
   (`fix01c-before` → `fix01c-after`, hall fragment gone, hall IoU 0.59 → 0.79, 2.9 m²
-  flagged). Latest 9-capture table: end of the 01c entry. A's changes are unverified.
+  flagged), Fix 02 ceiling (`fix02-before` → `fix02-after`). Latest 9-capture table:
+  the fix 02 entry. A's changes are unverified.
 - **Cozmo answered:** hosted model APIs allowed; head-to-head on our own data (needs a
   Polycam export we don't have, so it's at risk).
 
@@ -46,4 +51,10 @@ Cozmo AI take-home: iPhone captures → dimensioned floor plans with intervals. 
   real caller is `lidar.build_plan`). Grep to confirm.
 - Absolute height thresholds break on low scans (A's `c00a170fe1` never sees above 1.7 m).
   Prefer shape rules.
-- Fusing a capture takes 8–20 s; cache clouds as `.npy` in a scratch dir when iterating.
+- Fusing a capture takes 8–20 s; cache clouds as `.npy` in a scratch dir when iterating
+  (`outputs/cache/<id>.npy`, used by `scripts/diag_repeat.py`).
+- Stray `rgb.mp4` frames are stored **sideways** (portrait capture): multi-view models need
+  them rotated 90° clockwise first.
+- MapAnything venv: clone `facebookresearch/map-anything`, `uv venv`, `uv pip install
+  torch torchvision -e . -e <this repo>`; weights 4.9 GB in the HF cache; 12.8 GB peak RAM
+  for 30 frames.

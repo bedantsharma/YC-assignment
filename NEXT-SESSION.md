@@ -1,26 +1,34 @@
 # Next session
 
-Done in the last session: fix map 01a, 01b, 01c (see `docs/fix_loop.md`). Open checks from
-it: dataset A's room changes are unverified (compare with A's `rgb.mp4`); the plan does not
-draw the low-confidence zone's outline, only its area on the room label.
+Done Sat 20:40–22:20 IST (see each doc for numbers):
+- **Model spike** ([docs/model_spike.md](docs/model_spike.md)): MapAnything runs on the M4
+  (52 s / 30 frames, 12.8 GB peak). Upright frames: scale 1.03 vs ARKit, cloud 5.8 cm
+  from LiDAR, room 11.1 vs 13.1 m². Sideways frames (as Stray stores them) collapse it.
+- **Fix 02** (`fix02-after`): ceiling tail ripples fixed; the damage room's three scans
+  agree on the ceiling to 1 cm. Wall half parked on branch `fix02-wall-occluder`.
+- **Drift correction** (`--drift`, [docs/drift_ablation.md](docs/drift_ablation.md)):
+  built and ablated on all 9 captures. Mixed: damage-room repeat scans 21 → 1 cm on the
+  short side, but A `c00a170fe1` loses wall support. **Off by default.**
+
+**Decision for the user:** brief G5 fails if the multi-room capture uses poses as-is. Ship
+`--drift` on for the multi-room run (accepting A's regression), or trace the regression
+first (below, step 1)?
 
 Work in this order. Each step ends with a commit and the ROADMAP status updated.
 
-1. **Model spike, 1 h (biggest risk).** Video and photo tiers are 2 of the 3 required tiers
-   and Cozmo picks the walk-in tier on the day. Run a pretrained multi-view model (VGGT,
-   MASt3R or MapAnything) on ~30 frames of a Stray `rgb.mp4` on this Mac. Compare its
-   geometry with the LiDAR result of the same recording. Pick by result. If none runs,
-   tell the user at once.
-2. **Fix map 02: repeatability.** `c_damage_01` vs `c_damage_02` disagree by 3–15 cm on
-   walls (worst: 3.23 vs 3.08 m) and 8.8 cm on ceiling (gate: 1 cm / 0.5%). Trace before
-   fixing (systematic debugging), declare in `docs/fix_loop.md` before changing code. Also
-   compare B's 3 captures and A's 3. Candidate for the brief's single fix-loop entry.
-3. **Drift correction** with an on/off ablation on `c_home_01` and A (brief fails without
-   it).
-4. **Openings** (doors, windows): `lintel_mask` in `src/floorplan/plan2d.py` already finds
-   door heads; the gap under a head gives the width. Fill `rooms[].openings` + adjacency.
-5. **Video and photo tiers** (Phase 4) with the model from step 1.
-6. **Phase 5:** one open-vocabulary detector for damage (the hole in C's damage room) and
-   to remove wardrobes/fridges from walls (fix map 04). Plan in ROADMAP Phase 5.
+1. **Drift regression on `c00a170fe1`**: why its walls lose support with `--drift` (low
+   scan, thin wall strips). Then decide the default and add the ablation figure.
+2. **Video tier** (Phase 4) with MapAnything: upright frames (rotation from video
+   metadata; an RGB-only rule for Stray recordings, which have none), keyframes by view
+   change within the 16 GB budget, then `build_plan`. Install as an optional dependency
+   group, not a core one. Reference: the LiDAR result of the same recording.
+3. **Openings** (doors, windows): `lintel_mask` in `src/floorplan/plan2d.py` finds door
+   heads; the gap under a head gives the width. Fill `rooms[].openings` + adjacency.
+4. **Photo tier** with the same model.
+5. **Phase 5:** one open-vocabulary detector for damage and for furniture on walls
+   (fix map 04).
+
+Open from fix 02: notch long axis still 9–12 cm apart between scans; B's extents differ by
+up to 0.9 m (fix map 02b, segmentation, untraced).
 
 Waiting on the user: architect's laser measurements for B (first real accuracy numbers).
