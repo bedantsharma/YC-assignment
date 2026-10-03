@@ -1,0 +1,11 @@
+{
+  "capture": "c_home_01",
+  "source": "Hand-labelled by the user, who knows the home (Oct 3, 2026). Each room is a rough rectangle drawn on the plan image, so these labels fix room identity and rough extent only, never dimensions.",
+  "frame": "plan frame of `floorplan run data/home_c/lidar/c_home_01` (plan_rotation_deg 89.55), metres",
+  "rooms": {
+    "hall": [-1.15, -3.7, 3.8, 1.45],
+    "kitchen": [-1.6, -6.2, 1.65, -3.6],
+    "room1": [3.95, -0.3, 8.6, 3.5],
+    "room2": [4.0, -3.85, 8.7, -0.1]
+  }
+}

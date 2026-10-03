@@ -1,0 +1,99 @@
+# Fix loop log
+
+Each entry follows the brief's fix-loop discipline: the failing number, the root cause with
+evidence, the fix, and a **predicted** number, all written and committed **before** the fix.
+The before and after runs are regenerable from git tags. The entry submitted as the brief's
+single fix-loop declaration is chosen in Phase 6 (worst gate); entries here are the full
+record.
+
+## Fix 01: room segmentation on the friend's whole-home scan (C, `c_home_01`)
+
+Status: **declared, fix not yet shipped.** Before: tag `fix01-before`.
+
+### Failing number
+
+Rooms found on `c_home_01`, scored against the user's hand labels of the home
+(`data/gt/home_c_rooms.json`: hall, kitchen, room 1, room 2; identity and rough extent only):
+
+```
+uv run floorplan run data/home_c/lidar/c_home_01 && uv run scripts/score_rooms.py
+```
+
+| Labelled room | Detected | IoU | Result |
+|---|---|---|---|
+| room1 | r4, 13.6 m² | 0.77 | found |
+| kitchen | r2, 8.5 m² | 0.60 | found, but cut off at the counter front |
+| room2 | r3, 30.1 m² | 0.47 | missed: **r3 is the hall and room 2 merged** |
+| hall | r1, 4.2 m² | 0.11 | missed: r1 is a fragment of the hall |
+
+**ROOMS FOUND: 2/4.** A room is found at IoU ≥ 0.5 (one-to-one matching). Target: 4/4,
+no merged rooms. This is not one of the brief's numbered gates, but it decides every
+per-room number (walls, area, ceiling, adjacency) on a multi-room walk-in capture.
+
+### Root cause and evidence
+
+Three causes, found by tracing each stage's mask (floor hits, wall cells, observed,
+enclosure, distance-transform seeds, labels) and the raw point heights, then checking the
+video frames. The first hypothesis (counter tops raise the floor estimate) was **wrong**:
+the floor is fitted once for the whole home, so counters cannot move it.
+
+1. **Hall and room 2 merge through a 1.2 m doorway (code).** The partition at u ≈ 3.9 m
+   has a gap from v ≈ -2.8 to -1.6 m: zero points between 1.0 and 1.9 m height in every
+   10 cm of it, a lintel from ~1.9–2.0 m up, wall above to the ceiling. Room seeds are
+   free space more than `DOOR_HALF_WIDTH_M` = 0.45 m from any wall, i.e. the code assumes
+   doors are at most 0.9 m wide. A 1.2 m opening leaves a seed corridor through the door,
+   so both rooms grow from one seed.
+2. **Kitchen counter front classified as wall (code).** A cell is a wall if its points
+   span ≥ 0.8 m of height in 0.1–2.3 m. Across the kitchen (v ≈ -5.1) the base-cabinet
+   front at u ≈ 1.3–1.4 m has points in 0.1–1.1 m (10 slices): it passes. The tiled wall
+   behind the counter (seen in the video) is at u ≈ 2.0 m, with points from 0.8 to 2.3 m.
+   The kitchen's east wall is drawn at the counter front, ~0.7 m inside the real wall.
+3. **Hall west strip not captured below ~2 m (capture).** From u ≈ -1.2 to -0.6 m there
+   are 20–180 floor points per column (vs ~1,800 mid-hall) and nothing at 0.3–2.0 m, only
+   ceiling. The wall exists at u ≈ -1.5 m but the floor in front of it was never seen,
+   so that strip is "unobserved" and the hall's north-west corner is cut off as `r1`. The
+   friend's walk did not sweep that side down to the floor, which the capture checklist
+   asks for ("sweep each wall top to bottom"). Causes 1 and 2 are independent of this:
+   no capture would fix them.
+
+### Fix (causes 1 and 2; cause 3 is out of scope for this entry)
+
+1. **Door lintels split rooms.** Cells with points just below door-top height
+   (2.0–2.3 m) and none at 0.5–1.8 m are a lintel over an opening. Treat them as a barrier
+   when seeding and growing rooms (not when measuring walls). Open-plan junctions without
+   a lintel still merge, which is correct.
+2. **A wall must reach above counter height.** Wall cells also need points above ~1.5 m.
+   Counters, sofa backs and table edges drop out. Window walls still pass (wall above the
+   window head); wardrobes and fridges still count as walls (known limitation).
+
+Each gets a failing synthetic test first (two rooms joined by a 1.2 m doorway with a
+lintel; a room with a base cabinet along one wall).
+
+### Predicted numbers
+
+- `c_home_01`: **ROOMS FOUND 4/4**, no merged rooms. Hall IoU ≈ 0.55–0.65 (its west strip
+  is still missing, cause 3); `r1` stays as one unmatched fragment.
+- Kitchen east wall moves from u ≈ 1.3 to ≈ 2.0 m; kitchen area from 8.5 to ≈ 10.5 m².
+  Its IoU against the hand box may drop slightly, since the hand box stops at u = 1.65.
+- Other captures (regression check, `uv run scripts/lidar_summary.py`): B unchanged (one
+  room); A's room counts may change only where a doorway wider than 0.9 m has a lintel.
+
+### Baseline on every LiDAR capture (before)
+
+`uv run scripts/lidar_summary.py` at `fix01-before`:
+
+| Capture | Rooms | Areas (m²) | Ceilings (m) |
+|---|---|---|---|
+| 1a8384c3f6 | 5 | 11.9 8.3 3.4 16.3 13.3 | - - - - - |
+| c00a170fe1 | 3 | 8.1 2.9 3.9 | - - - |
+| c7d28f72c6 | 6 | 14.0 4.6 2.8 12.0 13.4 10.5 | 2.98 2.38 2.28 3.08 3.08 3.07 |
+| 42444946 | 1 | 15.0 | 3.05 |
+| 42444949 | 1 | 15.0 | 3.05 |
+| 42444950 | 1 | 14.8 | 3.05 |
+| c_damage_01 | 1 | 12.9 | 3.36 |
+| c_damage_02 | 1 | 12.4 | 3.45 |
+| c_home_01 | 4 | 4.2 8.5 30.1 13.6 | 3.28 3.37 3.38 3.47 |
+
+### Result
+
+Not shipped yet.
