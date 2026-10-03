@@ -11,9 +11,11 @@ Three input tiers produce the same output, with wider intervals as the input get
 | Video | a handheld walkthrough clip from any iPhone 15 or newer |
 | Photos | 2–8 stills per room, one folder per room |
 
-Status: LiDAR tier works end to end; drift correction is opt-in (`--drift`); video and
-photo tiers are stubs (model chosen: [docs/model_spike.md](docs/model_spike.md)). See [ROADMAP.md](ROADMAP.md) for progress and
-[requirements.md](requirements.md) for the full scope.
+Status: LiDAR tier works end to end; drift correction is opt-in (`--drift`); the video tier
+runs end to end on single rooms (`uv sync --extra video`; model comparison in
+[docs/model_research.md](docs/model_research.md)); the photo tier is a stub. See
+[ROADMAP.md](ROADMAP.md) for progress and [requirements.md](requirements.md) for the full
+scope.
 
 ## Setup
 

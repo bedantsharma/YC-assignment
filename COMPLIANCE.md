@@ -17,7 +17,7 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | C2 | One-page protocol a non-engineer follows: what to install, how to walk, how long, what to avoid, how to hand over files | `docs/capture_protocol.md` | The protocol | In progress | Draft covers all five points; runs ~2 pages by choice (clarity over cramming). Built from Polycam, magicplan and Apple RoomPlan guidance. To be tested on a non-engineer |
 | C3 | Photo tier: 2–8 stills per room, any iPhone 15+, no depth or poses | `src/floorplan/tiers/photo.py` *(planned)* | Plan from dataset C photo folders | Not started | **Deliberate deviation:** protocol asks ~15 photos per room (minimum 4) for a reliable first result; pipeline must still accept 2–8, with wider intervals. Accuracy vs photo count to be reported |
 | C4 | Photo tier: one folder per room → the same stitched whole-property plan | `src/floorplan/tiers/photo.py` *(planned)* | Stitched plan from C photo folders | Not started | Protocol requires one photo through each doorway to link rooms |
-| C5 | Video tier: handheld walkthrough clip, any iPhone 15+ | `src/floorplan/tiers/video.py` *(planned)* | Plan from C native video | Not started | |
+| C5 | Video tier: handheld walkthrough clip, any iPhone 15+ | `src/floorplan/video.py`, `mvs.py` (`floorplan run --tier video`) | Plan from C's `rgb.mp4` (`c_damage_01`: 11.87 vs 13.13 m² LiDAR) | In progress | One room works; whole home finds 1 of 4 rooms. Model choice pending (Pi3X vs MapAnything, `docs/model_research.md`) |
 | C6 | LiDAR tier: depth, poses, intrinsics on Pro devices | `src/floorplan/capture.py`, `src/floorplan/tiers/lidar.py` *(planned)* | Plans from datasets A, B, C | In progress | Loader done for Stray Scanner and ARKitScenes (common z-up frame) |
 | C7 | Same output contract from every tier | `src/floorplan/output.py` | One result type for all tiers | In progress | |
 | C8 | Intervals widen honestly as sensor data thins | `src/floorplan/lidar.py` (provisional) | Calibration table per tier | In progress | LiDAR: ±1.645σ from measured surface spreads, unobserved walls 5 cm σ. Uncalibrated until Phase 6 |
@@ -64,7 +64,7 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | G6 | Drift: ablation of stitched footprint with correction on and off | `scripts/drift_ablation.py` | [docs/drift_ablation.md](docs/drift_ablation.md) (table; no figure yet) | Partial | Mixed: damage-room repeat scans 21 → 1 cm on the short side; A `c00a170fe1` walls lose support |
 | G7 | Photo tier: one stitched plan, correct adjacency, no overlaps, footprint ±8%, calibrated intervals | `scripts/benchmark.py` *(planned)* | Photo-stitch row | Not started | |
 | G8 | Photo tier: wall lengths ±8% with calibrated intervals | `scripts/benchmark.py` *(planned)* | Photo-tier table | Not started | |
-| G9 | Video tier: wall lengths ±3% | `scripts/benchmark.py` *(planned)* | Video-tier table | Not started | |
+| G9 | Video tier: wall lengths ±3% | `scripts/score_bakeoff.py` (vs LiDAR); `scripts/benchmark.py` *(planned)* | Bake-off table in `docs/model_research.md` | Not met | Best so far (Pi3X): long wall −3.5%, other walls up to −9%; scale correction next |
 | G10 | Calibration scored at every tier; no confident garbage on thin input | `scripts/calibration.py` *(planned)* | Coverage table per tier | Not started | Caps total score if violated |
 
 ## 5. Head-to-head (brief Part 3)

@@ -3,7 +3,7 @@
 Deadline: **Mon Oct 5, 10:00 IST**. Start: Sat Oct 3, ~12:30 IST. About 45 working hours
 including sleep. Scope and scoring are in [requirements.md](requirements.md).
 
-## Status (Sat Oct 3, ~23:00 IST)
+## Status (Sat Oct 3, 23:40 IST)
 
 Read this first when resuming (after [HANDOVER.md](HANDOVER.md) and
 [NEXT-SESSION.md](NEXT-SESSION.md)). Details are in the phase sections below.
@@ -20,7 +20,12 @@ Read this first when resuming (after [HANDOVER.md](HANDOVER.md) and
   - Laser ground-truth package built: `uv run scripts/prepare_laser_gt.py` →
     `outputs/laser_gt/` and `outputs/laser_scan_for_measuring.zip` (120 MB: E57, LAS, PLY,
     overview, [measurement sheet](docs/laser_measurement_sheet.md) PDF)
-  - Phase 4 model spike ([docs/model_spike.md](docs/model_spike.md)): MapAnything chosen
+  - Phase 4: model spike + Firecrawl survey + Kaggle bake-off round 1
+    ([docs/model_research.md](docs/model_research.md)): Pi3X wins on geometry (cameras 5×
+    more accurate), MapAnything on license and proven M4 fit; neither handles the whole
+    home at 30 frames. Model choice pending the user
+  - **Video tier runs end to end** (`--tier video`, MapAnything, RGB-only orientation and
+    gravity): `c_damage_01` 11.87 vs 13.13 m² LiDAR
   - Drift correction built and ablated, **off by default (user decision)**
     ([docs/drift_ablation.md](docs/drift_ablation.md))
 - **Datasets: B stays (decided Sat 23:00).** B's laser scan is the only absolute ground
@@ -55,14 +60,13 @@ Read this first when resuming (after [HANDOVER.md](HANDOVER.md) and
   surfaces), notch 15 / 9 cm. B's three scans: ceilings 3.046–3.052 m (pass), extents
   differ up to 0.9 m (fix map 02b, outline/segmentation, untraced). Intervals (±3 cm) are
   overconfident (fix map 03)
-- **Next, in order**
-  1. **Video tier** (Phase 4) with MapAnything on C's `rgb.mp4` (`c_damage_01`, then
-     `c_home_01`), scored against the LiDAR result of the same recording
-  2. Openings (doors, windows) in the LiDAR backend → `rooms[].openings` and adjacency
-  3. Photo tier with the same model
-  4. When ground truth arrives (B's laser numbers; C's measurement plan): first accuracy
-     numbers, then `scripts/benchmark.py` and the `fixloop-before` tag
-  5. Phase 5 damage, flags and scope on C's damage room (the hole)
+- **Next, in order** (details: [NEXT-SESSION.md](NEXT-SESSION.md))
+  1. User decides the video model (recommendation: Pi3X, MapAnything as fallback)
+  2. Pi3X on the M4 (if agreed); whole-home video by chunked reconstruction
+  3. Video-tier scale correction; bake-off round 2 (DA3) if cheap
+  4. Openings in the LiDAR backend; photo tier; Phase 5 damage
+  5. When ground truth arrives (B laser; C measurement plan): accuracy numbers,
+     `scripts/benchmark.py`, `fixloop-before` tag
 
 ## Principles
 
@@ -197,7 +201,9 @@ Why: Cozmo expects all three tiers working, and the walk-in tier is chosen on th
       MASt3R not tried
 - [ ] Metric scale: model's metric output, or a monocular metric-depth model, cross-checked
       against ceiling height priors
-- [ ] Video tier: sample frames → reconstruction → same backend as Phase 2
+- [~] Video tier: sample frames → reconstruction → same backend as Phase 2. **Runs on one
+      room** (MapAnything, 30 frames); whole home fails (1 of 4 rooms): chunked
+      reconstruction next
 - [ ] Photo tier: all folders reconstructed jointly (doorway photos link rooms); folder =
       room label → stitched plan
 - [ ] Tier-specific interval widening, calibrated against our tape ground truth
