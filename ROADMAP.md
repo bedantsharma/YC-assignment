@@ -3,14 +3,37 @@
 Deadline: **Mon Oct 5, 10:00 IST**. Start: Sat Oct 3, ~12:30 IST. About 45 working hours
 including sleep. Scope and scoring are in [requirements.md](requirements.md).
 
-## Status (Sat Oct 3, 13:35 IST)
+## Status (Sat Oct 3, ~16:45 IST)
 
-- **Done:** project setup (uv, ruff, GitNexus, GitHub), requirements and Cozmo's answers,
-  data plan, datasets A and B downloaded, friend's capture checklist sent
-- **Waiting on:** friend's capture (dataset C), ETA 1–2 h
-- **Open in Phase 0:** device matrix is scaffolding only (accuracy numbers wait on Phase 6)
-- **Done since:** Phase 2 LiDAR geometry runs end to end (see Phase 2 below)
-- **Next:** openings, then Phase 3 (repeatability, drift)
+Read this first when resuming. Details are in the phase sections below.
+
+- **Done**
+  - Phase 0 scaffolding (output format, compliance matrix, capture protocol, CLI, loaders),
+    except the device matrix numbers (see warning in Phase 0)
+  - Phase 1: datasets A and B on disk; friend's checklist sent; B's laser station checked
+    (covers all four walls)
+  - **Phase 2: LiDAR tier runs end to end.** `uv run floorplan run <capture>` writes
+    `outputs/<id>_lidar/plan.json` + `plan.png` with an interval on every number. Dataset A
+    6 / 5 / 3 rooms, B one ~4 x 5 m room; 8–23 s per capture. 46 tests pass
+  - Laser ground-truth package built: `uv run scripts/prepare_laser_gt.py` →
+    `outputs/laser_gt/` and `outputs/laser_scan_for_measuring.zip` (120 MB: E57, LAS, PLY,
+    overview, [measurement sheet](docs/laser_measurement_sheet.md) PDF)
+- **Waiting on**
+  - Dataset C from the friend (was due ~15:00–16:00 Sat): goes in `data/home_c/`
+  - User to send the laser zip to the architect (girlfriend), then her measurements →
+    `data/gt/arkitscenes_421337.yaml`. She must measure blind: do not show her our plans
+  - Cozmo: hosted APIs allowed? how is the head-to-head run?
+- **Not yet validated:** no LiDAR number has been compared with ground truth yet; intervals
+  are provisional (±1.645σ from surface spreads) until Phase 6 calibrates them
+- **Next, in order**
+  1. Openings (doors, windows) in the LiDAR backend: gaps in wall faces → `rooms[].openings`
+     and adjacency (O4, O5)
+  2. Phase 3: repeatability across the three A captures (same apartment) and B's three
+     captures; drift correction with on/off ablation; tag `fixloop-before`
+  3. When C arrives: transcribe tape → `data/gt/home_c.yaml`, pick the held-out room
+  4. When the laser measurements arrive: first accuracy numbers on B (wall lengths,
+     ceiling height, openings)
+  5. Phase 4: video and photo tiers (1 h model spike first)
 
 ## Principles
 
@@ -41,14 +64,14 @@ the interface every later phase writes to.
       the doorway-overlap photo rule (~15 photos per room, minimum 4)
 - [x] Device matrix scaffolding (`docs/device_matrix.md`): hardware per tier fixed
 - [ ] Device matrix accuracy numbers: filled from the benchmark in Phase 6
+- [x] CLI skeleton: `floorplan run <capture_dir> --tier {lidar,video,photo} --out outputs/`
+- [x] Loaders for Stray Scanner and ARKitScenes (common z-up frame, verified on real data),
+      video and photo folders (paths only: isolation rule enforced)
 
 > **Warning: Phase 0 is not complete.** `docs/device_matrix.md` is scaffolding only, not the
 > deliverable. Every accuracy cell is `TBD`, and nothing in it has been measured yet. It
 > becomes the real device matrix only once the Phase 6 benchmark fills those cells from
 > ground truth. Do not cite it as done in the compliance matrix or the report until then.
-- [x] CLI skeleton: `floorplan run <capture_dir> --tier {lidar,video,photo} --out outputs/`
-- [x] Loaders for Stray Scanner and ARKitScenes (common z-up frame, verified on real data),
-      video and photo folders (paths only: isolation rule enforced)
 
 Exit: `uv run floorplan run data/raw/c7d28f72c6` writes a valid (mostly empty) JSON.
 
@@ -67,10 +90,11 @@ Sources and how each is used: [docs/data_plan.md](docs/data_plan.md).
 - [x] Check B's laser station covers every wall: yes, all four walls are visible (some
       parts in furniture shadow at 1.1 m, visible at other heights); no second station needed
 - [x] Laser cloud prepared for hand measurement (`scripts/prepare_laser_gt.py`: cropped,
-      thinned to 5 mm, E57 / LAS / PLY) and sent with
-      [the measurement sheet](docs/laser_measurement_sheet.md) to an architect, measuring
-      blind (without seeing our output)
-- [ ] **Waiting on:** her measurements → `data/gt/arkitscenes_421337.yaml`
+      thinned to 5 mm, E57 / LAS / PLY) with
+      [the measurement sheet](docs/laser_measurement_sheet.md);
+      zip in `outputs/laser_scan_for_measuring.zip`
+- [ ] Send the zip to the architect; she measures blind (without seeing our output)
+- [ ] Her measurements → `data/gt/arkitscenes_421337.yaml`
 - [ ] Transcribe the friend's tape sketch → `data/gt/home_c.yaml`; put captures in
       `data/home_c/`; pick the held-out room
 

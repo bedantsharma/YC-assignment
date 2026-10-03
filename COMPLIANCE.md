@@ -49,7 +49,7 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | B2 | One furnished room with staged damage spanning two classes | `data/home_c/` | Dataset C damaged room | In progress | Tape "crack" + tea-stain "water damage" |
 | B3 | Same rooms at all three tiers, multi-room set included | `data/home_c/` | Dataset C | In progress | |
 | B4 | At least one room captured twice at the same tier | `data/home_c/`, `data/arkitscenes/` | C damaged room ×2; B room ×3 | In progress | B downloaded |
-| B5 | Laser or tape ground truth on everything | `data/gt/` | `home_c.yaml`, `arkitscenes_421337.yaml` *(planned)* | In progress | B: laser cloud prepared and sent to an architect to measure blind in CAD (`docs/laser_measurement_sheet.md`); C from friend's tape sketch |
+| B5 | Laser or tape ground truth on everything | `data/gt/` | `home_c.yaml`, `arkitscenes_421337.yaml` *(planned)* | In progress | B: laser cloud prepared for an architect to measure blind in CAD (not yet sent) (`docs/laser_measurement_sheet.md`); C from friend's tape sketch |
 | B6 | Raw sensor data and measurements submitted | `scripts/fetch_*`, upload bundle *(planned)* | Reproduction bundle | Not started | |
 
 ## 4. Gates (brief Part 2)
