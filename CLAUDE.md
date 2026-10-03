@@ -34,6 +34,7 @@ land); datasets: `docs/data_plan.md`. Deadline: Mon Oct 5, 10:00 IST.
   - `mvs.py`: frames → metric cloud + camera poses (Pi3X default, MapAnything fallback)
   - `chunks.py`: > 30 frames in overlapping windows, chained by similarity fits
   - `intervals.py`: video scale-bias correction and per-axis interval widening
+  - `photos.py`: photo folders → upright images; plan rooms named after folders
   - `render.py`: `Result` → dimensioned `plan.png`
   - `output.py`: result type and JSON writer (every number is a `Measurement` with an interval)
 - `tests/`: pytest tests

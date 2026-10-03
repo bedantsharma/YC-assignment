@@ -1,4 +1,4 @@
-# Handover (Sun Oct 4, ~01:00 IST)
+# Handover (Sun Oct 4, ~04:00 IST)
 
 Cozmo AI take-home: iPhone captures → dimensioned floor plans with intervals. Deadline
 **Mon Oct 5, 10:00 IST**. Read in this order: this file, [NEXT-SESSION.md](NEXT-SESSION.md),
@@ -11,9 +11,9 @@ Cozmo AI take-home: iPhone captures → dimensioned floor plans with intervals. 
 |---|---|---|
 | LiDAR | **Works** end to end, 9 captures | `uv run floorplan run <capture>` |
 | Video | **Works** on the whole home (Pi3X, chained windows, scale corrected) | `uv sync --extra video`, then `uv run floorplan run <capture or .mp4> --tier video [--frames 90] [--model mapanything]` |
-| Photo | **Stub** (warning only) | – |
+| Photo | **Works per room**; whole-home stitch fails (rooms laid out side by side, warned) | `uv run floorplan run <folder of room folders>` |
 
-69 tests pass. Every output number is `{value, lo, hi, unit}`.
+78 tests pass. Every output number is `{value, lo, hi, unit}`.
 
 ### LiDAR tier
 
@@ -50,6 +50,23 @@ trimmed similarity fit on the shared frames' point maps) → vertical from wall 
   other rooms: ceiling error 5.6–9.1% → within 3.3%; √area mean 5.4% → 3.8%; the kitchen
   stays 8.5% short; longest walls differ by outline (up to −15.5%).
 - Limits: fitted and checked in one home, vs LiDAR not tape.
+
+### Photo tier (`photos.py`, pipeline `_run_photos`; built overnight Sun)
+
+Write-up: [docs/photo_tier.md](docs/photo_tier.md). Each folder is reconstructed on its
+own (Pi3X), levelled, scale corrected (photo bias: horizontal ×1.037, vertical ×1.075),
+plan built with enclosure 0.5 and **line-of-sight carving** (`plan2d.carved_mask`), the
+room its photos were taken from kept and named after the folder. Intervals 10% / 3%.
+- Test input: no real photos, so stills from C's videos (`scripts/make_photo_sets.py`;
+  time-slot and `--protocol` selections, folders `k8` / `k8p` in `data/home_c/photos_sim/`).
+- Rooms with ≥ 4 photos looking across the room: −7% to +1% area vs LiDAR; 2–3 photos:
+  25–45% small (warned). Kitchen time-slot set (close-ups): no room.
+- **Stitching fails**: joint reconstruction placed rooms 1–2 m wrong in every run, so rooms
+  are not placed (roadmap cut line). Compliance C4 partial, G7 not met.
+- Found and fixed (photo only): the observed mask made area depend on the cloud's yaw
+  (7.3 vs 11.1 m²); fix map 06.
+- Bake-off round 2 (Kaggle, `kaggle/photo_bakeoff`): Pi3X best again; DA3-nested now
+  installs (`addict`) but runs out of memory at 8 photos on a 16 GB GPU.
 
 ## Model findings (bake-off round 1)
 
@@ -90,7 +107,8 @@ Other findings:
   upright frames per recording); private notebook `bedantsharma/floorplan-model-bakeoff`
   (`kaggle/bakeoff/`). Legacy token works; request **T4** (L4 silently ran on CPU).
 - Disk: Pi3X (5.4 GB, approved) and MapAnything (4.9 GB) weights are in the local HF cache;
-  ~15 GB free. No further multi-GB models on the laptop: those run on Kaggle.
+  ~15 GB free. Kaggle also has `bedantsharma/floorplan-photos-c` (private: the k8 photo
+  sets) and notebook `bedantsharma/floorplan-photo-bakeoff`. No further multi-GB models on the laptop: those run on Kaggle.
 
 ## Hard rules (from the user and the brief)
 

@@ -21,6 +21,7 @@ Work top to bottom. Every fix must leave all 9 LiDAR captures no worse
 | 03 | Intervals overconfident: ±3 cm ranges that don't overlap between repeat scans | C damage room | Intervals from surface spread only, no capture-to-capture error | Calibrate against repeats and ground truth (Phase 6) | Open |
 | 04 | Wardrobes, fridges, bookshelves count as walls; rooms shrink | A, C | Tall furniture passes the wall test | Detector boxes (Phase 5 shared detector) remove them from walls | Open |
 | 05 | Spurious 0.3–0.5 m steps in walls | A | Clutter touching a wall bends the outline | Trace first | Open |
+| 06 | Same cloud, different area by yaw: 7.3 vs 11.1 m² (photo cloud turned 180°) | C photo stills | Observed mask fills unseen floor only if a ring of seen cells closes; one one-cell gap decides | Photo tier: line-of-sight carving (`docs/photo_tier.md` §6). LiDAR: dense, no effect seen on the 9 captures; not changed | Fixed for photos |
 | 06 | Open-plan spaces split arbitrarily | A | Watershed meets wherever the seeds touch | Trace first; lintels (01a) may cover part | Open |
 | 07 | Floor-to-ceiling opening into unscanned space notches a room | synthetic | Outline follows the observed edge | Trace first | Open |
 | 08 | Ceilings of 2.3–2.4 m in two A rooms | A `c7d28f72c6` | Real lowered ceiling, or a cabinet top? | Check against the video | Open |

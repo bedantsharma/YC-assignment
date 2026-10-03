@@ -3,12 +3,12 @@
 Deadline: **Mon Oct 5, 10:00 IST**. Start: Sat Oct 3, ~12:30 IST. About 45 working hours
 including sleep. Scope and scoring are in [requirements.md](requirements.md).
 
-## Status (Sun Oct 4, ~01:15 IST)
+## Status (Sun Oct 4, ~04:00 IST)
 
 Read this first when resuming (after [HANDOVER.md](HANDOVER.md) and
 [NEXT-SESSION.md](NEXT-SESSION.md)). Details are in the phase sections below.
 
-### Progress at a glance (~33 h to the deadline)
+### Progress at a glance (~30 h to the deadline)
 
 | Phase | Planned for | State |
 |---|---|---|
@@ -16,12 +16,12 @@ Read this first when resuming (after [HANDOVER.md](HANDOVER.md) and
 | 1 Data | Sat 12:30 | **Mostly done**: A, B, C's LiDAR + video in; ground truth (architect, friend's plan) not in |
 | 2 LiDAR backend | Sat 17:00 | **Done**: 9 captures run end to end |
 | 3 Repeatability, drift | Sat 23:00 | **Half**: drift built + ablated (off); repeatability table and `fixloop-before` tag not done |
-| 4 Video, photo | Sun 08:00 | **Video done early** (whole home, scale corrected); **photo not started** |
+| 4 Video, photo | Sun 08:00 | **Done early**: video (whole home, scale corrected); photo (per room; whole-home stitch fails, documented) |
 | 5 Openings, damage, scope | Sun 14:00 | Not started |
 | 6 Benchmark, fix loop | Sun 18:00 | Not started (needs ground truth); three practice fixes done in `docs/fix_loop.md` |
 | 7 Reports, packaging | Mon 01:00 | Not started |
 
-By score weight: walk-in (30%) can run LiDAR and video but not photo yet; fix loop (25%)
+By score weight: walk-in (30%) can run all three tiers (photo: per room, not stitched); fix loop (25%)
 has the method rehearsed but the graded fix needs the benchmark; benchmark (15%) and
 head-to-head (10%) wait on ground truth and a Polycam export; compliance (10%), capture
 route (5%) and commit history (5%) are on track.
@@ -83,9 +83,9 @@ route (5%) and commit history (5%) are on track.
   differ up to 0.9 m (fix map 02b, outline/segmentation, untraced). Intervals (±3 cm) are
   overconfident (fix map 03)
 - **Next, in order** (details: [NEXT-SESSION.md](NEXT-SESSION.md))
-  1. Photo tier (Pi3X on stills; folder = room label)
-  2. Openings in the LiDAR backend; Phase 5 damage
-  3. Video tier on B's `.mov` vs the laser scan (an independent home for the scale check)
+  1. Openings in the LiDAR backend; Phase 5 damage
+  2. Video and photo tiers on B's `.mov` vs the laser scan (an independent home)
+  3. Photo stitching (place rooms via doorway photos), only if time is left
   4. When ground truth arrives (B laser; C measurement plan): accuracy numbers,
      `scripts/benchmark.py`, `fixloop-before` tag
 
@@ -227,10 +227,13 @@ Why: Cozmo expects all three tiers working, and the walk-in tier is chosen on th
 - [x] Video tier: sample frames → reconstruction → same backend as Phase 2. Pi3X default,
       MapAnything fallback; > 30 frames go through chained windows (4 of 4 rooms on
       `c_home_01`, 57.3 vs 59.8 m² LiDAR)
-- [ ] Photo tier: all folders reconstructed jointly (doorway photos link rooms); folder =
-      room label → stitched plan
-- [~] Tier-specific interval widening: video done per axis from the held-out rooms (Pi3X 5%
-      horizontal, 2% vertical, 1σ); calibration against tape still to do
+- [x] Photo tier ([docs/photo_tier.md](docs/photo_tier.md), Sun night): Firecrawl survey +
+      Kaggle bake-off round 2 (Pi3X again; DA3 out of memory at 8 photos). Each folder
+      reconstructed alone, line-of-sight carving, folder = room label. Rooms with ≥ 4 good
+      photos within −7% to +1% of LiDAR area. **Joint reconstruction placed rooms 1–2 m
+      wrong, so rooms are not stitched** (cut line taken; documented)
+- [~] Tier-specific interval widening: video (5% / 2%) and photo (10% / 3%) per axis, 1σ;
+      calibration against tape still to do
 - [ ] Run on the provided captures (LiDAR as reference) and on our own captures (tape as
       reference)
 
