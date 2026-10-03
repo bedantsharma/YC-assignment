@@ -22,7 +22,10 @@ Read this first when resuming. Details are in the phase sections below.
   - Dataset C from the friend (was due ~15:00–16:00 Sat): goes in `data/home_c/`
   - User to send the laser zip to the architect (girlfriend), then her measurements →
     `data/gt/arkitscenes_421337.yaml`. She must measure blind: do not show her our plans
-  - Cozmo: hosted APIs allowed? how is the head-to-head run?
+  - ~~Cozmo: hosted APIs allowed? how is the head-to-head run?~~ **Answered (Siva):** hosted
+    APIs yes (disclose, keep a local fallback); head-to-head on our own data, i.e. dataset
+    C: our LiDAR vs Polycam on 2 rooms, both vs tape. So C's Polycam export is now needed
+    for the head-to-head too
 - **Not yet validated:** no LiDAR number has been compared with ground truth yet; intervals
   are provisional (±1.645σ from surface spreads) until Phase 6 calibrates them
 - **Next, in order**
@@ -169,7 +172,7 @@ the doorway photos; if that fails too, document the photo stitch as failing.
 
 - [ ] Openings: gaps in each wall line in the 2D map + depth discontinuities → widths
 - [ ] Damage: vision model on keyframes → class + bounding box → project onto the wall plane
-      for metric extent (hosted API if Cozmo allows, local fallback otherwise)
+      for metric extent (hosted API, allowed by Cozmo; local fallback if offline)
 - [ ] Concealed-damage rule table (e.g. ceiling stain → leak above; stain at skirting →
       rising damp); each flag names its rule
 - [ ] Scope line items keyed to surface ids (repaint wall W3: 12.4 m², etc.)
@@ -187,7 +190,8 @@ Why: fix loop is 25% and benchmark accuracy is 15%; both need everything above t
       root-cause hypothesis + evidence, fix, predicted number) **before** fixing
 - [ ] Ship the fix; rerun; record before vs after (both regenerable from tags
       `fixloop-before` / `fixloop-after`)
-- [ ] Head-to-head, if Cozmo answers with a usable option
+- [ ] Head-to-head on our own data (Cozmo confirmed): our LiDAR vs Polycam on 2 rooms of
+      dataset C, both vs tape; beat or tie on ≥ 70% of dimensions
 
 Exit: fix-loop bundle complete with honest numbers.
 

@@ -16,6 +16,8 @@ time-boxed plan lives in [ROADMAP.md](ROADMAP.md).
 | JSON schema / Round 1 gates | Ignore the Round 1 references | No published schema exists: we output JSON in our own format, documented in the README; only the gates in the brief apply |
 | Walk-in test | In person, on **our laptop**, no limits | Pipeline must run cold on this Mac (Apple Silicon); no time limit |
 | Scope | **All three tiers working** is expected | Video and photo tiers are core, not optional |
+| Hosted model APIs (follow-up, Siva) | **Yes** | The pipeline may call a hosted vision model (e.g. damage classification); disclose it in the report and keep a local fallback in case the walk-in has no network |
+| Head-to-head (follow-up, Siva) | **Yes, compare with our own data** | Run it on our own rooms (dataset C): our LiDAR output vs Polycam on the same 2 rooms, both scored against tape. No export of the provided apartment is coming |
 
 ## 2. What we are building
 
@@ -102,17 +104,12 @@ regenerable before/after = 0.
 
 ### Ask Cozmo (follow-up)
 
-1. **Hosted model APIs:** not answered. May the pipeline call a hosted vision model (e.g.
-   for damage classification), with disclosure? Walk-in runs on our laptop with no limits,
-   so we assume internet is available; we will keep a local fallback either way.
-2. **Head-to-head:** not answered. It needs the same rooms scanned by our LiDAR pipeline and
-   by Polycam/magicplan, but our LiDAR data is the provided apartment, which we can't
-   re-scan. Options: (a) they share a Polycam/magicplan export of that apartment, (b) we
-   compare at the video tier against an app on our own rooms, (c) mark as not possible.
-3. **Ground truth for the provided captures:** do they have measurements for that
+Hosted model APIs and the head-to-head were answered (Siva, Oct 3): see section 1.
+
+1. **Ground truth for the provided captures:** do they have measurements for that
    apartment? Without them, the LiDAR tier can be scored for repeatability (three captures)
    but not absolute accuracy.
-4. **Walk-in at the LiDAR tier:** which capture app will their Pro iPhone use? We assume they
+2. **Walk-in at the LiDAR tier:** which capture app will their Pro iPhone use? We assume they
    install Stray Scanner per our protocol.
 
 ### Decide ourselves (good-to-have answers, defaulted for now)

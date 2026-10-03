@@ -71,7 +71,7 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 
 | ID | Requirement | File path | Artifact | Status | Notes |
 |---|---|---|---|---|---|
-| H1 | Our LiDAR-tier output vs a consumer app on 2 benchmark rooms | `scripts/head_to_head.py` *(planned)* | Comparison table | Not started | Polycam free tier, on dataset C |
+| H1 | Our LiDAR-tier output vs a consumer app on 2 benchmark rooms | `scripts/head_to_head.py` *(planned)* | Comparison table | Not started | Polycam free tier, on dataset C (Cozmo confirmed: compare on our own data) |
 | H2 | Name the app and version; submit its export | `data/home_c/polycam/` | Polycam export | In progress | Friend exporting Sat |
 | H3 | One table, our error and theirs, dimension by dimension; beat or tie on ≥ 70% | `scripts/head_to_head.py` *(planned)* | Table in benchmark report | Not started | |
 
@@ -119,7 +119,7 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 |---|---|---|---|---|---|
 | K1 | Handheld consumer capture only | `docs/capture_protocol.md` | Protocol | In progress | iPhone only, no tripods or rigs |
 | K2 | Pretrained models, datasets, APIs allowed with disclosure | `docs/technical_report.md` *(planned)* | Disclosure section | In progress | ARKitScenes disclosed in data plan |
-| K3 | Runs without calling our own infrastructure | `src/floorplan/` | Code review | In progress | Hosted-API use still awaiting Cozmo's answer |
+| K3 | Runs without calling our own infrastructure | `src/floorplan/` | Code review | In progress | Hosted APIs allowed by Cozmo (Oct 3); disclose any use, keep a local fallback |
 | K4 | Weights and large binaries fetched by script, not committed | `scripts/fetch_*` | Fetch scripts | In progress | `scripts/fetch_arkitscenes.sh` |
 | K5 | Mirrors, glass, wet-look surfaces, low light covered | `docs/technical_report.md` *(planned)* | Known-failure-modes section | Not started | |
 
