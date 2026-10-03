@@ -16,6 +16,7 @@ land); datasets: `docs/data_plan.md`. Deadline: Mon Oct 5, 10:00 IST.
 - `uv run scripts/fuse_topdown.py`: fuse all captures, write `outputs/topdown_overview.png`
 - `scripts/fetch_arkitscenes.sh [visit_id] [n_laser]`: download an ARKitScenes venue
 - `uv run scripts/md_to_pdf.py <doc.md> [--skip "Section"]`: render a doc to PDF (PDFs are gitignored)
+- `uv run scripts/prepare_laser_gt.py`: crop + thin B's laser scan for hand measurement in CAD
 
 ## Layout
 

@@ -74,6 +74,9 @@ uv run scripts/fuse_topdown.py
 
 # Download an ARKitScenes venue (default 421337 with 1 laser station)
 scripts/fetch_arkitscenes.sh [visit_id] [n_laser_stations]
+
+# Crop and thin its laser scan for hand measurement in CAD (E57 / LAS / PLY)
+uv run scripts/prepare_laser_gt.py
 ```
 
 ## Output format

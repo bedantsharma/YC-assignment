@@ -1,7 +1,8 @@
 """Render one of our Markdown documents to a clean A4 PDF.
 
 Supports what our docs use: headings, paragraphs, bullet and numbered lists (one nesting
-level), "- [ ]" checkboxes, tables, code blocks, **bold**, *italic* and `code`.
+level), "- [ ]" checkboxes, tables, code blocks, images on their own line
+("![alt](path)", path relative to the document), **bold**, *italic* and `code`.
 
 Usage: uv run scripts/md_to_pdf.py docs/capture_protocol.md [--out x.pdf] [--skip "Section"]
 """
@@ -16,6 +17,7 @@ from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import mm
 from reportlab.platypus import (
     Flowable,
+    Image,
     KeepTogether,
     Paragraph,
     Preformatted,
@@ -124,7 +126,7 @@ def md_table(rows: list[str]) -> Table:
     return t
 
 
-def parse(md: str, skip: set[str]) -> list:
+def parse(md: str, skip: set[str], base: Path = Path()) -> list:
     story, section = [], []
     lines = md.splitlines()
     i, skipping = 0, False
@@ -158,6 +160,11 @@ def parse(md: str, skip: set[str]) -> list:
                 block.append(lines[i])
                 i += 1
             section.append(Preformatted("\n".join(block), CODE))
+        elif m := re.fullmatch(r"!\[[^\]]*\]\(([^)]+)\)", s):
+            img = Image(str(base / m.group(1)))
+            scale = min(1.0, (A4[0] - 36 * mm) / img.drawWidth, 150 * mm / img.drawHeight)
+            img.drawWidth, img.drawHeight = img.drawWidth * scale, img.drawHeight * scale
+            section.append(img)
         elif s.startswith("|"):
             rows = []
             while i < len(lines) and lines[i].strip().startswith("|"):
@@ -212,7 +219,7 @@ def main() -> None:
         bottomMargin=16 * mm,
         title=title,
     )
-    doc.build(parse(md, set(args.skip)))
+    doc.build(parse(md, set(args.skip), args.markdown.parent))
     print(out)
 
 

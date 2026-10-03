@@ -64,9 +64,13 @@ Sources and how each is used: [docs/data_plan.md](docs/data_plan.md).
       ([md](docs/friend_capture_checklist.md), PDF)
 - [ ] **In progress:** Dataset C, friend's home on an iPhone 16 Pro (all three tiers, staged
       damage, Polycam). Expected back ~15:00–16:00 IST Sat
-- [ ] Check B's laser station covers every wall; fetch a second station if not
-- [ ] Hand-measure B's walls, ceiling, openings from the laser cloud →
-      `data/gt/arkitscenes_421337.yaml`
+- [x] Check B's laser station covers every wall: yes, all four walls are visible (some
+      parts in furniture shadow at 1.1 m, visible at other heights); no second station needed
+- [x] Laser cloud prepared for hand measurement (`scripts/prepare_laser_gt.py`: cropped,
+      thinned to 5 mm, E57 / LAS / PLY) and sent with
+      [the measurement sheet](docs/laser_measurement_sheet.md) to an architect, measuring
+      blind (without seeing our output)
+- [ ] **Waiting on:** her measurements → `data/gt/arkitscenes_421337.yaml`
 - [ ] Transcribe the friend's tape sketch → `data/gt/home_c.yaml`; put captures in
       `data/home_c/`; pick the held-out room
 

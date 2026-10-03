@@ -19,6 +19,13 @@ openings **once, by hand**, from the laser cloud (picking corner points in a vie
 store them in `data/gt/arkitscenes_421337.yaml`. That file is then ground truth like any tape
 sheet.
 
+In practice the measuring is done by an architect in her own CAD software (ReCap / Revit,
+CloudCompare), working **blind** (she does not see our output first).
+`scripts/prepare_laser_gt.py` crops the 1.9 GB station scan to the room and thins it to
+one real point per 5 mm (43 M → 2.7 M points; E57, LAS, PLY);
+[laser_measurement_sheet.md](laser_measurement_sheet.md) says what to measure and how
+(inside faces at 1.1 m, ceiling at four points, clear opening widths).
+
 ## Experiments
 
 | # | Experiment | Data | Measures / gate | Score it feeds |
