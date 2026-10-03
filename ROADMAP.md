@@ -3,7 +3,7 @@
 Deadline: **Mon Oct 5, 10:00 IST**. Start: Sat Oct 3, ~12:30 IST. About 45 working hours
 including sleep. Scope and scoring are in [requirements.md](requirements.md).
 
-## Status (Sat Oct 3, ~18:35 IST)
+## Status (Sat Oct 3, ~23:00 IST)
 
 Read this first when resuming (after [HANDOVER.md](HANDOVER.md) and
 [NEXT-SESSION.md](NEXT-SESSION.md)). Details are in the phase sections below.
@@ -16,14 +16,22 @@ Read this first when resuming (after [HANDOVER.md](HANDOVER.md) and
     `data/home_c/lidar/c_home_01` (4 rooms, ~56 m², 22 s; unverified) and the staged-damage
     room twice, `c_damage_01` / `c_damage_02` (one ~3 in hole in a wall; ~10 s each)
   - **Phase 2: LiDAR tier runs end to end.** `uv run floorplan run <capture>` writes
-    `outputs/<id>_lidar/plan.json` + `plan.png` with an interval on every number. Dataset A
-    6 / 5 / 3 rooms, B one ~4 x 5 m room; 8–23 s per capture. 46 tests pass
+    `outputs/<id>_lidar/plan.json` + `plan.png` with an interval on every number. 61 tests
   - Laser ground-truth package built: `uv run scripts/prepare_laser_gt.py` →
     `outputs/laser_gt/` and `outputs/laser_scan_for_measuring.zip` (120 MB: E57, LAS, PLY,
     overview, [measurement sheet](docs/laser_measurement_sheet.md) PDF)
+  - Phase 4 model spike ([docs/model_spike.md](docs/model_spike.md)): MapAnything chosen
+  - Drift correction built and ablated, **off by default (user decision)**
+    ([docs/drift_ablation.md](docs/drift_ablation.md))
+- **Datasets: B stays (decided Sat 23:00).** B's laser scan is the only absolute ground
+  truth until C's measurements arrive, so B is kept as the benchmark dataset (not used in
+  the walk-in path). Revisit once C has tape numbers
 - **Waiting on**
-  - Friend: nothing more expected. Not in hand: tape sketch,
-    Camera-app videos, photo folders, Polycam export, so the fallbacks in
+  - **Friend: house measurement plan (tape dimensions of C's rooms), user asks him Sun
+    Oct 4.** When it arrives: transcribe → `data/gt/home_c.yaml` (by hand, never from our
+    output), then C becomes a second ground-truth dataset (all three tiers on one home)
+  - Friend, otherwise: not in hand: Camera-app videos, photo folders, Polycam export,
+    so the fallbacks in
     `docs/data_plan.md` apply (B's laser is the only absolute ground truth; C's `rgb.mp4`
     stands in for Camera-app video; stills sampled from video stand in for photo folders;
     head-to-head at risk without a Polycam export)
@@ -48,15 +56,12 @@ Read this first when resuming (after [HANDOVER.md](HANDOVER.md) and
   differ up to 0.9 m (fix map 02b, outline/segmentation, untraced). Intervals (±3 cm) are
   overconfident (fix map 03)
 - **Next, in order**
-  1. Openings (doors, windows) in the LiDAR backend: gaps in wall faces → `rooms[].openings`
-     and adjacency (O4, O5)
-  2. Phase 3: repeatability across the three A captures (same apartment), B's three
-     captures and C's two damage-room scans; drift correction with on/off ablation; tag
-     `fixloop-before`
-  3. Phase 4: video and photo tiers (1 h model spike first) on A, B and C's `rgb.mp4`,
-     with the LiDAR result from the same recording as reference
-  4. When the laser measurements arrive: first accuracy numbers on B (wall lengths,
-     ceiling height, openings)
+  1. **Video tier** (Phase 4) with MapAnything on C's `rgb.mp4` (`c_damage_01`, then
+     `c_home_01`), scored against the LiDAR result of the same recording
+  2. Openings (doors, windows) in the LiDAR backend → `rooms[].openings` and adjacency
+  3. Photo tier with the same model
+  4. When ground truth arrives (B's laser numbers; C's measurement plan): first accuracy
+     numbers, then `scripts/benchmark.py` and the `fixloop-before` tag
   5. Phase 5 damage, flags and scope on C's damage room (the hole)
 
 ## Principles
@@ -121,8 +126,8 @@ Sources and how each is used: [docs/data_plan.md](docs/data_plan.md).
       zip in `outputs/laser_scan_for_measuring.zip`
 - [ ] Send the zip to the architect; she measures blind (without seeing our output)
 - [ ] Her measurements → `data/gt/arkitscenes_421337.yaml`
-- [ ] Transcribe the friend's tape sketch → `data/gt/home_c.yaml`; put captures in
-      `data/home_c/`; pick the held-out room
+- [ ] Friend's house measurement plan (requested Sun Oct 4) → transcribe by hand into
+      `data/gt/home_c.yaml`; pick the held-out room
 
 Exit: all three datasets on disk, both ground-truth files complete.
 
