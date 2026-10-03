@@ -5,7 +5,8 @@ including sleep. Scope and scoring are in [requirements.md](requirements.md).
 
 ## Status (Sat Oct 3, ~17:45 IST)
 
-Read this first when resuming. Details are in the phase sections below.
+Read this first when resuming (after [HANDOVER.md](HANDOVER.md) and
+[NEXT-SESSION.md](NEXT-SESSION.md)). Details are in the phase sections below.
 
 - **Done**
   - Phase 0 scaffolding (output format, compliance matrix, capture protocol, CLI, loaders),
@@ -34,8 +35,8 @@ Read this first when resuming. Details are in the phase sections below.
     for the head-to-head too
 - **Fix loop:** [docs/fix_loop.md](docs/fix_loop.md) holds the fix map (work top to bottom)
   and each entry. Fix 01 shipped (`fix01-before` → `fix01-after`): `c_home_01` rooms found
-  2/4 → 4/4 (door lintels split rooms; counter fronts no longer walls). Next on the map:
-  01c (hall's unscanned corner), 02 (damage-room repeatability)
+  2/4 → 4/4 (door lintels split rooms; counter fronts no longer walls). 01c closed
+  as a capture gap (wall never scanned). Next on the map: 02 (damage-room repeatability)
 - **Not yet validated:** no LiDAR number has been compared with ground truth yet; intervals
   are provisional (±1.645σ from surface spreads) until Phase 6 calibrates them
 - **First repeatability look (C damage room, two scans, by eye, before Phase 3):** walls
@@ -189,8 +190,13 @@ the doorway photos; if that fails too, document the photo stitch as failing.
 ## Phase 5: Openings, damage, scope (Sun 14:00–18:00, 4 h)
 
 - [ ] Openings: gaps in each wall line in the 2D map + depth discontinuities → widths
-- [ ] Damage: vision model on keyframes → class + bounding box → project onto the wall plane
-      for metric extent (hosted API, allowed by Cozmo; local fallback if offline)
+- [ ] One shared detector (agreed Sat): open-vocabulary (YOLO-World / Grounding DINO;
+      hosted vision model as fallback) on RGB keyframes, with a text list of classes. Box →
+      depth pixels in the box → 3D with the frame's pose (same frame index as the depth; no
+      IMU work needed) → footprint on the plan. Built once, used for:
+  - [ ] Damage: hole, crack, water stain → class + metric extent on the wall plane
+  - [ ] Fix map 04: wardrobe / fridge / bookshelf boxes removed from the wall mask
+  - [ ] Stretch: furniture symbols on the plan (not required by the brief)
 - [ ] Concealed-damage rule table (e.g. ceiling stain → leak above; stain at skirting →
       rising damp); each flag names its rule
 - [ ] Scope line items keyed to surface ids (repaint wall W3: 12.4 m², etc.)
