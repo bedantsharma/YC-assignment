@@ -1,5 +1,9 @@
 # Next session
 
+Done in the last session: fix map 01a, 01b, 01c (see `docs/fix_loop.md`). Open checks from
+it: dataset A's room changes are unverified (compare with A's `rgb.mp4`); the plan does not
+draw the low-confidence zone's outline, only its area on the room label.
+
 Work in this order. Each step ends with a commit and the ROADMAP status updated.
 
 1. **Model spike, 1 h (biggest risk).** Video and photo tiers are 2 of the 3 required tiers

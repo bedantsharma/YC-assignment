@@ -16,10 +16,14 @@ WALL_MIN_EXTENT_M = 0.8  # a wall cell has points across at least this much heig
 COUNTER_TOP_M = (0.82, 1.05)  # kitchen counter top heights
 COUNTER_HOLLOW_M = (0.1, 0.7)  # a counter top hides what is under it
 COUNTER_FRONT_MAX_TOP_M = 1.2  # a counter front ends at the top; a wall goes on above
+FLOOR_TOL_M = 0.05
 LINTEL_BAND_M = (1.95, 2.3)  # underside of a door head
 LINTEL_CLEAR_M = (0.5, 1.8)  # a doorway is empty at body height
 ENCLOSED_FRACTION = 0.75
 DOOR_HALF_WIDTH_M = 0.45  # free space narrower than 2x this does not seed a room
+OPEN_BOUNDARY_M = 2.0  # wider than any doorway or open passage: longer contact = one space
+MIN_LOW_CONF_AREA_M2 = 0.3
+LOW_CONF_MAX_DEPTH_M = 1.0  # a low-confidence zone reaches at most this past its room
 MIN_SEED_AREA_M2 = 0.2
 MIN_ROOM_AREA_M2 = 1.0
 ANGLE_SAMPLE = 200_000
@@ -106,6 +110,15 @@ def _counter_tops(h: np.ndarray, points: np.ndarray, grid: Grid) -> np.ndarray:
     return top & hollow
 
 
+def floor_mask(points: np.ndarray, grid: Grid, floor_z: float) -> np.ndarray:
+    """Cells where the floor itself was seen (small gaps closed)."""
+    h = points[:, 2] - floor_z
+    ij = grid.cells(points[np.abs(h) < FLOOR_TOL_M, :2])
+    seen = np.zeros(grid.shape, bool)
+    seen[ij[:, 0], ij[:, 1]] = True
+    return ndi.binary_closing(seen, iterations=3)
+
+
 def lintel_mask(points: np.ndarray, grid: Grid, floor_z: float) -> np.ndarray:
     """Cells with points at door-head height but none at body height: the lintel over a
     doorway. Rooms are split there whatever the door's width; open-plan junctions have no
@@ -150,14 +163,21 @@ def enclosure(walls: np.ndarray, res: float, rays: int = 16, max_range: float = 
 
 
 def segment_rooms(
-    walls: np.ndarray, observed: np.ndarray, res: float, lintels: np.ndarray | None = None
-) -> np.ndarray:
+    walls: np.ndarray,
+    observed: np.ndarray,
+    res: float,
+    lintels: np.ndarray | None = None,
+    floor_seen: np.ndarray | None = None,
+) -> tuple[np.ndarray, np.ndarray]:
     """Label enclosed free space by room (0 = not a room), split at doorway constrictions
-    and under door lintels."""
-    free = observed & ~ndi.binary_dilation(walls)
-    free &= enclosure(walls, res) >= ENCLOSED_FRACTION  # lintels play no part in enclosure
+    and under door lintels. Also returns the low-confidence cells: seen floor that fails
+    the enclosure test (a wall was never scanned) but borders a room."""
+    near_wall = ndi.binary_dilation(walls)
     if lintels is not None:
-        free &= ~ndi.binary_dilation(lintels)
+        near_wall |= ndi.binary_dilation(lintels)
+    open_space = observed & ~near_wall
+    enclosed = enclosure(walls, res) >= ENCLOSED_FRACTION  # lintels play no part here
+    free = open_space & enclosed
     dist = ndi.distance_transform_edt(free) * res
     seeds, n = ndi.label(dist > DOOR_HALF_WIDTH_M)
     seed_area = ndi.sum(np.ones_like(dist), seeds, np.arange(1, n + 1)) * res**2
@@ -165,5 +185,57 @@ def segment_rooms(
     labels = watershed(-dist, seeds, mask=free)
     area = np.bincount(labels.ravel()) * res**2
     labels[area[labels] < MIN_ROOM_AREA_M2] = 0
-    _, labels = np.unique(labels, return_inverse=True)  # renumber 1..n, 0 stays 0
-    return labels.reshape(walls.shape)
+    candidates = open_space & ~enclosed
+    if floor_seen is not None:
+        candidates &= floor_seen
+    labels, low = attach_unenclosed(labels, candidates, res)
+    return merge_open_boundaries(labels, res), low  # after attaching: a zone can join rooms
+
+
+def merge_open_boundaries(labels: np.ndarray, res: float) -> np.ndarray:
+    """Merge rooms that touch along more than OPEN_BOUNDARY_M. Rooms never touch across a
+    wall or lintel (those cells are not free), so a long contact is a watershed split of
+    one open space; a doorway gives a contact no longer than its width."""
+    contact: dict[tuple[int, int], int] = {}
+    for a, b in ((labels[1:], labels[:-1]), (labels[:, 1:], labels[:, :-1])):
+        touch = (a != b) & (a > 0) & (b > 0)
+        for x, y in zip(a[touch], b[touch], strict=True):
+            key = (min(x, y), max(x, y))
+            contact[key] = contact.get(key, 0) + 1
+    parent = np.arange(labels.max() + 1)
+
+    def root(k: int) -> int:
+        while parent[k] != k:
+            k = parent[k]
+        return k
+
+    for (x, y), n in contact.items():
+        if n * res > OPEN_BOUNDARY_M:
+            parent[max(root(x), root(y))] = min(root(x), root(y))
+    merged = np.array([root(k) for k in range(len(parent))])[labels]
+    ids = np.unique(merged[merged > 0])
+    renumber = np.zeros(len(parent), int)
+    renumber[ids] = np.arange(1, len(ids) + 1)  # 1..n, 0 stays 0
+    return renumber[merged]
+
+
+def attach_unenclosed(
+    labels: np.ndarray, unenclosed: np.ndarray, res: float
+) -> tuple[np.ndarray, np.ndarray]:
+    """Give each patch of observed-but-unenclosed floor within LOW_CONF_MAX_DEPTH_M of a
+    room to the room it borders most, and mark it low confidence. Patches touching no room
+    stay outside every room."""
+    labels = labels.copy()
+    low = np.zeros(labels.shape, bool)
+    reach = ndi.distance_transform_edt(labels == 0) * res <= LOW_CONF_MAX_DEPTH_M
+    patches, n = ndi.label(unenclosed & (labels == 0) & reach)
+    for k in range(1, n + 1):
+        patch = patches == k
+        if patch.sum() * res**2 < MIN_LOW_CONF_AREA_M2:
+            continue
+        rim = labels[ndi.binary_dilation(patch) & ~patch]
+        rim = rim[rim > 0]
+        if rim.size:
+            labels[patch] = np.bincount(rim).argmax()
+            low |= patch
+    return labels, low

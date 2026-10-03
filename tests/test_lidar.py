@@ -66,3 +66,15 @@ def test_rooms_joined_by_a_wide_door_under_a_lintel_stay_separate():
     plan = build_plan(two_rooms(angle_deg=30.0, door=(0.9, 2.1), lintel=2.0))
     areas = sorted(r.floor_area.value for r in plan.rooms)
     assert areas == pytest.approx([2.95 * 3, 3.95 * 3], rel=0.05)
+
+
+def test_a_room_with_an_unscanned_wall_keeps_its_floor_flagged_low_confidence():
+    pts = two_rooms(angle_deg=0.0)
+    gap = (pts[:, 0] < 0.05) & (pts[:, 1] > 0.5) & (pts[:, 1] < 2.5)
+    plan = build_plan(pts[~gap])  # 2 m of room A's west wall never scanned
+    assert len(plan.rooms) == 2
+    room_a = max(plan.rooms, key=lambda r: r.floor_area.value)
+    assert room_a.floor_area.lo <= 3.95 * 3 <= room_a.floor_area.hi
+    assert any(w.startswith(f"{room_a.id}:") and "low confidence" in w for w in plan.warnings)
+    assert room_a.low_confidence_area.value > 0.3
+    assert all(r.low_confidence_area is None for r in plan.rooms if r is not room_a)

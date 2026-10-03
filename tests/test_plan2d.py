@@ -2,10 +2,12 @@ import numpy as np
 import pytest
 
 from floorplan.plan2d import (
+    attach_unenclosed,
     dominant_angle,
     enclosure,
     lintel_mask,
     make_grid,
+    merge_open_boundaries,
     observed_mask,
     segment_rooms,
     wall_mask,
@@ -76,7 +78,7 @@ def test_enclosure_rejects_floor_seen_through_a_window(apartment):
 def test_segment_rooms_splits_at_the_door(apartment):
     pts, grid = apartment
     walls = wall_mask(pts, grid, floor_z=0.0)
-    labels = segment_rooms(walls, observed_mask(pts, grid, floor_z=0.0), RES)
+    labels, _ = segment_rooms(walls, observed_mask(pts, grid, floor_z=0.0), RES)
     areas = sorted(np.bincount(labels.ravel())[1:] * RES**2)
     assert len(areas) == 2
     # free space stops a cell or two short of each wall, so areas run slightly small
@@ -93,7 +95,44 @@ def test_segment_rooms_splits_at_a_wide_door_under_a_lintel():
     pts = two_rooms(angle_deg=30.0, door=(0.9, 2.1), lintel=2.0)  # 1.2 m wide
     grid = make_grid(pts, dominant_angle(pts), RES)
     walls = wall_mask(pts, grid, floor_z=0.0)
-    labels = segment_rooms(
+    labels, _ = segment_rooms(
         walls, observed_mask(pts, grid, floor_z=0.0), RES, lintel_mask(pts, grid, floor_z=0.0)
     )
     assert labels.max() == 2
+
+
+def test_rooms_touching_along_a_long_open_boundary_merge():
+    labels = np.zeros((100, 100), int)
+    labels[:, :50], labels[:, 50:] = 1, 2  # 3 m of contact, no wall
+    merged = merge_open_boundaries(labels, RES)
+    assert merged.max() == 1
+
+
+def test_rooms_meeting_only_in_a_doorway_stay_separate():
+    labels = np.zeros((100, 100), int)  # a wall (label 0) at columns 49-50
+    labels[:, :49], labels[:, 51:] = 1, 2
+    labels[40:60, 49], labels[40:60, 50] = 1, 2  # they touch only in a 0.6 m doorway
+    assert merge_open_boundaries(labels, RES).max() == 2
+
+
+def test_unenclosed_floor_bordering_a_room_is_attached_as_low_confidence():
+    labels = np.zeros((100, 100), int)
+    labels[:, :50] = 1
+    unenclosed = np.zeros_like(labels, bool)
+    unenclosed[:, 50:70] = True  # borders room 1
+    unenclosed[:, 80:] = True  # touches no room
+    out, low = attach_unenclosed(labels, unenclosed, RES)
+    assert (out[:, 50:70] == 1).all() and low[:, 50:70].all()
+    assert (out[:, 80:] == 0).all() and not low[:, 80:].any()
+    assert not low[:, :50].any()
+
+
+def test_low_confidence_zone_reaches_at_most_one_metre_past_the_room():
+    labels = np.zeros((100, 200), int)
+    labels[:, :50] = 1
+    unenclosed = np.zeros_like(labels, bool)
+    unenclosed[:, 50:150] = True  # 3 m of floor beyond the room's last enclosed cell
+    out, low = attach_unenclosed(labels, unenclosed, RES)
+    depth = low.any(axis=0).sum() * RES
+    assert depth == pytest.approx(1.0, abs=2 * RES)
+    assert (out[:, 100:] == 0).all()

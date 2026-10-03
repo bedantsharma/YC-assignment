@@ -98,7 +98,7 @@ confidence interval (coverage given by `interval_coverage`, default 0.9).
 |---|---|
 | `format_version` | Output format version (currently `0.1`) |
 | `capture` | `id`, `tier` (`lidar` / `video` / `photo`), `source` path, `device` |
-| `rooms[]` | `id`, `label`, `polygon` (corner points, counter-clockwise), `floor_area`, `ceiling_height` (`null` if the ceiling was never captured), `walls[]`, `openings[]` |
+| `rooms[]` | `id`, `label`, `polygon` (corner points, counter-clockwise), `floor_area`, `ceiling_height` (`null` if the ceiling was never captured), `walls[]`, `openings[]`, `low_confidence_area` (part of the floor area bounded by a wall that was never scanned, `null` if none; `floor_area.lo` is already widened by it) |
 | `rooms[].walls[]` | `id`, `start`, `end` (points), `length`, `height`, `observed` (`false`: no wall surface seen, e.g. an open side; its interval is wide) |
 | `rooms[].openings[]` | `id`, `wall_id`, `kind` (`door` / `window` / `passage`), `width`, `height`, `connects_to` (room id) |
 | `adjacency[]` | `room_a`, `room_b`, `opening_id`: which rooms connect, and through which opening |

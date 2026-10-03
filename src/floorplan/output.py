@@ -75,6 +75,9 @@ class Room:
     ceiling_height: Measurement | None = None  # None when the ceiling was never captured
     walls: list[Wall] = field(default_factory=list)
     openings: list[Opening] = field(default_factory=list)
+    # part of floor_area where the floor was seen but a bounding wall never was (None: all
+    # of the room is enclosed by scanned walls); floor_area.lo is already widened by it
+    low_confidence_area: Measurement | None = None
 
 
 @dataclass

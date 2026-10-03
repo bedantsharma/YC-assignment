@@ -38,6 +38,8 @@ def render_plan(result: Result, path: Path | str) -> Path:
         cx, cy = np.array(room.polygon).mean(axis=0)
         ceiling = _fmt(room.ceiling_height) if room.ceiling_height else "not captured"
         label = f"{room.label}\n{_fmt(room.floor_area, 'm²', 1)}\nceiling {ceiling}"
+        if room.low_confidence_area:
+            label += f"\nincl. {room.low_confidence_area.value:.1f} m² low confidence"
         ax.text(cx, cy, label, ha="center", va="center", fontsize=9, weight="bold")
 
     title = f"{result.capture.id} [{result.capture.tier}]"
@@ -55,5 +57,8 @@ def render_plan(result: Result, path: Path | str) -> Path:
 
 
 def _fmt(m: Measurement, unit: str = "m", digits: int = 2) -> str:
-    half = (m.hi - m.lo) / 2
-    return f"{m.value:.{digits}f} ± {half:.{max(digits, 2)}f} {unit}"
+    d = max(digits, 2)
+    up, down = m.hi - m.value, m.value - m.lo
+    if abs(up - down) > 0.1 * max(up, down, 1e-9):  # lopsided interval: show both sides
+        return f"{m.value:.{digits}f} (−{down:.{d}f} / +{up:.{d}f}) {unit}"
+    return f"{m.value:.{digits}f} ± {(up + down) / 2:.{d}f} {unit}"

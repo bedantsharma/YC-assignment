@@ -13,6 +13,7 @@ from floorplan.levels import floor_level
 from floorplan.output import Measurement, Room, Wall
 from floorplan.plan2d import (
     dominant_angle,
+    floor_mask,
     lintel_mask,
     make_grid,
     observed_mask,
@@ -45,7 +46,9 @@ def build_plan(points: np.ndarray) -> Plan:
     grid = make_grid(points, angle, GRID_RES_M)
     walls = wall_mask(points, grid, floor.z)
     observed = observed_mask(points, grid, floor.z)
-    labels = segment_rooms(walls, observed, GRID_RES_M, lintel_mask(points, grid, floor.z))
+    lintels = lintel_mask(points, grid, floor.z)
+    floor_seen = floor_mask(points, grid, floor.z)
+    labels, low_conf = segment_rooms(walls, observed, GRID_RES_M, lintels, floor_seen)
     shapes = [
         measure_room(labels == k, points, grid, walls, floor.z) for k in range(1, labels.max() + 1)
     ]
@@ -56,6 +59,17 @@ def build_plan(points: np.ndarray) -> Plan:
     warnings = [
         f"{r.id}: ceiling not captured, height unknown" for r in rooms if not r.ceiling_height
     ]
+    for k, room in enumerate(rooms, start=1):
+        low = float((low_conf & (labels == k)).sum()) * GRID_RES_M**2
+        if low > 0:
+            # the zone may not belong to the room at all: widen the area interval down by it
+            area = room.floor_area
+            room.floor_area = Measurement(area.value, round(area.lo - low, 4), area.hi, area.unit)
+            room.low_confidence_area = Measurement(round(low, 4), 0.0, round(low, 4), "m2")
+            warnings.append(
+                f"{room.id}: {low:.1f} m2 is low confidence (floor seen, but a wall bounding "
+                "it was never scanned); floor area interval widened by it"
+            )
     total = sum(r.floor_area.value for r in rooms)
     sigma = np.sqrt(sum(((r.floor_area.hi - r.floor_area.value) / Z90) ** 2 for r in rooms))
     return Plan(rooms, _measure(total, sigma, "m2"), angle, floor.z, warnings)

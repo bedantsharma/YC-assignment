@@ -15,7 +15,7 @@ Work top to bottom. Every fix must leave all 9 LiDAR captures no worse
 |---|---|---|---|---|---|
 | 01a | Hall and room 2 merged through a 1.2 m doorway | C `c_home_01` | Rooms split only at openings < 0.9 m | Door lintels split rooms (kept out of the enclosure test) | **Done** (`fix01-after`) |
 | 01b | Kitchen cut off at the counter front | C `c_home_01` | Counter front (0.1–1.1 m) passes the wall test | First try, "walls reach 1.5 m", **broke A** (low scans); replaced by the counter's shape (face capped by a hollow-under top at 0.82–1.05 m) | **Done** (`fix01-after`) |
-| 01c | Hall's north-west corner cut off as its own room | C `c_home_01` | 2.7 m of the hall's west wall has **zero points at any height** (no ceiling either); the hall floor stops on a straight line at u ≈ -1.15 m. Rays leak west, the strip fails enclosure (0.62 < 0.75), and the fragment `r1` touches the hall along ~2 m with no wall or lintel between (a watershed artefact) | (1) merge rooms sharing > 1.2 m of boundary with no wall or lintel; (2) attach observed-but-unenclosed floor that borders a room, reported as a **low-confidence zone** (warning, area interval widened by the zone) | In progress (declared below) |
+| 01c | Hall's north-west corner cut off as its own room | C `c_home_01` | 2.7 m of the hall's west wall has **zero points at any height**; rays leak west, the strip fails enclosure (0.62 < 0.75) and the hall splits in two | Seen floor that fails enclosure is attached (≤ 1 m deep) to the room it borders as a **low-confidence zone**; rooms touching along > 2 m with no wall or lintel merge | **Done** (`fix01c-after`) |
 | 02 | Two scans of the damaged room disagree: walls by 3–15 cm, ceiling by 8.8 cm | C `c_damage_01/02` | Not traced yet | Trace first (Phase 3) | Open (repeatability gate) |
 | 03 | Intervals overconfident: ±3 cm ranges that don't overlap between repeat scans | C damage room | Intervals from surface spread only, no capture-to-capture error | Calibrate against repeats and ground truth (Phase 6) | Open |
 | 04 | Wardrobes, fridges, bookshelves count as walls; rooms shrink | A, C | Tall furniture passes the wall test | Detector boxes (Phase 5 shared detector) remove them from walls | Open |
@@ -33,6 +33,24 @@ Predicted after: `c_home_01` **4 rooms**, no fragment; hall ≈ 21–25 m², IoU
 low-confidence zone of ≈ 2–4 m² named in the warnings and the hall's area interval
 widened by it. Other 8 captures: B and C damage unchanged; A may merge rooms that touch
 along > 1.2 m with no wall (open plan), each to be checked by eye.
+
+Result (after: tag `fix01c-after`): **as predicted.** `c_home_01` 4 rooms, no fragment;
+hall r1 23.8 m² (interval 20.5–24.1), IoU 0.79, of which 2.9 m² low confidence (in
+`rooms[].low_confidence_area`, the warnings and the plan label). B, C damage and
+`c7d28f72c6` unchanged; `1a8384c3f6` unchanged; `c00a170fe1` r1 10.0 → 12.8 m², the extra
+2.5 m² flagged low confidence (floor seen, walls never seen; capped at 1 m).
+
+Found while fixing, before claiming the result (each caught by the 9-capture check):
+
+1. First version attached any unenclosed observed cell: B gained 2.1 m² outside the room
+   (through a door, only 10% of it real floor) and `c00a170fe1` a 3 m wedge. Added: floor
+   must have been seen, and a zone reaches at most 1 m past its room.
+2. A 1.2 m merge threshold merged two A rooms joined by a ~1.5 m open passage. Raised to
+   2.0 m (wider than any doorway or open passage), not fitted to these captures.
+3. Merging before attaching left the fragment: it only touches the hall along a long
+   boundary once the strip between them is attached. Now attach, then merge.
+4. Renumbering labels with `np.unique` mapped room 1 to 0 when no cell was outside every
+   room; caught by a unit test.
 
 ## Fix 01: room segmentation on the friend's whole-home scan (C, `c_home_01`)
 

@@ -31,7 +31,7 @@ def measured():
     pts = two_rooms(angle_deg=30.0, ceiling=2.5)
     grid = make_grid(pts, dominant_angle(pts), RES)
     walls = wall_mask(pts, grid, floor_z=0.0)
-    labels = segment_rooms(walls, observed_mask(pts, grid, floor_z=0.0), RES)
+    labels, _ = segment_rooms(walls, observed_mask(pts, grid, floor_z=0.0), RES)
     rooms = [measure_room(labels == k, pts, grid, walls, floor_z=0.0) for k in (1, 2)]
     return sorted(rooms, key=lambda r: r.area)
 

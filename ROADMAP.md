@@ -3,7 +3,7 @@
 Deadline: **Mon Oct 5, 10:00 IST**. Start: Sat Oct 3, ~12:30 IST. About 45 working hours
 including sleep. Scope and scoring are in [requirements.md](requirements.md).
 
-## Status (Sat Oct 3, ~17:45 IST)
+## Status (Sat Oct 3, ~19:15 IST)
 
 Read this first when resuming (after [HANDOVER.md](HANDOVER.md) and
 [NEXT-SESSION.md](NEXT-SESSION.md)). Details are in the phase sections below.
@@ -35,8 +35,9 @@ Read this first when resuming (after [HANDOVER.md](HANDOVER.md) and
     for the head-to-head too
 - **Fix loop:** [docs/fix_loop.md](docs/fix_loop.md) holds the fix map (work top to bottom)
   and each entry. Fix 01 shipped (`fix01-before` → `fix01-after`): `c_home_01` rooms found
-  2/4 → 4/4 (door lintels split rooms; counter fronts no longer walls). 01c closed
-  as a capture gap (wall never scanned). Next on the map: 02 (damage-room repeatability)
+  2/4 → 4/4 (door lintels split rooms; counter fronts no longer walls). Fix 01c
+  shipped (`fix01c-after`): the hall's unscanned strip is kept as a flagged low-confidence
+  zone (2.9 m²), hall IoU 0.79. Next on the map: 02 (damage-room repeatability)
 - **Not yet validated:** no LiDAR number has been compared with ground truth yet; intervals
   are provisional (±1.645σ from surface spreads) until Phase 6 calibrates them
 - **First repeatability look (C damage room, two scans, by eye, before Phase 3):** walls
