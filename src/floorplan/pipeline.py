@@ -10,7 +10,13 @@ from floorplan.capture import detect_format, load_lidar, load_photos, load_video
 from floorplan.cloud import fuse, voxel_downsample
 from floorplan.drift import METHOD as DRIFT_METHOD
 from floorplan.drift import correct_drift
-from floorplan.intervals import VIDEO_SCALE_REL, VIDEO_SURFACE_M, widen_room
+from floorplan.intervals import (
+    RESIDUAL_REL,
+    SCALE_BIAS,
+    VIDEO_SURFACE_M,
+    correct_scale,
+    widen_room,
+)
 from floorplan.lidar import build_plan
 from floorplan.output import Capture, Measurement, Result
 
@@ -79,9 +85,10 @@ def _run_video(path: Path, capture: Capture, n_frames: int, up: str, model: str)
 
     start = time.perf_counter()
     vertical = estimate_up(rec.points, rec.cam_poses)
-    points = voxel_downsample(z_up(rec.points, vertical), VIDEO_VOXEL_M)
+    points = voxel_downsample(correct_scale(z_up(rec.points, vertical), model), VIDEO_VOXEL_M)
     plan = build_plan(points)
-    rooms = [widen_room(r, VIDEO_SCALE_REL, VIDEO_SURFACE_M) for r in plan.rooms]
+    rel_h, rel_v = RESIDUAL_REL[model]
+    rooms = [widen_room(r, rel_h, rel_v, VIDEO_SURFACE_M) for r in plan.rooms]
     timing["geometry"] = round(time.perf_counter() - start, 3)
 
     footprint = None
@@ -94,9 +101,11 @@ def _run_video(path: Path, capture: Capture, n_frames: int, up: str, model: str)
     how = f"{orient.source}, margin {orient.margin:.1f}" if orient.margin else orient.source
     warnings = [
         f"used {len(frames)} frames of {video.name}; up = stored frame's {orient.up_side} ({how})",
-        f"reconstruction: {MODEL_NAMES[rec.model]}, {rec.seconds:.0f} s; intervals widened by "
-        f"{100 * VIDEO_SCALE_REL:.0f}% scale and {100 * VIDEO_SURFACE_M:.0f} cm surface error "
-        "(provisional, from the model spike)",
+        f"reconstruction: {MODEL_NAMES[rec.model]}, {rec.seconds:.0f} s",
+        f"scale corrected by the model's measured bias (horizontal x{1 / SCALE_BIAS[model][0]:.3f},"
+        f" vertical x{1 / SCALE_BIAS[model][1]:.3f}; damage room vs LiDAR); intervals widened by"
+        f" {100 * rel_h:.0f}% horizontal, {100 * rel_v:.0f}% vertical and"
+        f" {100 * VIDEO_SURFACE_M:.0f} cm surface error (provisional until ground truth)",
         *[
             f"window {k.window} chained: scale {k.scale:.3f}, residual "
             f"{100 * k.residual_m:.1f} cm over {k.pairs} points"

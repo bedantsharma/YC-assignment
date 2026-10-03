@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from floorplan.intervals import widen
+from floorplan.intervals import correct_scale, widen, widen_room
 from floorplan.output import Measurement
 from floorplan.video import estimate_up, z_up
 from tests.synthetic import two_rooms
@@ -36,3 +36,23 @@ def test_widen_adds_scale_and_surface_terms_in_quadrature():
     extra = 1.645 * np.hypot(0.12, 0.05)
     assert m.hi - m.value == pytest.approx(np.hypot(0.05, extra), abs=1e-4)
     assert m.value - m.lo == pytest.approx(np.hypot(0.05, extra), abs=1e-4)
+
+
+def test_correct_scale_divides_out_horizontal_and_vertical_bias():
+    pts = np.array([[0.964, -1.928, 0.914], [0.0, 0.0, 2.742]])
+    out = correct_scale(pts, "pi3x")
+    assert np.allclose(out, [[1.0, -2.0, 1.0], [0.0, 0.0, 3.0]])
+
+
+def test_widen_room_uses_vertical_error_for_ceiling_only():
+    from floorplan.output import Room, Wall
+
+    def m(v):
+        return Measurement(v, v, v, "m")
+
+    walls = [Wall(f"w{i}", (0, 0), (1, 0), m(4.0), m(3.0), True) for i in range(4)]
+    room = Room("r1", "r1", [], Measurement(16.0, 16.0, 16.0, "m2"), m(3.0), walls)
+    widen_room(room, rel_h=0.05, rel_v=0.0, surface_m=0.0)
+    assert room.walls[0].length.hi - 4.0 == pytest.approx(1.645 * 0.05 * 4.0, abs=1e-4)
+    assert room.ceiling_height.hi == pytest.approx(3.0)
+    assert room.floor_area.hi - 16.0 == pytest.approx(1.645 * 0.10 * 16.0, abs=1e-3)
