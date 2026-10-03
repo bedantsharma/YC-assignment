@@ -3,7 +3,7 @@
 Deadline: **Mon Oct 5, 10:00 IST**. Start: Sat Oct 3, ~12:30 IST. About 45 working hours
 including sleep. Scope and scoring are in [requirements.md](requirements.md).
 
-## Status (Sat Oct 3, ~16:45 IST)
+## Status (Sat Oct 3, ~17:15 IST)
 
 Read this first when resuming. Details are in the phase sections below.
 
@@ -19,7 +19,10 @@ Read this first when resuming. Details are in the phase sections below.
     `outputs/laser_gt/` and `outputs/laser_scan_for_measuring.zip` (120 MB: E57, LAS, PLY,
     overview, [measurement sheet](docs/laser_measurement_sheet.md) PDF)
 - **Waiting on**
-  - Dataset C from the friend (was due ~15:00–16:00 Sat): goes in `data/home_c/`
+  - Dataset C from the friend: **partly in.** LiDAR whole-home walk received →
+    `data/home_c/lidar/c_home_01` (runs: 4 rooms, ~56 m², 22 s; unverified). Still missing:
+    tape sketch (no ground truth for C yet), damaged-room LiDAR x2, Camera-app videos,
+    photo folders, Polycam export. Layout and checklist status: `docs/data_plan.md`
   - User to send the laser zip to the architect (girlfriend), then her measurements →
     `data/gt/arkitscenes_421337.yaml`. She must measure blind: do not show her our plans
   - ~~Cozmo: hosted APIs allowed? how is the head-to-head run?~~ **Answered (Siva):** hosted
@@ -89,7 +92,8 @@ Sources and how each is used: [docs/data_plan.md](docs/data_plan.md).
 - [x] Capture checklist written and sent to the friend
       ([md](docs/friend_capture_checklist.md), PDF)
 - [ ] **In progress:** Dataset C, friend's home on an iPhone 16 Pro (all three tiers, staged
-      damage, Polycam). Expected back ~15:00–16:00 IST Sat
+      damage, Polycam). LiDAR whole-home walk received (`data/home_c/lidar/c_home_01`);
+      tape sketch, videos, photos, damaged-room scans and Polycam still missing
 - [x] Check B's laser station covers every wall: yes, all four walls are visible (some
       parts in furniture shadow at 1.1 m, visible at other heights); no second station needed
 - [x] Laser cloud prepared for hand measurement (`scripts/prepare_laser_gt.py`: cropped,

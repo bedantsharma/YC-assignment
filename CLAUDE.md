@@ -36,7 +36,8 @@ land); datasets: `docs/data_plan.md`. Deadline: Mon Oct 5, 10:00 IST.
 - `scripts/`: exploration and one-off analysis scripts
 - `data/raw/<capture-id>/`: Cozmo's Stray Scanner captures, dataset A (gitignored)
 - `data/arkitscenes/`: ARKitScenes venue 421337 + laser scan, dataset B (gitignored)
-- `data/home_c/`: friend's iPhone 16 Pro capture of a home, all tiers, dataset C (gitignored)
+- `data/home_c/`: friend's iPhone 16 Pro capture of a home, dataset C (gitignored):
+  `lidar/c_home_NN/` (Stray Scanner), `video/`, `photos/<room>/`, `polycam/`, `notes/`
 - `data/gt/`: hand-measured ground truth files (committed)
 - `docs/`: data plan, capture checklist; later the capture protocol and reports
 - `outputs/`: generated plots and results (gitignored)

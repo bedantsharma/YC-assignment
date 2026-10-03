@@ -26,6 +26,31 @@ one real point per 5 mm (43 M → 2.7 M points; E57, LAS, PLY);
 [laser_measurement_sheet.md](laser_measurement_sheet.md) says what to measure and how
 (inside faces at 1.1 m, ceiling at four points, clear opening widths).
 
+### Dataset C layout and what has arrived
+
+```
+data/home_c/
+  lidar/c_home_NN/   one Stray Scanner recording per folder (same files as dataset A)
+  video/             native Camera-app videos, original files
+  photos/<room>/     one folder per room, original photos (+ doorway shots)
+  polycam/           Polycam export + floor-plan screenshots (head-to-head)
+  notes/             photo of the tape-measured sketch
+data/gt/home_c.yaml  tape measurements, transcribed from the sketch (committed)
+```
+
+| Item from the checklist | Status (Sat Oct 3, ~17:15 IST) |
+|---|---|
+| LiDAR whole-home walk | **Received:** `lidar/c_home_01` (167 s, 9,995 frames, 1920x1440 RGB, 256x192 depth). Runs: 4 rooms, ~56 m², ceilings ~3.3–3.5 m (unverified) |
+| LiDAR damaged room x2 | Not received |
+| Camera-app video (whole home, damaged room x2) | Not received |
+| Photo folders per room + doorway shots | Not received |
+| Polycam export (2 rooms) | Not received |
+| Tape sketch (walls, ceilings, openings, damage, adjacency) | Not received: **no ground truth for C yet** |
+
+`c_home_01` was renamed from the friend's `firendsScan` folder (the original Stray Scanner
+id was not kept). The held-out room is chosen when the sketch arrives; nothing has been
+tuned on C so far.
+
 ## Experiments
 
 | # | Experiment | Data | Measures / gate | Score it feeds |

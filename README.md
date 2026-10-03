@@ -33,7 +33,7 @@ committed. How each dataset is used: [docs/data_plan.md](docs/data_plan.md).
 |---|---|---|---|
 | A | Cozmo's 3 Stray Scanner captures of one apartment | `data/raw/<capture-id>/` | provided by Cozmo |
 | B | ARKitScenes venue 421337: 3 captures + laser scan | `data/arkitscenes/` | `scripts/fetch_arkitscenes.sh` (~4.6 GB) |
-| C | Own home capture, all tiers + tape measurements | `data/home_c/` | [capture checklist](docs/friend_capture_checklist.md) |
+| C | Own home capture, all tiers + tape measurements | `data/home_c/` (`lidar/`, `video/`, `photos/<room>/`, `polycam/`, `notes/`) | [capture checklist](docs/friend_capture_checklist.md) |
 
 ### Stray Scanner capture format (dataset A)
 
