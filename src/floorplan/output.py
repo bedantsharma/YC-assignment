@@ -1,7 +1,9 @@
 """Pipeline output: one result type shared by every tier, written as JSON.
 
 Every measured number is a `Measurement` carrying its confidence interval, so no value can
-leave the pipeline without one. Plan coordinates are metres in a top-down frame (x, y).
+leave the pipeline without one. Plan coordinates are metres in a top-down frame (x, y): the
+capture's world frame rotated about the vertical by -`plan_rotation_deg`, so that the
+dominant walls run along x and y.
 """
 
 import json
@@ -47,6 +49,7 @@ class Wall:
     end: Point
     length: Measurement
     height: Measurement | None = None
+    observed: bool = True  # False: no wall surface seen (open side), position inferred
 
 
 @dataclass
@@ -69,7 +72,7 @@ class Room:
     label: str
     polygon: list[Point]
     floor_area: Measurement
-    ceiling_height: Measurement
+    ceiling_height: Measurement | None = None  # None when the ceiling was never captured
     walls: list[Wall] = field(default_factory=list)
     openings: list[Opening] = field(default_factory=list)
 
@@ -134,6 +137,7 @@ class Result:
     flags: list[Flag] = field(default_factory=list)
     scope: list[ScopeItem] = field(default_factory=list)
     footprint_area: Measurement | None = None
+    plan_rotation_deg: float | None = None
     drift_correction: str | None = None
     interval_coverage: float = 0.9
     timing_s: dict[str, float] = field(default_factory=dict)
