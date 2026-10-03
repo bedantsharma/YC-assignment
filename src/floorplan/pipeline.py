@@ -19,6 +19,7 @@ from floorplan.intervals import (
 )
 from floorplan.lidar import build_plan
 from floorplan.output import Capture, Measurement, Result
+from floorplan.plan2d import ENCLOSED_FRACTION, ENCLOSED_FRACTION_SPARSE
 
 MAX_LIDAR_FRAMES = 3000  # more adds run time, not accuracy (depth frames overlap heavily)
 VIDEO_FRAMES = 30  # 12.8 GB peak on a 16 GB Mac (docs/model_spike.md)
@@ -115,7 +116,9 @@ def _from_images(
     start = time.perf_counter()
     vertical = estimate_up(rec.points, rec.cam_poses)
     points = voxel_downsample(correct_scale(z_up(rec.points, vertical), model), VIDEO_VOXEL_M)
-    plan = build_plan(points)
+    # photos see walls only in parts: accept rooms enclosed by fewer observed walls
+    sparse = ENCLOSED_FRACTION_SPARSE if tier == "photo" else ENCLOSED_FRACTION
+    plan = build_plan(points, sparse)
     labels = []
     if folders is not None:
         from floorplan.photos import label_rooms

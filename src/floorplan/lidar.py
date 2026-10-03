@@ -12,6 +12,7 @@ import numpy as np
 from floorplan.levels import floor_level
 from floorplan.output import Measurement, Room, Wall
 from floorplan.plan2d import (
+    ENCLOSED_FRACTION,
     dominant_angle,
     floor_mask,
     lintel_mask,
@@ -36,7 +37,7 @@ class Plan:
     warnings: list[str] = field(default_factory=list)
 
 
-def build_plan(points: np.ndarray) -> Plan:
+def build_plan(points: np.ndarray, enclosed_fraction: float = ENCLOSED_FRACTION) -> Plan:
     floor = floor_level(points[:, 2])
     h = points[:, 2] - floor.z
     band = points[(h > ANGLE_BAND_M[0]) & (h < ANGLE_BAND_M[1])]
@@ -48,7 +49,9 @@ def build_plan(points: np.ndarray) -> Plan:
     observed = observed_mask(points, grid, floor.z)
     lintels = lintel_mask(points, grid, floor.z)
     floor_seen = floor_mask(points, grid, floor.z)
-    labels, low_conf = segment_rooms(walls, observed, GRID_RES_M, lintels, floor_seen)
+    labels, low_conf = segment_rooms(
+        walls, observed, GRID_RES_M, lintels, floor_seen, enclosed_fraction
+    )
     shapes = [
         measure_room(labels == k, points, grid, walls, floor.z) for k in range(1, labels.max() + 1)
     ]

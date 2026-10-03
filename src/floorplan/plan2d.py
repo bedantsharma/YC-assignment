@@ -20,6 +20,9 @@ FLOOR_TOL_M = 0.05
 LINTEL_BAND_M = (1.95, 2.3)  # underside of a door head
 LINTEL_CLEAR_M = (0.5, 1.8)  # a doorway is empty at body height
 ENCLOSED_FRACTION = 0.75
+# Photos see only parts of each wall (2-8 stills per room): rooms are enclosed by fewer
+# observed walls, so the image tiers accept half the rays hitting a wall (docs/photo_tier.md)
+ENCLOSED_FRACTION_SPARSE = 0.5
 DOOR_HALF_WIDTH_M = 0.45  # free space narrower than 2x this does not seed a room
 OPEN_BOUNDARY_M = 2.0  # wider than any doorway or open passage: longer contact = one space
 MIN_LOW_CONF_AREA_M2 = 0.3
@@ -168,6 +171,7 @@ def segment_rooms(
     res: float,
     lintels: np.ndarray | None = None,
     floor_seen: np.ndarray | None = None,
+    enclosed_fraction: float = ENCLOSED_FRACTION,
 ) -> tuple[np.ndarray, np.ndarray]:
     """Label enclosed free space by room (0 = not a room), split at doorway constrictions
     and under door lintels. Also returns the low-confidence cells: seen floor that fails
@@ -176,7 +180,7 @@ def segment_rooms(
     if lintels is not None:
         near_wall |= ndi.binary_dilation(lintels)
     open_space = observed & ~near_wall
-    enclosed = enclosure(walls, res) >= ENCLOSED_FRACTION  # lintels play no part here
+    enclosed = enclosure(walls, res) >= enclosed_fraction  # lintels play no part here
     free = open_space & enclosed
     dist = ndi.distance_transform_edt(free) * res
     seeds, n = ndi.label(dist > DOOR_HALF_WIDTH_M)
