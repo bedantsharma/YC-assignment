@@ -4,7 +4,7 @@ import pytest
 from floorplan.lidar import build_plan
 from floorplan.output import Capture, Result
 from floorplan.render import render_plan
-from tests.synthetic import two_rooms
+from tests.synthetic import kitchen, two_rooms
 
 
 @pytest.fixture(scope="module")
@@ -52,3 +52,11 @@ def test_render_writes_a_png(plan, tmp_path):
     result = Result(Capture("synthetic", "lidar", "test"), plan.rooms)
     path = render_plan(result, tmp_path / "plan.png")
     assert path.read_bytes()[:4] == b"\x89PNG"
+
+
+def test_kitchen_is_measured_to_the_wall_behind_the_counter():
+    plan = build_plan(kitchen())
+    assert len(plan.rooms) == 1
+    room = plan.rooms[0]
+    assert room.floor_area.value == pytest.approx(4.0 * 3.0, rel=0.03)
+    assert max(w.length.value for w in room.walls) == pytest.approx(4.0, abs=0.03)

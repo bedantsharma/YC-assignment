@@ -51,3 +51,21 @@ def two_rooms(angle_deg=30.0, noise=0.004, ceiling=2.5):
     t = np.radians(angle_deg)
     rot = np.array([[np.cos(t), -np.sin(t), 0], [np.sin(t), np.cos(t), 0], [0, 0, 1]])
     return pts @ rot.T
+
+
+def kitchen(noise=0.004, ceiling=2.7):
+    """Room [0,4]x[0,3] with a base cabinet along the east wall: front face at x = 3.4
+    (0-0.9 m), top at 0.9 m from x 3.4 to 4. The room's east wall is at x = 4, not 3.4.
+    """
+    parts = [
+        wall((0, 0), (4, 0), z1=ceiling),
+        wall((4, 0), (4, 3), z0=0.9, z1=ceiling),  # tiled wall above the counter
+        wall((4, 3), (0, 3), z1=ceiling),
+        wall((0, 3), (0, 0), z1=ceiling),
+        wall((3.4, 0), (3.4, 3), z1=0.9),  # cabinet front
+        slab(3.4, 4, 0, 3, 0.9),  # counter top
+        slab(0, 3.4, 0, 3, 0.0),
+        slab(0, 4, 0, 3, ceiling),
+    ]
+    pts = np.concatenate(parts)
+    return pts + rng.normal(0, noise, pts.shape)

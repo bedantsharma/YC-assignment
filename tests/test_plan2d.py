@@ -9,7 +9,7 @@ from floorplan.plan2d import (
     segment_rooms,
     wall_mask,
 )
-from tests.synthetic import two_rooms
+from tests.synthetic import kitchen, two_rooms
 
 RES = 0.03
 
@@ -41,6 +41,16 @@ def test_wall_mask_keeps_walls_and_drops_the_table(apartment):
     shared = grid.cells(_rot(np.array([[3.95, 0.5]]), 30.0))[0]
     assert not walls[tuple(table)]
     assert walls[tuple(shared)]
+
+
+def test_wall_mask_drops_a_counter_front_but_keeps_the_wall_behind_it():
+    pts = kitchen()
+    grid = make_grid(pts, dominant_angle(pts), RES)
+    walls = wall_mask(pts, grid, floor_z=0.0)
+    front = grid.cells(np.array([[3.4, 1.5]]))[0]
+    behind = grid.cells(np.array([[4.0, 1.5]]))[0]
+    assert not walls[tuple(front)]
+    assert walls[tuple(behind)]
 
 
 def test_enclosure_rejects_floor_seen_through_a_window(apartment):

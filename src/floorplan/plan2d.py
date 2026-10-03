@@ -13,6 +13,7 @@ from skimage.segmentation import watershed
 WALL_BAND_M = (0.1, 2.3)  # heights above floor that count as wall evidence
 WALL_SLICE_M = 0.1
 WALL_MIN_EXTENT_M = 0.8  # a wall cell has points across at least this much height
+WALL_MIN_TOP_M = 1.5  # ...and some above this: counters, sofa backs and desks stop lower
 ENCLOSED_FRACTION = 0.75
 DOOR_HALF_WIDTH_M = 0.45  # free space narrower than 2x this does not seed a room
 MIN_SEED_AREA_M2 = 0.2
@@ -70,7 +71,9 @@ def make_grid(points: np.ndarray, angle_deg: float, res: float, margin: float = 
 
 
 def wall_mask(points: np.ndarray, grid: Grid, floor_z: float) -> np.ndarray:
-    """Cells whose points span at least WALL_MIN_EXTENT_M of height: walls, not tabletops."""
+    """Cells whose points span at least WALL_MIN_EXTENT_M of height and reach above
+    WALL_MIN_TOP_M: walls, not tabletops or counter fronts (a window wall passes on the
+    wall above its head)."""
     h = points[:, 2] - floor_z
     band = (h > WALL_BAND_M[0]) & (h < WALL_BAND_M[1])
     ij = grid.cells(points[band, :2])
@@ -78,7 +81,9 @@ def wall_mask(points: np.ndarray, grid: Grid, floor_z: float) -> np.ndarray:
     n_slices = int(np.ceil((WALL_BAND_M[1] - WALL_BAND_M[0]) / WALL_SLICE_M))
     occupied = np.zeros((*grid.shape, n_slices), bool)
     occupied[ij[:, 0], ij[:, 1], k] = True
-    return occupied.sum(axis=2) >= round(WALL_MIN_EXTENT_M / WALL_SLICE_M)
+    high = round((WALL_MIN_TOP_M - WALL_BAND_M[0]) / WALL_SLICE_M)
+    tall = occupied.sum(axis=2) >= round(WALL_MIN_EXTENT_M / WALL_SLICE_M)
+    return tall & occupied[:, :, high:].any(axis=2)
 
 
 def observed_mask(points: np.ndarray, grid: Grid, floor_z: float) -> np.ndarray:
