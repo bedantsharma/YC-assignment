@@ -13,7 +13,9 @@ from skimage.segmentation import watershed
 WALL_BAND_M = (0.1, 2.3)  # heights above floor that count as wall evidence
 WALL_SLICE_M = 0.1
 WALL_MIN_EXTENT_M = 0.8  # a wall cell has points across at least this much height
-WALL_MIN_TOP_M = 1.5  # ...and some above this: counters, sofa backs and desks stop lower
+COUNTER_TOP_M = (0.82, 1.05)  # kitchen counter top heights
+COUNTER_HOLLOW_M = (0.1, 0.7)  # a counter top hides what is under it
+COUNTER_FRONT_MAX_TOP_M = 1.2  # a counter front ends at the top; a wall goes on above
 LINTEL_BAND_M = (1.95, 2.3)  # underside of a door head
 LINTEL_CLEAR_M = (0.5, 1.8)  # a doorway is empty at body height
 ENCLOSED_FRACTION = 0.75
@@ -73,9 +75,12 @@ def make_grid(points: np.ndarray, angle_deg: float, res: float, margin: float = 
 
 
 def wall_mask(points: np.ndarray, grid: Grid, floor_z: float) -> np.ndarray:
-    """Cells whose points span at least WALL_MIN_EXTENT_M of height and reach above
-    WALL_MIN_TOP_M: walls, not tabletops or counter fronts (a window wall passes on the
-    wall above its head)."""
+    """Cells whose points span at least WALL_MIN_EXTENT_M of height: walls, not tabletops.
+
+    Counter fronts are also tall enough, so a tall cell is dropped when it stops at counter
+    height right next to a counter top. The rule uses the counter's shape, not a minimum
+    wall height: walls scanned only up to chest height must survive.
+    """
     h = points[:, 2] - floor_z
     band = (h > WALL_BAND_M[0]) & (h < WALL_BAND_M[1])
     ij = grid.cells(points[band, :2])
@@ -83,9 +88,22 @@ def wall_mask(points: np.ndarray, grid: Grid, floor_z: float) -> np.ndarray:
     n_slices = int(np.ceil((WALL_BAND_M[1] - WALL_BAND_M[0]) / WALL_SLICE_M))
     occupied = np.zeros((*grid.shape, n_slices), bool)
     occupied[ij[:, 0], ij[:, 1], k] = True
-    high = round((WALL_MIN_TOP_M - WALL_BAND_M[0]) / WALL_SLICE_M)
     tall = occupied.sum(axis=2) >= round(WALL_MIN_EXTENT_M / WALL_SLICE_M)
-    return tall & occupied[:, :, high:].any(axis=2)
+    top = n_slices - 1 - np.argmax(occupied[:, :, ::-1], axis=2)  # highest occupied slice
+    low_top = top < round((COUNTER_FRONT_MAX_TOP_M - WALL_BAND_M[0]) / WALL_SLICE_M)
+    front = tall & low_top & ndi.binary_dilation(_counter_tops(h, points, grid), iterations=3)
+    return tall & ~front
+
+
+def _counter_tops(h: np.ndarray, points: np.ndarray, grid: Grid) -> np.ndarray:
+    """Cells with a surface at counter height and nothing visible below it."""
+    top = np.zeros(grid.shape, bool)
+    hollow = np.ones(grid.shape, bool)
+    ij = grid.cells(points[(h > COUNTER_TOP_M[0]) & (h < COUNTER_TOP_M[1]), :2])
+    top[ij[:, 0], ij[:, 1]] = True
+    ij = grid.cells(points[(h > COUNTER_HOLLOW_M[0]) & (h < COUNTER_HOLLOW_M[1]), :2])
+    hollow[ij[:, 0], ij[:, 1]] = False
+    return top & hollow
 
 
 def lintel_mask(points: np.ndarray, grid: Grid, floor_z: float) -> np.ndarray:

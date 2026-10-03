@@ -54,6 +54,15 @@ def test_wall_mask_drops_a_counter_front_but_keeps_the_wall_behind_it():
     assert walls[tuple(behind)]
 
 
+def test_wall_mask_keeps_a_wall_scanned_only_up_to_chest_height():
+    pts = two_rooms(angle_deg=30.0)
+    low = pts[pts[:, 2] < 1.3]  # the phone never pointed above 1.3 m
+    grid = make_grid(low, dominant_angle(low), RES)
+    walls = wall_mask(low, grid, floor_z=0.0)
+    shared = grid.cells(_rot(np.array([[3.95, 0.5]]), 30.0))[0]
+    assert walls[tuple(shared)]
+
+
 def test_enclosure_rejects_floor_seen_through_a_window(apartment):
     pts, grid = apartment
     walls = wall_mask(pts, grid, floor_z=0.0)

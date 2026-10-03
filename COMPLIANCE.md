@@ -79,10 +79,10 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 
 | ID | Requirement | File path | Artifact | Status | Notes |
 |---|---|---|---|---|---|
-| F1 | Fix declaration: single worst gate, with the failing number | `docs/fix_declaration.md` *(planned)* | Declaration page | Not started | Written before the fix |
-| F2 | Root-cause hypothesis and the evidence for it | `docs/fix_declaration.md` *(planned)* | Declaration page | Not started | |
-| F3 | The fix and the predicted number after it | `docs/fix_declaration.md` *(planned)* | Declaration page | Not started | |
-| F4 | Shipped fix with before and after runs, both regenerable, and a readable diff | git tags `fixloop-before` / `fixloop-after` *(planned)* | Before/after numbers + diff | Not started | |
+| F1 | Fix declaration: single worst gate, with the failing number | `docs/fix_loop.md` | Declaration page | In progress | Fix 01 (room segmentation, 2/4 rooms found) declared before fixing; the submitted entry is picked in Phase 6 (worst brief gate) |
+| F2 | Root-cause hypothesis and the evidence for it | `docs/fix_loop.md` | Declaration page | In progress | Fix 01: three causes traced stage by stage; first hypothesis recorded as wrong |
+| F3 | The fix and the predicted number after it | `docs/fix_loop.md` | Declaration page | In progress | Fix 01: 4/4 and hall IoU predicted and met; kitchen area predicted wrong, explained |
+| F4 | Shipped fix with before and after runs, both regenerable, and a readable diff | git tags `fix01-before` / `fix01-after` | Before/after numbers + diff | In progress | Fix 01 shipped: `git diff fix01-before fix01-after`; `scripts/lidar_summary.py` + `scripts/score_rooms.py` regenerate both |
 | F5 | If it falls short of the gate, the report says why | `docs/fix_declaration.md` *(planned)* | Post-mortem section | Not started | |
 
 ## 7. Process (brief Part 5)

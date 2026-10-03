@@ -13,8 +13,8 @@ Work top to bottom. Every fix must leave all 9 LiDAR captures no worse
 
 | # | Problem | Seen on | Cause | Fix | Status |
 |---|---|---|---|---|---|
-| 01a | Hall and room 2 merged through a 1.2 m doorway | C `c_home_01` | Rooms split only at openings < 0.9 m | Door lintels split rooms (kept out of the enclosure test) | Works on synthetic; in progress on real data |
-| 01b | Kitchen cut off at the counter front | C `c_home_01` | Counter front (0.1–1.1 m) passes the wall test | First try, "walls reach 1.5 m", **broke A** (low scans): replace with the counter's shape (face capped by a hollow-under top at 0.82–1.05 m) | In progress |
+| 01a | Hall and room 2 merged through a 1.2 m doorway | C `c_home_01` | Rooms split only at openings < 0.9 m | Door lintels split rooms (kept out of the enclosure test) | **Done** (`fix01-after`) |
+| 01b | Kitchen cut off at the counter front | C `c_home_01` | Counter front (0.1–1.1 m) passes the wall test | First try, "walls reach 1.5 m", **broke A** (low scans); replaced by the counter's shape (face capped by a hollow-under top at 0.82–1.05 m) | **Done** (`fix01-after`) |
 | 01c | Hall's north-west corner cut off as its own room | C `c_home_01` | Strip never scanned below ~2 m (capture) | Treat ceiling-seen cells as observed, or report the side as unobserved | Open |
 | 02 | Two scans of the damaged room disagree: walls by 3–15 cm, ceiling by 8.8 cm | C `c_damage_01/02` | Not traced yet | Trace first (Phase 3) | Open (repeatability gate) |
 | 03 | Intervals overconfident: ±3 cm ranges that don't overlap between repeat scans | C damage room | Intervals from surface spread only, no capture-to-capture error | Calibrate against repeats and ground truth (Phase 6) | Open |
@@ -26,7 +26,8 @@ Work top to bottom. Every fix must leave all 9 LiDAR captures no worse
 
 ## Fix 01: room segmentation on the friend's whole-home scan (C, `c_home_01`)
 
-Status: **declared, fix not yet shipped.** Before: tag `fix01-before`.
+Status: **shipped.** Before: tag `fix01-before`. After: tag `fix01-after`.
+Regenerate either: `git checkout <tag> && uv run scripts/lidar_summary.py && uv run scripts/score_rooms.py`.
 
 ### Failing number
 
@@ -114,4 +115,47 @@ lintel; a room with a base cabinet along one wall).
 
 ### Result
 
-Not shipped yet.
+**ROOMS FOUND: 2/4 → 4/4, no merged rooms** (target met).
+
+| Labelled room | Before | After |
+|---|---|---|
+| hall | r1, 4.2 m², IoU 0.11, missed | r3, 16.7 m², IoU 0.59, found |
+| room2 | r3 (merged with hall), 30.1 m², IoU 0.47, missed | r4, 14.9 m², IoU 0.85, found |
+| room1 | r4, 13.6 m², IoU 0.77 | r5, 13.3 m², IoU 0.76 |
+| kitchen | r2, 8.5 m², IoU 0.60 | r2, 7.8 m², IoU 0.60 |
+| fragments | none | r1, 4.2 m² (hall's unscanned north-west corner, cause 3) |
+
+Against the predictions:
+
+- **4/4, no merges: as predicted.** Hall IoU 0.59, inside the predicted 0.55–0.65; the
+  `r1` fragment remains, as predicted (cause 3 is a capture gap, fix map 01c).
+- **Kitchen area: prediction wrong.** Predicted ≈ 10.5 m², got 7.8 m². The east wall did
+  move from the counter front to the tiled wall (u ≈ 1.7–2.0 m), but the "before" 8.5 m²
+  also contained a strip of the hall (v ≈ -3.7 to -2.6 m) that the hall now owns. The
+  prediction added the counter strip without subtracting that.
+
+What went wrong on the way (both caught by the 9-capture check, before committing a
+result):
+
+1. **"Walls must reach 1.5 m" broke dataset A.** In `c00a170fe1` 99% of points are below
+   1.69 m (the phone never pointed up), so real walls failed it: 3 rooms → 0, and
+   `1a8384c3f6` 5 → 3. Replaced by the counter's shape, with a test that a wall scanned
+   only to 1.3 m survives.
+2. **Lintels inside the enclosure test made a phantom room** in B (`42444946`, +3.4 m²)
+   and merged rooms in `c7d28f72c6`: rays stopped at lintels, so floor seen through doors
+   looked enclosed. That side effect had also inflated the hall to 24 m² (IoU 0.78), which
+   would have overstated this fix. Lintels now only split rooms.
+
+### After on every LiDAR capture
+
+| Capture | Rooms before → after | Verdict |
+|---|---|---|
+| B `42444946`, `42444949`, `42444950` | 1 → 1, areas within 0.4 m² | unchanged |
+| C `c_damage_01`, `c_damage_02` | 1 → 1, 12.9 → 13.1, 12.4 → 12.4 m² | unchanged |
+| C `c_home_01` | 4 (2 right) → 5 (4 right + 1 fragment) | improved |
+| A `c00a170fe1` | 3 → 2: a 2.9 m² sliver in a notch of r1 joins r1 | plausible, unverified |
+| A `c7d28f72c6` | 6 → 5: the 2.8 m² "room" with a 2.28 m ceiling is gone; two boundaries move ~1 m | plausible, unverified |
+| A `1a8384c3f6` | 5 → 6: a 13.3 m² room splits 7.0 + 5.8 at a lintel | plausible, unverified |
+
+A has no ground truth or labels, so its changes are judged by eye from the plans, not
+scored. They should be checked against A's video before the benchmark.

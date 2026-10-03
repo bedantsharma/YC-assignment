@@ -32,6 +32,10 @@ Read this first when resuming. Details are in the phase sections below.
     APIs yes (disclose, keep a local fallback); head-to-head on our own data, i.e. dataset
     C: our LiDAR vs Polycam on 2 rooms, both vs tape. So C's Polycam export is now needed
     for the head-to-head too
+- **Fix loop:** [docs/fix_loop.md](docs/fix_loop.md) holds the fix map (work top to bottom)
+  and each entry. Fix 01 shipped (`fix01-before` → `fix01-after`): `c_home_01` rooms found
+  2/4 → 4/4 (door lintels split rooms; counter fronts no longer walls). Next on the map:
+  01c (hall's unscanned corner), 02 (damage-room repeatability)
 - **Not yet validated:** no LiDAR number has been compared with ground truth yet; intervals
   are provisional (±1.645σ from surface spreads) until Phase 6 calibrates them
 - **First repeatability look (C damage room, two scans, by eye, before Phase 3):** walls
