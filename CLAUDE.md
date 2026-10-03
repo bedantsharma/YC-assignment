@@ -10,13 +10,16 @@ land); datasets: `docs/data_plan.md`. Deadline: Mon Oct 5, 10:00 IST.
 
 - `uv sync`: install dependencies (Python 3.12, managed by uv; never use pip directly)
 - `uv add <pkg>` / `uv add --dev <pkg>`: add dependencies
-- `uv run ruff check --fix . && uv run ruff format .`: run before every commit
+- `uv run ruff check --fix . && uv run ruff format . && uv run pytest`: run before every commit
 - `uv run scripts/fuse_topdown.py`: fuse all captures, write `outputs/topdown_overview.png`
 - `scripts/fetch_arkitscenes.sh [visit_id] [n_laser]`: download an ARKitScenes venue
 
 ## Layout
 
-- `src/floorplan/`: the pipeline package
+- `src/floorplan/`: the pipeline package; `output.py` defines the result type and JSON writer
+  (every number is a `Measurement` with an interval)
+- `tests/`: pytest tests
+- `COMPLIANCE.md`: requirement → file → artifact → status; update a row whenever work lands
 - `scripts/`: exploration and one-off analysis scripts
 - `data/raw/<capture-id>/`: Cozmo's Stray Scanner captures, dataset A (gitignored)
 - `data/arkitscenes/`: ARKitScenes venue 421337 + laser scan, dataset B (gitignored)

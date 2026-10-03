@@ -31,10 +31,10 @@ including sleep. Scope and scoring are in [requirements.md](requirements.md).
 Why first: cheap, guaranteed marks (compliance 10%, capture route 5%), and the output format fixes
 the interface every later phase writes to.
 
-- [ ] JSON output format (our own; no published schema, and no formal JSON Schema file):
+- [x] JSON output format (our own; no published schema, and no formal JSON Schema file):
       rooms, walls, openings, surfaces, damage, flags, scope items; every number as
-      `{value, lo, hi, unit}`. Fields documented in the README
-- [ ] Compliance matrix skeleton (`COMPLIANCE.md`), every row "not started"
+      `{value, lo, hi, unit}`. Fields documented in the README; `src/floorplan/output.py`
+- [x] Compliance matrix (`COMPLIANCE.md`): 64 requirements, statuses updated as work lands
 - [ ] Capture protocol draft (`docs/capture_protocol.md`) for all three tiers, including
       the doorway-overlap photo rule, plus the device matrix
 - [ ] CLI skeleton: `floorplan run <capture_dir> --tier {lidar,video,photo} --out outputs/`

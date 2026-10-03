@@ -72,11 +72,39 @@ uv run scripts/fuse_topdown.py
 scripts/fetch_arkitscenes.sh [visit_id] [n_laser_stations]
 ```
 
+## Output format
+
+Each capture produces `plan.json` (our own format; there is no published schema), written by
+`floorplan.output.write_json`, which refuses to write a result with broken cross-references.
+Lengths are metres, areas m², plan coordinates are metres in a top-down frame.
+
+**Every measured number** is `{"value", "lo", "hi", "unit"}`: the estimate and its
+confidence interval (coverage given by `interval_coverage`, default 0.9).
+
+| Field | Contents |
+|---|---|
+| `format_version` | Output format version (currently `0.1`) |
+| `capture` | `id`, `tier` (`lidar` / `video` / `photo`), `source` path, `device` |
+| `rooms[]` | `id`, `label`, `polygon` (corner points), `floor_area`, `ceiling_height`, `walls[]`, `openings[]` |
+| `rooms[].walls[]` | `id`, `start`, `end` (points), `length`, `height` |
+| `rooms[].openings[]` | `id`, `wall_id`, `kind` (`door` / `window` / `passage`), `width`, `height`, `connects_to` (room id) |
+| `adjacency[]` | `room_a`, `room_b`, `opening_id`: which rooms connect, and through which opening |
+| `surfaces[]` | `id`, `room_id`, `kind` (`wall` / `floor` / `ceiling`), `wall_id`, `area` |
+| `damage[]` | `id`, `surface_id`, `damage_class`, `score` (detector confidence 0–1), `region` (u0, v0, u1, v1 metres on the surface), `area` |
+| `flags[]` | Concealed-damage flags: `id`, `rule_id`, `rule` (text of the rule that fired), `surface_id`, `damage_ids` |
+| `scope[]` | Repair line items: `id`, `surface_id`, `action`, `quantity`, `reason_ids` (damage / flag ids) |
+| `footprint_area` | Whole-property floor area |
+| `drift_correction` | Drift-correction method used (multi-room captures), or `null` |
+| `interval_coverage` | Target coverage of every interval (0.9 = 90%) |
+| `timing_s` | Seconds per pipeline stage |
+| `warnings` | Anything the pipeline wants a human to know (e.g. "ceiling not observed") |
+
 ## Development
 
 ```bash
 uv run ruff check --fix .   # lint
 uv run ruff format .        # format
+uv run pytest               # tests
 ```
 
 ## Documents
