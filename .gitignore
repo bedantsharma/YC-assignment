@@ -29,3 +29,4 @@ dataset/
 
 # Gemini damage responses: the record of a hosted model run (small JSON, committed)
 !data/damage_cache/
+.claude/worktrees/

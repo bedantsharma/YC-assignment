@@ -41,12 +41,17 @@ Step by step for a non-engineer, with pictures of the results:
 ./setup.sh
 ```
 
-```bash
-./run.sh <capture folder or video file> --damage
-```
+Then one line per capture, depending on what the phone recorded (drag the file or folder
+from Finder onto the Terminal window to type its path):
+
+| Capture | Command |
+|---|---|
+| LiDAR scan (Stray Scanner zip or folder) | `./run.sh ~/Downloads/<recording>.zip --damage` |
+| Video (one `.MOV` per room) | `./run.sh ~/Downloads/IMG_1234.MOV --frames 60 --damage` |
+| Photos (a folder with one subfolder per room) | `./run.sh ~/Downloads/MyHome --damage` |
 
 `setup.sh` installs uv and everything else once (`--lite`: LiDAR tier only); `run.sh` runs
-one capture and opens its plan.
+one capture and opens its plan; `uv run floorplan check` says whether each tier is ready.
 
 ## Setup
 

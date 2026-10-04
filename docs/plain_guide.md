@@ -27,7 +27,7 @@ How to film or photograph a room, step by step: `docs/capture_protocol.md` (two 
 For damage: stand about 1 metre from it and hold the phone still for 3 seconds (video or
 scan), or take one close photo and put it in that room's folder.
 
-## 3. Running it: four steps
+## 3. Running it
 
 You type (or paste) each line below into the **Terminal** app and press Return.
 To open Terminal: press Cmd + Space, type `Terminal`, press Return.
@@ -41,26 +41,69 @@ space), drag the project folder from Finder into the Terminal window, press Retu
 ./setup.sh
 ```
 
-**Step 3. Put the capture on the Mac.** AirDrop the Stray Scanner folder, the video file
-or the photo folders to the Mac. Photos: make one folder per room (named after the room,
-e.g. `Kitchen`), all inside one folder (e.g. `MyHome`).
+**Step 3. Run your capture.** Pick the recipe for what the phone recorded. In each one,
+"drag X onto the Terminal window" means: find X in Finder and drop it into the Terminal
+window, which types its full location for you.
 
-**Step 4. Run it** (one line per capture). Type `./run.sh `, then drag the capture (folder
-or video file) onto the window, then add ` --damage` and press Return:
+### A. A LiDAR scan (Stray Scanner app, iPhone Pro)
 
-```
-./run.sh ~/Downloads/MyScan --damage
-```
+1. On the iPhone, open **Stray Scanner**, open the recording, tap **Share**, choose this
+   Mac. It arrives in **Downloads**, usually as a `.zip` file. Do not unzip it.
+2. In Terminal type `./run.sh ` (with the space at the end), drag the `.zip` (or the
+   recording folder) onto the Terminal window, type ` --damage`, press Return:
+   ```
+   ./run.sh ~/Downloads/2026-10-05_101500.zip --damage
+   ```
+3. Wait about 1–3 minutes. The floor plan opens by itself.
 
-When it finishes, the floor plan picture opens by itself. Everything is saved in the
-`outputs` folder, in a folder named after the capture.
+### B. A video (Camera app, any iPhone 15 or newer)
 
-**How long it takes:** a LiDAR scan takes under a minute. Video and photos need a large
-AI model. The tool sends the images to Kaggle (a free online computer with a strong
-graphics card), which takes about 10 minutes. With no internet it runs the model on this
-Mac instead: slower (20 to 40 minutes), but it splits the work into small pieces so the
-Mac never runs out of memory. Damage detection asks Google's Gemini model over the
-internet, and uses a small model on the Mac when there is no internet.
+1. On the iPhone, in **Photos**, select the video, tap **Share > Options**, switch on
+   **All Photos Data**, then AirDrop it to this Mac. It arrives in **Downloads** as
+   `IMG_1234.MOV`.
+2. In Terminal type `./run.sh `, drag the `.MOV` file onto the window, type
+   ` --frames 60 --damage`, press Return:
+   ```
+   ./run.sh ~/Downloads/IMG_1234.MOV --frames 60 --damage
+   ```
+   For a video of several rooms in one clip use `--frames 90` instead of `--frames 60`.
+   One clip per room is best: run this line once for each clip.
+3. Wait about 5–10 minutes (it uses Kaggle over the internet; it prints what it is doing).
+   The floor plan opens by itself.
+
+### C. Photos (Camera app, any iPhone 15 or newer)
+
+1. In Finder, open **Downloads**, make a new folder (**File > New Folder**) called
+   `MyHome`, and inside it one folder per room, named after the room: `Kitchen`,
+   `Bedroom`, and so on.
+2. On the iPhone, AirDrop **one room's photos at a time** (Share > Options > **All Photos
+   Data** on). They arrive loose in Downloads: drag them into that room's folder before
+   sending the next room. A close-up of damage goes in the folder of the room it is in.
+3. In Terminal type `./run.sh `, drag the `MyHome` folder (not a room folder) onto the
+   window, type ` --damage`, press Return:
+   ```
+   ./run.sh ~/Downloads/MyHome --damage
+   ```
+4. Wait about 5–10 minutes. The plan opens by itself, one room per folder.
+
+### Where the results are
+
+Everything is saved in the project's `outputs` folder, in a folder named after the
+capture (for example `outputs/MyHome_photo/`): `plan.png` (the picture), `plan.json` (the
+numbers) and `damage/` (the photos with the damage outlined). If something goes wrong,
+the last lines in Terminal say what; [walkin_runbook.md](walkin_runbook.md) lists the
+usual fixes.
+
+**Check before you start:** `uv run floorplan check` says, for each kind of capture,
+whether this Mac is ready (internet, accounts, disk space).
+
+**How long it takes, and what needs internet:** a LiDAR scan runs entirely on this Mac,
+in about a minute (plus 1–2 minutes for damage). Video and photos need a large AI model
+(Pi3X). The tool sends the frames to Kaggle (a free online computer with a strong
+graphics card) and gets the result back, about 5 minutes in all. That model needs more
+memory than a 16 GB Mac has, so without internet video and photos cannot run here (on a
+bigger computer they run locally, slowly). Damage detection asks Google's Gemini over the
+internet and uses a small model on the Mac when there is no internet.
 
 ## 4. Reading the results
 
