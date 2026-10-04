@@ -1,0 +1,37 @@
+{
+  "capture": "ARKitScenes venue 421337 (dataset B): scans 42444946, 42444949, 42444950; Faro laser station 170078",
+  "source": "Architect's measurements of the cropped laser cloud (docs/laser_measurement_sheet.md), drawn in ArchiCAD; files in data/gt/arkitscenes_421337_source/ (plan PDF, wall schedule, components). Given by the user on Oct 4, 2026. Transcribed by hand from her labels, never from our output.",
+  "caveats": [
+    "The architect says the laser reconstruction was hard to read and some values are her best guess: treat as approximate ground truth",
+    "UNRESOLVED: the plan's dimension lines appear to run along the OUTER faces of 0.13 m walls (scaled off the PDF, the interior long side is about 4.39 m, not 4.647). Our LiDAR measures inside faces. Both readings are kept until she confirms which faces she dimensioned",
+    "Wall height 3.100 m is the ArchiCAD wall height parameter, not four measured floor-to-ceiling points as the sheet asked",
+    "One corner is 99 degrees (top right on her plan), not square"
+  ],
+  "units": "metres",
+  "wall_thickness_m": 0.13,
+  "as_labelled": {
+    "bottom_long_side": 4.647,
+    "right_side": 3.824,
+    "top_side": 3.5,
+    "top_right_step": 0.549,
+    "left_side_segments_bottom_to_top": [0.802, 2.01, 1.168],
+    "left_step": 0.228,
+    "wall_height": 3.1
+  },
+  "interior_if_labels_are_outer_faces": {
+    "bottom_long_side": 4.387,
+    "right_side": 3.564,
+    "note": "label minus two wall thicknesses; the steps and short segments are not converted"
+  },
+  "openings": [
+    {"kind": "door", "where": "top wall, middle", "width_m": 0.914},
+    {"kind": "door", "where": "bottom wall, right", "width_m": 0.9},
+    {"kind": "door", "where": "right wall, bottom", "width_m": 0.711},
+    {"kind": "window", "where": "top wall, left", "width_m": 0.9},
+    {"kind": "window", "where": "top wall, right", "width_m": 0.9}
+  ],
+  "wall_schedule_lengths_m": {
+    "SW-002": 3.85, "SW-003": 0.83, "SW-004": 0.34, "SW-005": 2.12, "SW-006": 0.42,
+    "SW-007": 1.28, "SW-011": 3.51, "SW-012": 0.21, "SW-013": 0.63, "SW-014": 4.65
+  }
+}

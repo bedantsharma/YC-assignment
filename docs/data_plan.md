@@ -16,7 +16,7 @@ Three data sources, each covering gaps the others leave. Scoring weights refer t
 The laser point cloud is not a list of wall lengths, and measuring it with our own wall
 detector would grade our code with itself. Instead we measure B's walls, ceiling height, and
 openings **once, by hand**, from the laser cloud (picking corner points in a viewer), and
-store them in `data/gt/arkitscenes_421337.yaml`. That file is then ground truth like any tape
+store them in `data/gt/arkitscenes_421337.json`. That file is then ground truth like any tape
 sheet.
 
 In practice the measuring is done by an architect in her own CAD software (ReCap / Revit,
