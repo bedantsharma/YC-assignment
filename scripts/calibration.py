@@ -80,7 +80,8 @@ def checks(key: str, room: dict) -> list[tuple[str, float, dict]]:
     return out
 
 
-def main() -> None:
+def coverage() -> tuple[dict[str, dict[str, list]], list[str]]:
+    """Per tier and check: (inside, half-width, error) rows; and the misses as text."""
     import json
 
     per_tier: dict[str, dict[str, list]] = {}
@@ -105,15 +106,26 @@ def main() -> None:
                     got = f"{m['value']:.2f} [{m['lo']:.2f}, {m['hi']:.2f}]"
                     misses.append(f"{tier:5} {p.parent.parent.name}/{p.parent.name:28} {key:13} "
                                   f"{kind:7} truth {truth:.2f} got {got}")  # fmt: skip
-    print("| Tier | Check | Inside the 90% interval | Mean half-width | Mean abs. error |")
-    print("|---|---|---|---|---|")
+    return per_tier, misses
+
+
+def table(per_tier: dict[str, dict[str, list]]) -> str:
+    lines = ["| Tier | Check | Inside the 90% interval | Mean half-width | Mean abs. error |",
+             "|---|---|---|---|---|"]  # fmt: skip
     for tier, groups in per_tier.items():
         for group, rows in groups.items():
             ins = sum(r[0] for r in rows)
             unit = "m²" if group == "area" else "m"
-            print(f"| {tier} | {group} | {ins} of {len(rows)} ({100 * ins / len(rows):.0f}%) | "
-                  f"{np.mean([r[1] for r in rows]):.2f} {unit} | "
-                  f"{np.mean([abs(r[2]) for r in rows]):.2f} {unit} |")  # fmt: skip
+            share = f"{ins} of {len(rows)} ({100 * ins / len(rows):.0f}%)"
+            lines.append(f"| {tier} | {group} | {share} | "
+                         f"{np.mean([r[1] for r in rows]):.2f} {unit} | "
+                         f"{np.mean([abs(r[2]) for r in rows]):.2f} {unit} |")  # fmt: skip
+    return "\n".join(lines)
+
+
+def main() -> None:
+    per_tier, misses = coverage()
+    print(table(per_tier))
     print("\nMisses (sides and ceilings):")
     print("\n".join(misses) or "none")
 
