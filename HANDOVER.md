@@ -5,8 +5,8 @@ Cozmo AI take-home: iPhone captures → dimensioned floor plans with intervals. 
 `CLAUDE.md` (commands, layout, data conventions, **Kaggle rules**), the status section of
 `ROADMAP.md`.
 
-Git: 16 local commits ahead of `origin/main`, **not pushed** (push only when the user
-asks). 80 tests pass. Every output number is `{value, lo, hi, unit}`.
+Git: pushed through `2fa5f9e` (Sun ~17:00); later commits are local (push only when the
+user asks). 80 tests pass. Every output number is `{value, lo, hi, unit}`.
 
 ## Headline: ground truth is in, and our walls are short
 
