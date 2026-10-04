@@ -1,5 +1,6 @@
-"""Score SpatialLM layouts (Kaggle bake-off round 3) on the damage room against our LiDAR
-plan and Polycam: room width and depth from the walls longer than 2 m (wall lines are
+"""Score SpatialLM layouts (Kaggle bake-off round 3) on the damage room against the ground
+truth (data/gt/home_c.json: bedroom 11' x 15', ceiling 11'), next to our LiDAR plan:
+room width and depth from the walls longer than 2 m (wall lines are
 rotated to the dominant wall direction), wall height, doors and windows.
 
 Usage: uv run scripts/score_spatiallm.py [outputs/kaggle_lidar_bakeoff]
@@ -47,13 +48,18 @@ def room_dims(walls: list) -> tuple[float, float, float] | None:
 def main() -> None:
     root = Path(sys.argv[1] if len(sys.argv) > 1 else "outputs/kaggle_lidar_bakeoff")
     poly = json.loads(Path("data/gt/home_c_polycam.json").read_text())["rooms"]["bedroom_2"]
-    print(f"Polycam bedroom 2 (damage room): {poly['width']} x {poly['depth']} m")
+    gt = json.loads(Path("data/gt/home_c.json").read_text())["rooms"]["bedroom"]
+    gl, gs = max(gt["width_m"], gt["depth_m"]), min(gt["width_m"], gt["depth_m"])
+    gh = gt["measured"]["ceiling_height_m"]
+    print(f"ground truth {gl:.2f} x {gs:.2f} m, ceiling {gh:.2f}; "
+          f"Polycam {poly['width']} x {poly['depth']} m")  # fmt: skip
     for cap in ("c_damage_01", "c_damage_02"):
         plan = json.loads(Path(f"outputs/{cap}_lidar/plan.json").read_text())["rooms"][0]
         p = np.asarray(plan["polygon"])
         ours = sorted(np.ptp(p, axis=0).round(2).tolist(), reverse=True)
-        print(f"{cap}: our LiDAR {ours[0]:.2f} x {ours[1]:.2f}, "
-              f"ceiling {plan['ceiling_height']['value']:.2f}")  # fmt: skip
+        print(f"{cap}: our LiDAR {ours[0]:.2f} x {ours[1]:.2f}: vs truth "
+              f"{100 * (ours[0] - gl):+4.0f} / {100 * (ours[1] - gs):+4.0f} cm, ceiling "
+              f"{plan['ceiling_height']['value']:.2f}")  # fmt: skip
         for f in sorted(root.glob(f"{cap}__*.txt")):
             lay = parse(f)
             dims = room_dims(lay["wall"])
@@ -64,10 +70,9 @@ def main() -> None:
                 continue
             x, y, h = dims
             long_, short = max(x, y), min(x, y)
-            print(f"  {tag:28} {long_:.2f} x {short:.2f} (vs ours "
-                  f"{long_ - ours[0]:+.2f} / {short - ours[1]:+.2f}, vs Polycam "
-                  f"{long_ - poly['width']:+.2f} / {short - poly['depth']:+.2f}), "
-                  f"wall height {h:.2f}, {len(lay['door'])} doors, "
+            print(f"  {tag:28} {long_:.2f} x {short:.2f}: vs truth "
+                  f"{100 * (long_ - gl):+4.0f} / {100 * (short - gs):+4.0f} cm, height "
+                  f"{h:.2f} ({100 * (h - gh):+.0f} cm), {len(lay['door'])} doors, "
                   f"{len(lay['window'])} windows")  # fmt: skip
 
 

@@ -45,33 +45,35 @@ point clouds reconstructed from video, SpatialLM's zero-shot wall F1@0.25 is 68-
   depth, and whether doors and windows are found. Tape measurements replace both
   references when they arrive.
 
-### Results (round 3, run 1)
+### Results (round 3, runs 1-3), against the ground truth
 
-`uv run scripts/score_spatiallm.py`. Damage room only: the whole-home cloud (3.4 M points)
-and every Llama-1B run ran **out of GPU memory** on the T4 (attention without flash
-attention needs 5-13 GB more), so 6 of 18 runs produced a layout.
+`uv run scripts/score_spatiallm.py`. Ground truth: the architect's drawing, bedroom (the
+damage room) 4.57 × 3.35 m, ceiling 11 ft = 3.35 m (`data/gt/home_c.json`).
 
-| Scan | Seed | SpatialLM room (m) | vs our LiDAR | vs Polycam | Wall height | Doors / windows |
-|---|---|---|---|---|---|---|
-| `c_damage_01` (ours 4.24 × 3.30) | 0 | 4.67 × 3.42 | +43 / +12 cm | +14 / +15 cm | 3.58 | 4 / 1 |
-| | 1 | 4.70 × 3.50 | +46 / +20 cm | +17 / +23 cm | 3.54 | 3 / 3 |
-| | 2 | 4.65 × 3.40 | +41 / +10 cm | +12 / +13 cm | 3.54 | 2 / 3 |
-| `c_damage_02` (ours 4.26 × 3.08) | 0 | broken outline (16 walls, several of zero length) | | | 3.52 | 2 / 1 |
-| | 1 | broken outline (8 walls) | | | 3.46 | 2 / 2 |
-| | 2 | 4.58 × 3.45 | +32 / +37 cm | +4 / +18 cm | 3.54 | 2 / 2 |
+Runs: run 1 used one GPU (whole home and Llama-1B out of memory); run 2 split the model
+over the two T4s (memory fixed, but the point encoder hit device asserts on the second
+GPU); run 3 made that GPU current for the encoder: all 6 Llama runs work. The whole-home
+cloud still fails: a single 13 GB allocation exceeds one T4 (needs per-room crops).
 
-Polycam: 4.53 × 3.27 m; our ceiling 3.35-3.36 m.
+| Scan | Model, seed | Room (m) | vs truth (cm) | Wall height vs 3.35 m | Doors / windows (truth 1 / 1) |
+|---|---|---|---|---|---|
+| `c_damage_01` | **our LiDAR** | 4.24 × 3.30 | **−33 / −5** | 3.36 (+1) | not built |
+| | Llama s0 / s1 / s2 | 4.62 × 3.48, 4.65 × 3.50, 4.68 × 3.42 | +5/+12, +8/+15, +10/+7 | +35, +27, +33 | 1/1, 2/3, 1/1 |
+| | Qwen s0 / s1 / s2 | 4.67 × 3.42, 4.70 × 3.50, 4.65 × 3.40 | +10/+7, +13/+15, +8/+5 | +23, +19, +19 | 4/1, 3/3, 2/3 |
+| `c_damage_02` | **our LiDAR** | 4.26 × 3.08 | **−31 / −27** | 3.35 (0) | not built |
+| | Llama s0 / s1 / s2 | broken (186 walls), 6.62 × 3.52, 6.58 × 3.42 | –, +205/+17, +200/+7 | –, +5, +7 | –, 1/1, 1/1 |
+| | Qwen s0 / s1 / s2 | broken, broken, 4.58 × 3.45 | –, –, +0/+10 | –, –, +19 | –, –, 2/2 |
 
-- **Dimensions:** where SpatialLM gives a room, it is *larger* than Polycam by 4-23 cm,
-  while ours is smaller by up to 29 cm. It puts walls near the outer copy of the doubled
-  walls, we use the inner one; Polycam sits in between. The tape decides.
-- **Height:** 3.46-3.58 m vs our ceiling 3.35 m (+11 to +23 cm on every run).
-- **Reliability:** 2 of 6 outlines are broken, and seeds disagree by up to 8 cm on the same
-  scan and on the number of doors (2-4) and windows (1-3). Our backend is deterministic.
-- **Openings:** it does propose doors and windows at plausible places (the large window
-  wall, the entrance), which we have not built yet (Phase 5).
+- **Walls:** when SpatialLM gives a sane room (7 of 12 runs), it is within +0 to +15 cm of
+  the truth on both sides, much closer than our −5 to −33 cm. It places walls at the outer
+  copies of the doubled walls; the truth is there too.
+- **Failures:** 5 of 12 runs are unusable: 3 broken outlines, 2 that swallow the entrance
+  corridor (+2 m). All bad runs are on `c_damage_02`.
+- **Height:** +5 to +35 cm too tall; our ceiling is within 1 cm.
+- **Doors/windows:** Llama s0 and s2 on `c_damage_01` get exactly 1 door and 1 window;
+  other runs over-detect.
 
-**Verdict so far:** not a replacement for our wall geometry (unstable, no better against
-the only other reference, cannot run the whole home on a T4). Possibly useful for doors and
-windows, if several seeds are voted. Next steps if pursued: crop the whole-home cloud per
-room (or a smaller voxel budget) to fit the T4; vote over seeds.
+**Verdict:** SpatialLM is not usable alone (5 of 12 runs broken, heights off), but it shows
+our outlines sit on the wrong copy of the wall: the fix belongs in our backend (choose the
+outer face of a doubled wall, and don't treat cabinets as wall). SpatialLM stays a
+candidate for doors and windows, voted over seeds.
