@@ -1,0 +1,52 @@
+{
+ "model": "gemini-2.5-flash",
+ "prompt_version": "v1",
+ "image_sha1": "309ec3c8c1cb223840666f9c7a5c6102cd676293",
+ "raw": "[\n  {\n    \"label\": \"water_stain\",\n    \"box_2d\": [608, 28, 648, 59],\n    \"confidence\": 0.9,\n    \"note\": \"small water stain on lower left\"\n  },\n  {\n    \"label\": \"water_stain\",\n    \"box_2d\": [706, 62, 752, 104],\n    \"confidence\": 0.9,\n    \"note\": \"small water stain on lower left\"\n  },\n  {\n    \"label\": \"hole\",\n    \"box_2d\": [372, 434, 628, 570],\n    \"confidence\": 1.0,\n    \"note\": \"irregular hole in the wall exposing electrical wires\"\n  },\n  {\n    \"label\": \"exposed_wiring\",\n    \"box_2d\": [420, 440, 600, 558],\n    \"confidence\": 1.0,\n    \"note\": \"red, blue, and yellow/black electrical wires visible inside the hole\"\n  }\n]",
+ "items": [
+  {
+   "label": "water_stain",
+   "box_2d": [
+    608,
+    28,
+    648,
+    59
+   ],
+   "confidence": 0.9,
+   "note": "small water stain on lower left"
+  },
+  {
+   "label": "water_stain",
+   "box_2d": [
+    706,
+    62,
+    752,
+    104
+   ],
+   "confidence": 0.9,
+   "note": "small water stain on lower left"
+  },
+  {
+   "label": "hole",
+   "box_2d": [
+    372,
+    434,
+    628,
+    570
+   ],
+   "confidence": 1.0,
+   "note": "irregular hole in the wall exposing electrical wires"
+  },
+  {
+   "label": "exposed_wiring",
+   "box_2d": [
+    420,
+    440,
+    600,
+    558
+   ],
+   "confidence": 1.0,
+   "note": "red, blue, and yellow/black electrical wires visible inside the hole"
+  }
+ ]
+}

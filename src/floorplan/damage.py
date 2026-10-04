@@ -258,6 +258,7 @@ def _call_gemini(data: bytes, model: str) -> str:
         config=types.GenerateContentConfig(
             temperature=0.0,
             response_mime_type="application/json",
+            automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
         ),
     )
     return response.text or "[]"
