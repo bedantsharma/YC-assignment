@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Regenerate every reported number from the raw captures (README "Reproduce").
+# Regenerate every reported number from the raw captures (README "Data").
 #
 # LiDAR: all 9 captures run live. Video and photo: the reconstruction model runs on Kaggle
 # (kaggle/video_runs, kaggle/cache_runs); this replays its cached output (outputs/*/

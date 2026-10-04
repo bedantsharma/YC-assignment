@@ -1,4 +1,4 @@
-"""Staged hole in home C's bedroom vs our damage output (LiDAR tier).
+"""Staged hole in home C's bedroom vs our damage output (every tier).
 
 Truth (data/gt/home_c.json, the friend's tape): 2.5 in hole, centre 4.66 ft up, 7.5 ft
 from the right-hand wall seen facing the damaged wall. Our wall coordinates: u along the
