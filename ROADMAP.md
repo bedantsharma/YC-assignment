@@ -3,103 +3,56 @@
 Deadline: **Mon Oct 5, 10:00 IST**. Start: Sat Oct 3, ~12:30 IST. About 45 working hours
 including sleep. Scope and scoring are in [requirements.md](requirements.md).
 
-## Status (Sun Oct 4, ~14:00 IST)
-
-**Update Sun ~14:00:** friend sent Camera-app videos (damage room ×2, whole house) and
-Polycam screenshots ([docs/home_c_new_captures.md](docs/home_c_new_captures.md)). **No
-model runs on the laptop any more (user)**: Kaggle runs, the laptop replays cached
-reconstructions. Video tier on the damage-room clips: within 5 cm of LiDAR (60 frames).
-Whole-house clip fails (windows fold rooms); chain links fixed (`chunks.fit_shared`).
-Polycam is larger than our LiDAR on every dimension (6-57 cm): doubled walls from drift,
-cabinets. **Ground truth arrived (architect's drawing, 4 rooms): `data/gt/home_c.json`,
-compare with `uv run scripts/compare_gt_c.py`. Polycam within 12 cm of it; our LiDAR
-11-53 cm short, areas 11-30% low, all outside our intervals: worst failing gate.** LiDAR model survey + SpatialLM bake-off
-([docs/lidar_model_research.md](docs/lidar_model_research.md)): unstable, larger than
-Polycam, OOM on the whole home; not adopted.
+## Status (Sun Oct 4, ~17:00 IST)
 
 Read this first when resuming (after [HANDOVER.md](HANDOVER.md) and
 [NEXT-SESSION.md](NEXT-SESSION.md)). Details are in the phase sections below.
 
-### Progress at a glance (~30 h to the deadline)
+**Headline:** home C's ground truth is in (`data/gt/home_c.json`), and
+`uv run scripts/gt_table.py` ([docs/gt_comparison.md](docs/gt_comparison.md)) compares
+every method with it. Polycam is 6 cm off (median); our LiDAR tier 29 cm, every side
+short, areas −11 to −30%, truth outside our intervals in all 6 room measurements;
+ceilings within 1 cm. Everything through our plan builder is short (innermost of doubled
+walls; cabinets as wall). **Next session: the graded fix on this** (NEXT-SESSION.md §1).
+**No model runs on the laptop (user)**: Kaggle runs, the laptop replays cached outputs.
+
+### Progress at a glance (~17 h to the deadline)
 
 | Phase | Planned for | State |
 |---|---|---|
 | 0 Scaffolding | Sat 12:30 | **Done**, except device-matrix numbers (need the benchmark) |
-| 1 Data | Sat 12:30 | **Mostly done**: A, B, C's LiDAR + video in; ground truth (architect, friend's plan) not in |
-| 2 LiDAR backend | Sat 17:00 | **Done**: 9 captures run end to end |
+| 1 Data | Sat 12:30 | **Mostly done**: A, B, C in; C's ground truth, Polycam, Camera-app videos in; C's real photos arriving; B's laser measurements pending |
+| 2 LiDAR backend | Sat 17:00 | **Done**: 9 captures end to end; **walls short vs ground truth** (next fix) |
 | 3 Repeatability, drift | Sat 23:00 | **Half**: drift built + ablated (off); repeatability table and `fixloop-before` tag not done |
-| 4 Video, photo | Sun 08:00 | **Done early**: video (whole home, scale corrected); photo (per room; whole-home stitch fails, documented) |
-| 5 Openings, damage, scope | Sun 14:00 | Not started |
-| 6 Benchmark, fix loop | Sun 18:00 | Not started (needs ground truth); three practice fixes done in `docs/fix_loop.md` |
+| 4 Video, photo | Sun 08:00 | **Done with gaps**: video works on room clips, fails on the 5-min house clip; photo per room on video stills, stitch fails |
+| 5 Openings, damage, scope | Sun 14:00 | Not started (ground truth for doors, windows and the hole now in) |
+| 6 Benchmark, fix loop | Sun 18:00 | **Started**: `scripts/gt_table.py` is the benchmark on C; graded fix declared next session |
 | 7 Reports, packaging | Mon 01:00 | Not started |
 
-By score weight: walk-in (30%) can run all three tiers (photo: per room, not stitched); fix loop (25%)
-has the method rehearsed but the graded fix needs the benchmark; benchmark (15%) and
-head-to-head (10%) wait on ground truth and a Polycam export; compliance (10%), capture
-route (5%) and commit history (5%) are on track.
+By score weight: walk-in (30%) runs all three tiers (photo per room); fix loop (25%) has
+its failing gate (short walls) and evidence; benchmark (15%) has ground truth on C;
+head-to-head (10%) is currently lost to Polycam (6 vs 29 cm) until the fix lands;
+compliance (10%), capture route (5%) and commit history (5%) on track.
 
-- **Done**
-  - Phase 0 scaffolding (output format, compliance matrix, capture protocol, CLI, loaders),
-    except the device matrix numbers (see warning in Phase 0)
-  - Phase 1: datasets A and B on disk; friend's checklist sent; B's laser station checked
-    (covers all four walls); **dataset C LiDAR in**: whole-home walk
-    `data/home_c/lidar/c_home_01` (4 rooms, ~56 m², 22 s; unverified) and the staged-damage
-    room twice, `c_damage_01` / `c_damage_02` (one ~3 in hole in a wall; ~10 s each)
-  - **Phase 2: LiDAR tier runs end to end.** `uv run floorplan run <capture>` writes
-    `outputs/<id>_lidar/plan.json` + `plan.png` with an interval on every number. 61 tests
-  - Laser ground-truth package built: `uv run scripts/prepare_laser_gt.py` →
-    `outputs/laser_gt/` and `outputs/laser_scan_for_measuring.zip` (120 MB: E57, LAS, PLY,
-    overview, [measurement sheet](docs/laser_measurement_sheet.md) PDF)
-  - Phase 4: model spike + Firecrawl survey + Kaggle bake-off round 1
-    ([docs/model_research.md](docs/model_research.md)): Pi3X wins on geometry (cameras 5×
-    more accurate), MapAnything on license. **User chose Pi3X (Sun 00:00)**, MapAnything
-    kept behind `--model mapanything`
-  - **Video tier works on the whole home** ([docs/video_scale.md](docs/video_scale.md)):
-    Pi3X on the M4 (119 s / 10.9 GB per 30 frames), 90 frames in 4 chained windows, scale
-    bias divided out (fitted on the damage room, checked on 3 other rooms). `c_home_01`:
-    4 rooms, 57.3 [52.2, 62.5] m² vs 59.8 m² LiDAR; every room's LiDAR area and ceiling
-    inside the video interval
-  - Drift correction built and ablated, **off by default (user decision)**
-    ([docs/drift_ablation.md](docs/drift_ablation.md))
-- **Datasets: B stays (decided Sat 23:00).** B's laser scan is the only absolute ground
-  truth until C's measurements arrive, so B is kept as the benchmark dataset (not used in
-  the walk-in path). Revisit once C has tape numbers
+- **Done today (Sun)**
+  - Camera-app videos + Polycam ([docs/home_c_new_captures.md](docs/home_c_new_captures.md)):
+    damage-room clips within 5 cm of our LiDAR; house clip fails (windows fold rooms);
+    chained-window links repaired (`chunks.fit_shared`)
+  - Reconstruction cache (`mvs.py`): Kaggle runs, laptop replays
+  - LiDAR model survey + SpatialLM bake-off on two T4s
+    ([docs/lidar_model_research.md](docs/lidar_model_research.md)): not adopted
+  - Ground truth for C + `scripts/compare_gt_c.py` + `scripts/gt_table.py`
 - **Waiting on**
-  - **Friend: house measurement plan (tape dimensions of C's rooms), user asks him Sun
-    Oct 4.** When it arrives: transcribe → `data/gt/home_c.yaml` (by hand, never from our
-    output), then C becomes a second ground-truth dataset (all three tiers on one home)
-  - Friend: photos and tape measurements (Camera-app videos and Polycam screenshots arrived Sun ~11:00). Before that: not in hand: Camera-app videos, photo folders, Polycam export,
-    so the fallbacks in
-    `docs/data_plan.md` apply (B's laser is the only absolute ground truth; C's `rgb.mp4`
-    stands in for Camera-app video; stills sampled from video stand in for photo folders;
-    head-to-head at risk without a Polycam export)
-  - User to send the laser zip to the architect (girlfriend), then her measurements →
-    `data/gt/arkitscenes_421337.yaml`. She must measure blind: do not show her our plans
-  - ~~Cozmo: hosted APIs allowed? how is the head-to-head run?~~ **Answered (Siva):** hosted
-    APIs yes (disclose, keep a local fallback); head-to-head on our own data, i.e. dataset
-    C: our LiDAR vs Polycam on 2 rooms, both vs tape. So C's Polycam export is now needed
-    for the head-to-head too
-- **Fix loop:** [docs/fix_loop.md](docs/fix_loop.md) holds the fix map (work top to bottom)
-  and each entry. Fix 01 shipped (`fix01-before` → `fix01-after`): `c_home_01` rooms found
-  2/4 → 4/4 (door lintels split rooms; counter fronts no longer walls). Fix 01c
-  shipped (`fix01c-after`): the hall's unscanned strip is kept as a flagged low-confidence
-  zone (2.9 m²), hall IoU 0.79. Fix 02 (`fix02-after`): ceiling tail ripples no longer
-  picked; the damage room's three scans agree on the ceiling within 1 cm (3.35–3.36 m).
-  Its wall part failed its prediction twice and was not shipped (PR #1 closed unmerged;
-  most likely drift, see the entry)
-- **Not yet validated:** no LiDAR number has been compared with ground truth yet; intervals
-  are provisional (±1.645σ from surface spreads) until Phase 6 calibrates them
-- **Repeatability (C damage room, two scans):** ceiling **passes** after fix 02 (3.36 vs
-  3.35 m). Walls **fail**: short side 3.30 vs 3.08 m (window wall, three candidate
-  surfaces), notch 15 / 9 cm. B's three scans: ceilings 3.046–3.052 m (pass), extents
-  differ up to 0.9 m (fix map 02b, outline/segmentation, untraced). Intervals (±3 cm) are
-  overconfident (fix map 03)
+  - User: photo folders sorted by room → photo tier on Kaggle
+  - Friend (one message): original-quality files, Polycam app version + export;
+    optionally a 1-2 min eye-level house video
+  - Architect: blind laser measurements for B → `data/gt/arkitscenes_421337.yaml`
 - **Next, in order** (details: [NEXT-SESSION.md](NEXT-SESSION.md))
-  1. Openings in the LiDAR backend; Phase 5 damage
-  2. Video and photo tiers on B's `.mov` vs the laser scan (an independent home)
-  3. Photo stitching (place rooms via doorway photos), only if time is left
-  4. When ground truth arrives (B laser; C measurement plan): accuracy numbers,
-     `scripts/benchmark.py`, `fixloop-before` tag
+  1. Graded fix: walls snap to the innermost surface (tag `fixloop-before`, declare, fix,
+     `gt_table.py` before/after)
+  2. Real photo folders on Kaggle; head-to-head table (ours vs Polycam vs GT)
+  3. Openings (doors, windows) and Phase 5 damage (the bedroom hole)
+  4. Phase 7 reports and packaging
 
 ## Principles
 
@@ -151,10 +104,9 @@ Sources and how each is used: [docs/data_plan.md](docs/data_plan.md).
       `scripts/fetch_arkitscenes.sh`)
 - [x] Capture checklist written and sent to the friend
       ([md](docs/friend_capture_checklist.md), PDF)
-- [ ] **In progress:** Dataset C, friend's home on an iPhone 16 Pro (all three tiers, staged
-      damage, Polycam). LiDAR whole-home walk received (`data/home_c/lidar/c_home_01`);
-      staged-damage room twice (`c_damage_01`, `c_damage_02`); tape, videos, photos,
-      Polycam not expected
+- [ ] **In progress:** Dataset C, friend's home on an iPhone 16 Pro: LiDAR (whole home,
+      damage room ×2), Camera-app videos (damage room ×2, whole house), Polycam
+      screenshots, ground truth in; photos arriving (being sorted)
 - [x] Check B's laser station covers every wall: yes, all four walls are visible (some
       parts in furniture shadow at 1.1 m, visible at other heights); no second station needed
 - [x] Laser cloud prepared for hand measurement (`scripts/prepare_laser_gt.py`: cropped,
@@ -163,8 +115,8 @@ Sources and how each is used: [docs/data_plan.md](docs/data_plan.md).
       zip in `outputs/laser_scan_for_measuring.zip`
 - [ ] Send the zip to the architect; she measures blind (without seeing our output)
 - [ ] Her measurements → `data/gt/arkitscenes_421337.yaml`
-- [ ] Friend's house measurement plan (requested Sun Oct 4) → transcribe by hand into
-      `data/gt/home_c.yaml`; pick the held-out room
+- [x] Friend's house: architect's drawing + tape measurements → `data/gt/home_c.json`
+      (Sun Oct 4; ceiling 11 ft by user decision); held-out room still to pick
 
 Exit: all three datasets on disk, both ground-truth files complete.
 
