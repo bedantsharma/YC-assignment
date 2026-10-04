@@ -81,3 +81,13 @@ def test_chain_ignores_shared_frames_the_two_windows_place_differently():
     assert links[0].residual_m < 1e-6
     assert links[0].frames == (6, 10)
     assert np.allclose(out.view_points[30:], 0.8 * truth[30:], atol=1e-6)
+
+
+def test_chain_without_shared_confident_pixels_says_so():
+    def run(idx):
+        keep = np.zeros((len(idx), 2, 2), bool) if idx[0] else np.ones((len(idx), 2, 2), bool)
+        pts = np.zeros((len(idx), 2, 2, 3))
+        return Reconstruction(pts, keep, np.tile(np.eye(4), (len(idx), 1, 1)), 0.0, "pi3x")
+
+    with pytest.raises(RuntimeError, match="shares no confident pixels"):
+        chain(8, run, 5, 2)

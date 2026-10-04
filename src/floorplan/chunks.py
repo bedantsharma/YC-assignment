@@ -146,6 +146,11 @@ def chain(
                     both = rec.view_keep[j] & keep[i]
                     src.append(rec.view_points[j][both])
                     dst.append(pts[i][both])
+            if sum(map(len, src)) < 3:  # a similarity fit needs points; say why, not SVD
+                raise RuntimeError(
+                    f"window {k + 1} of {len(spans)} shares no confident pixels with the "
+                    "previous window: cannot chain them"
+                )
             s, r, t, res, m, used = fit_shared(src, dst)
             rec = transform(rec, s, r, t)
             links.append(Link(k, s, res, m, used))
