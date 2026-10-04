@@ -321,3 +321,13 @@ def test_merge_handles_cracks_without_length():
     crack.length, crack.length_draws = None, None  # image tiers do not measure crack length
     merged = merge([crack])
     assert merged[0].length is None
+
+
+def test_traced_crack_mask_is_a_clean_writable_bool_and_places():
+    # a polyline mask once came back read-only with True stored as 255: skeletonize raised
+    pts = [(440.0, 480.0), (840.0, 480.0)]
+    mask = damage.polyline_mask(pts, (1280, 960))
+    assert mask.flags.writeable
+    assert set(np.unique(mask.view(np.uint8))) <= {0, 1}
+    room, crack = _placed_on_w1("crack", mask, source="polyline")
+    assert crack is not None and crack.length > 0

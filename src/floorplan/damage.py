@@ -221,7 +221,9 @@ def parse_crack_items(items) -> list[dict]:
 def polyline_mask(points: list[tuple[float, float]], size: tuple[int, int]) -> np.ndarray:
     im = Image.new("1", size, 0)
     ImageDraw.Draw(im).line(points, fill=1, width=CRACK_PX, joint="curve")
-    return np.asarray(im, dtype=bool)
+    # not np.asarray(im, dtype=bool): a mode-"1" image gives a read-only array whose True
+    # bytes are 255, which skeletonize (crack length) rejects or crashes on
+    return np.asarray(im, dtype=np.uint8) > 0
 
 
 def _boxes_touch(a, b) -> bool:
