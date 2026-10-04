@@ -107,13 +107,14 @@ information the pipeline needs.
 
 ## For the operator (pipeline side)
 
-Received files go into one folder per capture, then one command per capture:
+One command per capture, on whatever AirDrop delivered (a Stray Scanner zip or folder, a
+video file, or a folder with one subfolder per room):
 
 ```
-uv run floorplan run <capture-folder> --tier lidar|video|photo
+./run.sh <capture> --damage
 ```
 
-*(Command planned; see ROADMAP Phase 0.)*
+Step by step, with what to do when something fails: [walkin_runbook.md](walkin_runbook.md).
 
 ## Known limits
 

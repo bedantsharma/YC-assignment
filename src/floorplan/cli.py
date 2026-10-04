@@ -59,7 +59,12 @@ def main(argv: list[str] | None = None) -> int:
     p_dmg.add_argument(
         "--crack-pass", action="store_true", help="second Gemini call tracing cracks"
     )
+    sub.add_parser("check", help="is this machine ready for each tier? (run before the walk-in)")
     args = parser.parse_args(argv)
+    if args.command == "check":
+        from floorplan.check import run as check
+
+        return check()
     if args.command == "damage":
         return _damage_photos(args.images, args.out, args.crack_pass)
 

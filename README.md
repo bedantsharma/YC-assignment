@@ -79,6 +79,24 @@ fixes the local window size (default from the machine's RAM: 10 frames on 16 GB)
 Captures are large and not committed. Hand-measured ground truth lives in `data/gt/` and is
 committed. How each dataset is used: [docs/data_plan.md](docs/data_plan.md).
 
+**Raw-data bundle (home C + model replay caches, 2.8 GB).** Home C is a private home, so
+the download link is given in the submission, not here. One command downloads it, checks
+the SHA-256 sums and unpacks it in place; then `scripts/reproduce.sh` regenerates every
+reported number with no GPU and no network:
+
+```bash
+scripts/fetch_data.sh <bundle URL from the submission>
+```
+
+| Zip | Contents |
+|---|---|
+| `floorplan_home_c_raw.zip` (1.05 GB) | home C: 3 LiDAR recordings (Stray Scanner), 4 Camera-app videos, photos per room and the sets derived from them, Polycam 7.0.4 screenshots (street address blacked out) |
+| `floorplan_replay_cache.zip` (1.76 GB) | the Kaggle model outputs `reproduce.sh` replays |
+
+Built by `uv run scripts/make_bundle.py`. The architect's drawing photo is left out
+(address and stamp); its numbers are in `data/gt/home_c.json`. Dataset A is Cozmo's own;
+B is public (`scripts/fetch_arkitscenes.sh`).
+
 | ID | Dataset | Location | Get it |
 |---|---|---|---|
 | A | Cozmo's 3 Stray Scanner captures of one apartment | `data/raw/<capture-id>/` | provided by Cozmo |

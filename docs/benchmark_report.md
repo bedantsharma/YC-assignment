@@ -116,12 +116,12 @@ LiDAR rows: live on this laptop (M4, 16 GB). Video rows on this laptop replay th
 
 | Capture | Tier | Stages (s) | Total (s) |
 |---|---|---|---|
-| c_home_01 | lidar | load 0.3, fuse 13.5, geometry 4.0 | 17.8 |
-| c_damage_01 | lidar | load 0.1, fuse 8.2, geometry 0.9 | 9.2 |
-| 42444946 | lidar | load 0.3, fuse 5.1, geometry 1.6 | 7.1 |
-| c7d28f72c6 | lidar | load 0.3, fuse 14.3, geometry 5.5 | 20.1 |
-| c_damage_v1 | video | frames 6.3, reconstruction 0.6, geometry 4.2 | 11.2 |
-| c_home_v1 | video | frames 8.5, reconstruction 1.0, geometry 8.9 | 18.4 |
+| c_home_01 | lidar | load 0.3, fuse 13.8, geometry 4.1 | 18.2 |
+| c_damage_01 | lidar | load 0.1, fuse 8.4, geometry 0.9 | 9.4 |
+| 42444946 | lidar | load 0.3, fuse 5.0, geometry 1.6 | 6.9 |
+| c7d28f72c6 | lidar | load 0.3, fuse 15.7, geometry 5.7 | 21.7 |
+| c_damage_v1 | video | frames 6.7, reconstruction 0.7, geometry 4.3 | 11.7 |
+| c_home_v1 | video | frames 8.9, reconstruction 1.1, geometry 9.6 | 19.6 |
 | c_damage_v1 (30 frames) | video, live on a Kaggle T4 | model + geometry | 110 |
 | c_damage_v2 (30 frames) | video, live on a Kaggle T4 | model + geometry | 62 |
 | c_home_v1 (90 frames) | video, live on a Kaggle T4 | model + geometry | 135 |
