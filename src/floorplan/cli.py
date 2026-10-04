@@ -39,8 +39,8 @@ def main(argv: list[str] | None = None) -> int:
     p_run.add_argument(
         "--damage",
         action="store_true",
-        help="detect damage on any tier (Gemini, credentials from the environment; offline "
-        "fallback: see src/floorplan/damage.py)",
+        help="detect damage on every tier (LiDAR, video, photo): Gemini online, credentials "
+        "from the environment; Florence-2 offline fallback (src/floorplan/damage.py)",
     )
     p_run.add_argument("--damage-frames", type=int, help="keyframes sent to the damage detector")
     p_run.add_argument(
