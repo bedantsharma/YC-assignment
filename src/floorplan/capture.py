@@ -114,9 +114,11 @@ def load_photos(path: Path | str) -> PhotoCapture:
 
 def _photo_rooms(path: Path) -> dict[str, list[Path]]:
     def photos_in(d: Path) -> list[Path]:
-        return sorted(p for p in d.iterdir() if p.suffix.lower() in PHOTO_SUFFIXES)
+        return sorted(
+            p for p in d.iterdir() if p.suffix.lower() in PHOTO_SUFFIXES and not _hidden(p)
+        )
 
-    rooms = {d.name: photos_in(d) for d in sorted(path.iterdir()) if d.is_dir()}
+    rooms = {d.name: photos_in(d) for d in sorted(path.iterdir()) if d.is_dir() and not _hidden(d)}
     rooms = {name: photos for name, photos in rooms.items() if photos}
     if not rooms and photos_in(path):
         rooms = {path.name: photos_in(path)}
@@ -164,3 +166,46 @@ def _load_arkitscenes(path: Path) -> LidarCapture:
         depth.append(depth_files[j])
         conf.append(path / "confidence" / f"{stem}.png")
     return LidarCapture(depth, conf, np.array(poses), np.array(intr))
+
+
+def _hidden(p: Path) -> bool:
+    """macOS metadata, not captures: '._IMG_1.jpg' (AppleDouble files that a Mac adds to a
+    zip or a non-Mac disk) and the '__MACOSX' folder of a zip made on a Mac."""
+    return p.name.startswith(".") or p.name == "__MACOSX"
+
+
+INCOMING = Path("outputs/incoming")
+
+
+def unpack(path: Path | str, into: Path = INCOMING) -> Path:
+    """A zipped capture (how Stray Scanner recordings are shared) -> the capture inside it,
+    extracted once to into/<zip name>/. Anything that is not a .zip is returned as is.
+    Inside, the capture is the first folder (shallowest) holding a LiDAR recording, else
+    the first video file, else the extracted folder itself (photo folders)."""
+    import zipfile
+
+    path = Path(path)
+    if not (path.is_file() and path.suffix.lower() == ".zip"):
+        return path
+    out = into / path.stem
+    if not out.exists():
+        tmp = out.with_name(out.name + ".tmp")
+        with zipfile.ZipFile(path) as z:
+            z.extractall(tmp)
+        tmp.rename(out)
+    shown = [q for q in out.rglob("*") if not any(map(_hidden, q.relative_to(out).parents))]
+    shown = [q for q in shown if not _hidden(q)]
+    recordings = [
+        d for d in shown
+        if d.is_dir() and ((d / "odometry.csv").exists() or (d / "lowres_wide.traj").exists())
+    ]  # fmt: skip
+    if recordings:
+        return min(recordings, key=lambda d: len(d.parts))
+    videos = sorted(
+        (f for f in shown if f.suffix.lower() in VIDEO_SUFFIXES), key=lambda f: len(f.parts)
+    )
+    if videos:
+        return videos[0]
+    inner = [d for d in out.iterdir() if d.is_dir() and not _hidden(d)]
+    loose = [f for f in out.iterdir() if f.is_file() and not _hidden(f)]
+    return inner[0] if len(inner) == 1 and not loose else out

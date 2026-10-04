@@ -4,7 +4,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from floorplan.capture import detect_format, resolve_tier
+from floorplan.capture import detect_format, resolve_tier, unpack
 from floorplan.output import TIERS, write_json
 from floorplan.pipeline import run
 from floorplan.render import render_plan
@@ -70,6 +70,7 @@ def main(argv: list[str] | None = None) -> int:
 
         os.environ[BACKEND_ENV] = args.recon
     try:
+        args.capture = unpack(args.capture)
         tier = resolve_tier(detect_format(args.capture), args.tier)
         out_dir = args.out / f"{_capture_id(args.capture)}_{tier}"
         result = run(

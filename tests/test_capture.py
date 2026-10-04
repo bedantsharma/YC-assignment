@@ -1,4 +1,5 @@
 from dataclasses import fields
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -81,3 +82,48 @@ def test_flat_photo_folder_is_one_room(tmp_path):
     for i in range(2):
         Image.new("RGB", (8, 6)).save(tmp_path / f"p{i}.jpg")
     assert list(load_photos(tmp_path).rooms) == [tmp_path.name]
+
+
+def _zip(src, dest, root_name=None, extra=()):
+    import zipfile
+
+    with zipfile.ZipFile(dest, "w") as z:
+        for f in src.rglob("*"):
+            z.write(f, Path(root_name or src.name) / f.relative_to(src))
+        for name, data in extra:
+            z.writestr(name, data)
+    return dest
+
+
+def test_zipped_stray_recording_is_found_inside(stray_capture, tmp_path):
+    from floorplan.capture import unpack
+
+    z = _zip(stray_capture, tmp_path / "rec.zip", "Recordings/2026-10-05")
+    got = unpack(z, into=tmp_path / "incoming")
+    assert detect_format(got) == "stray" and got.name == "2026-10-05"
+    assert unpack(z, into=tmp_path / "incoming") == got  # extracted once, reused
+
+
+def test_zip_made_on_a_mac_ignores_its_metadata(photo_capture, tmp_path):
+    from floorplan.capture import load_photos, unpack
+
+    junk = [("__MACOSX/photos01/Room 1 Kitchen/._IMG_0.jpg", b"\0\5\26\7"),
+            ("photos01/Room 1 Kitchen/._IMG_1.jpg", b"\0\5\26\7")]  # fmt: skip
+    z = _zip(photo_capture, tmp_path / "photos01.zip", extra=junk)
+    got = unpack(z, into=tmp_path / "incoming")
+    assert detect_format(got) == "photos"
+    rooms = load_photos(got).rooms
+    assert sorted(rooms) == ["Room 1 Kitchen", "Room 2 Hallway"]
+    assert all(not p.name.startswith(".") for ps in rooms.values() for p in ps)
+    assert len(rooms["Room 1 Kitchen"]) == 3
+
+
+def test_zipped_video_and_plain_paths(tmp_path):
+    from floorplan.capture import unpack
+
+    d = tmp_path / "v"
+    d.mkdir()
+    (d / "walk.MOV").write_bytes(b"x")
+    z = _zip(d, tmp_path / "walk.zip")
+    assert unpack(z, into=tmp_path / "incoming").name == "walk.MOV"
+    assert unpack(d / "walk.MOV") == d / "walk.MOV"  # not a zip: unchanged
