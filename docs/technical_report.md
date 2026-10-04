@@ -16,8 +16,9 @@ adjacency, and a 90% interval on every number. The tier is inferred from the inp
 | Video | one Camera-app walkthrough (RGB only) | any iPhone 15 or newer |
 | Photos | a folder per room of stills (RGB only) | any iPhone 15 or newer |
 
-Not built: damage regions, concealed-damage flags and repair scope (output fields exist,
-always empty), window detection, the photo tier's stitch into one plan.
+Damage (§8) is built for the LiDAR tier: detection is benchmarked on photos, sizing on the
+wall plane is not yet checked against the staged hole. Not built: damage on the video and
+photo tiers, window detection, the photo tier's stitch into one plan.
 
 ## 2. Architecture: one geometry backend for every tier
 
@@ -47,7 +48,7 @@ Photos  per-room stills ── Pi3X per room ──────┘   floor/    w
   similarity fits on shared frames; a broken link is refitted on the shared frames that
   agree (`chunks.fit_shared`).
 
-**Models** (§9): the video and photo tiers use Pi3X (default) or MapAnything
+**Models** (§10): the video and photo tiers use Pi3X (default) or MapAnything
 (`--model mapanything`, Apache 2.0) for multi-view reconstruction, chosen in a bake-off of
 three models on home C ([model_research.md](model_research.md), [photo_tier.md](photo_tier.md)).
 Each model places surfaces too close to the cameras by a stable factor (Pi3X 0.89
@@ -84,7 +85,7 @@ partly covered and come out up to a third too small.
 
 **Head-to-head** with Polycam (Apple RoomPlan) on the same home, 8 room dimensions: beat or
 tie on **6 of 8 (75%)**, target 70% (`uv run scripts/gt_table.py`). Medians: ours 5 cm,
-Polycam 6 cm. Our one clear loss is a wall that was never scanned (§8).
+Polycam 6 cm. Our one clear loss is a wall that was never scanned (§9).
 
 Device matrix: [device_matrix.md](device_matrix.md). A Pro iPhone gets all three tiers; a
 non-Pro iPhone 15+ gets video and photos, whose numbers here are what such a phone gets
@@ -131,7 +132,7 @@ predicted (+5 / +6 cm), in-sample. Before and after: tags `fixloop-before`, `fix
 **Short of the gate.** The repeatability gate (1 cm / 0.5%) still fails on the bedroom's long
 side (4.6 cm) and across B's scans, whose outlines differ before any wall placement (B's
 coverage differs per scan). The dining room's short side is 23 cm short: its west wall has
-no points at any height (§8).
+no points at any height (§9).
 
 ## 7. Error budget and calibration
 
@@ -158,7 +159,50 @@ third too small): the interval was widened to the tier's measured error, but a r
 in part can still fall outside it. That is the thin-input risk the brief caps; the
 pipeline warns when a folder has fewer than 4 photos.
 
-## 8. Known failure modes
+## 8. Damage detection and the choice of model
+
+**Pipeline** (`src/floorplan/damage*.py`, research in [damage_research.md](damage_research.md)).
+A hosted vision model finds and labels damage on each image as boxes: crack, water stain,
+mould, hole, peeling paint, plus sockets and exposed wiring as context for the rules. The
+model never measures anything. Each box is outlined in the image without a model
+(contrast against the surrounding wall, ellipse fallback), and the outline is cast through
+the frame's pose onto the measured wall plane. That gives area and position in wall
+coordinates (along the wall, height above the floor). The 90% interval is a Monte Carlo
+over the outline (±2 px), the wall's position, the pose and the floor height. A damage
+seen in several frames is merged, and its draws are pooled. On the LiDAR tier, a box where
+the depth shows an object in front of the wall (a picture frame) is dropped. Rules
+R1–R5 and R7–R10 raise concealed-damage flags that name their rule; scope items are
+Xactimate-style (trade code, surface id, quantity with interval, no pricing). Every model
+answer is cached in `data/damage_cache/`, so the numbers replay offline.
+
+**Model choice.** Three Gemini models on the 26 photos of the staged bedroom, scored image
+by image against labels drawn by eye and corrected by the user
+([damage_models.md](damage_models.md), `uv run scripts/damage_compare.py`):
+
+| | **Gemini 3.1 Pro** (chosen) | Gemini 3.8 Flash | Gemini 3.6 Flash |
+|---|---|---|---|
+| Holes found (10 photos) | **10 / 10** | 9 / 10 | 9 / 10 |
+| False holes | **0** | 2 | 0 |
+| Exposed wiring found (7 photos) | 7 / 7 | 7 / 7 | 7 / 7 |
+| Damage-free photos left clean | **16 / 16** | 12 / 16 | 11 / 16 |
+| Touch grime called water stain | **2 photos** | 5 photos | 5 photos |
+| Seconds per photo (2 calls) | **8** | 24 | 14 |
+
+3.1 Pro is the default because it is best on every row: no missed hole, no false damage on
+a clean photo, and the fastest. A false alarm costs more here than a missed blemish: each
+one becomes a flag and a scope line a homeowner pays to check. Speed matters at the
+walk-in. Gemini 2.5 Flash, the first model tried, also called grime marks water stains.
+`FLOORPLAN_GEMINI_MODEL` switches models; each model's answers are cached separately.
+
+**Limits.** Every model calls grime from hands on a white wall "water stain"; a prompt
+change would likely fix it but would be tuned on this same test set, so it is not made. A
+second crack-only prompt (`--crack-pass`, traced polylines) is experimental: Pro once
+looped 54 segments on a clean wall (now discarded), and it traces the outline of a plaster
+patch as a crack. The labels are image-level and only 26 photos of one room, so these are
+indications, not accuracy figures. The hosted model needs a network; the local fallback
+(Florence-2-base + depth check) is not built yet.
+
+## 9. Known failure modes
 
 - **Unscanned walls.** A wall with no points is placed at the edge of the floor seen; the
   room is short on that side (dining room −23 cm). The floor past it is flagged
@@ -181,12 +225,15 @@ pipeline warns when a folder has fewer than 4 photos.
 - **Scale bias varies by room** (Pi3X 0.80–0.99 horizontally): ±10% per room on the video
   and photo tiers, covered by their wider intervals.
 
-## 9. Disclosure: models, data, compute
+## 10. Disclosure: models, data, compute
 
 - **Pi3X** (yyfz/Pi3, weights CC BY-NC 4.0: non-commercial) is the default image model;
   **MapAnything** (Meta, Apache 2.0 weights) is the commercial-use option. Depth Anything 3
   and SpatialLM 1.1 (Qwen-0.5B, Llama-1B) were tested and not adopted
-  ([lidar_model_research.md](lidar_model_research.md)). No hosted model API is called.
+  ([lidar_model_research.md](lidar_model_research.md)).
+- **Gemini 3.1 Pro (Google, hosted API on Vertex AI)** detects damage (§8): images are sent
+  to Google; answers are cached in `data/damage_cache/`. Allowed by Cozmo with disclosure.
+  Sizes, flags and scope are computed locally.
 - **Datasets:** ARKitScenes (Apple, research licence) for B; Cozmo's captures for A; C is
   our own capture with the owner's permission.
 - **Compute:** models run on Kaggle (two T4s; fp16, since the T4 has no bf16 attention
