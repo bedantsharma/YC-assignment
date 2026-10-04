@@ -18,7 +18,22 @@
       "our_label": "kitchen",
       "polycam": "kitchen",
       "note": "side labels 10' and 12' match the room label",
-      "area_m2": 11.148
+      "area_m2": 11.148,
+      "measured": {
+        "lower_counters": {
+          "height_m": 0.762,
+          "depth_m": 0.6858,
+          "height_ft": 2.5,
+          "depth_ft": 2.25
+        },
+        "upper_cabinets": {
+          "height_m": 0.762,
+          "depth_m": 0.3048,
+          "height_ft": 2.5,
+          "depth_ft": 1
+        },
+        "note": "friend's message gives 'width'; read as depth out from the wall (a counter's length runs along the wall)"
+      }
     },
     "dining_living": {
       "plan_label": "DINING & LIVING 18'9\"X18'0\"",

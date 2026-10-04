@@ -11,7 +11,7 @@ SpatialLM pins Python <= 3.12 and torch 2.4; Kaggle runs 3.13, so it gets its ow
 enable_flash=False (plain attention, same weights).
 Two GPUs (Kaggle "T4 x2"): the language model stays on cuda:0 and the Sonata point
 encoder (what ran out of memory in run 1) moves to cuda:1, so each gets a full 15 GB.
-Run 2 repeats only what failed in run 1 (whole home, and every Llama-1B run).
+Runs 2-3 repeat only what failed in run 1 (whole home, and every Llama-1B run).
 Output: <cloud>__<model>__s<seed>.txt (SpatialLM layout language), log.txt, summary.json.
 """
 
@@ -68,13 +68,17 @@ def setup() -> Path:
     for f in ("spatiallm_qwen.py", "spatiallm_llama.py"):  # T4: no flash attention
         p = repo / "spatiallm" / "model" / f
         s = p.read_text()
-        # the encoder may sit on another GPU: move its input there and its output back
-        call = "encoded_features = self.point_backbone(input_dict)"
+        # the encoder may sit on another GPU: move its input there, make that GPU current
+        # (spconv / torch_scatter launch on the current device; run 2 hit device asserts)
+        # and bring the output back
+        call = "            encoded_features = self.point_backbone(input_dict)\n"
         s = s.replace(
             call,
-            "pb = next(self.point_backbone.parameters()).device; "
-            "input_dict = {k: v.to(pb) if torch.is_tensor(v) else v "
-            "for k, v in input_dict.items()}; " + call + ".to(device)",
+            "            pb = next(self.point_backbone.parameters()).device\n"
+            "            input_dict = {k: v.to(pb) if torch.is_tensor(v) else v\n"
+            "                          for k, v in input_dict.items()}\n"
+            "            with torch.cuda.device(pb):\n"
+            "                encoded_features = self.point_backbone(input_dict).to(device)\n",
         )
         p.write_text(
             s.replace(
