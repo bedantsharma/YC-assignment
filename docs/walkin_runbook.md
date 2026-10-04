@@ -11,8 +11,8 @@ something goes wrong.
 - [ ] `uv run floorplan check`: every line OK (Kaggle, Gemini, Florence-2, ffmpeg, disk).
 - [ ] Laptop charged, charger packed; phone hotspot ready (Kaggle and Gemini need network).
 - [ ] At least 5 GB free on the disk (`floorplan check` says).
-- [ ] Print or have open: [capture_protocol.pdf](capture_protocol.pdf) (two pages; they follow
-      it literally).
+- [ ] Print or have open: [capture_protocol.md](capture_protocol.md) as a PDF (two pages; they
+      follow it literally): `uv run scripts/md_to_pdf.py docs/capture_protocol.md`.
 
 ## On arrival (5 minutes)
 

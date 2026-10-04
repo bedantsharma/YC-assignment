@@ -22,8 +22,8 @@ works end to end on a whole home (`uv sync --extra video`; Pi3X by default, whos
 are **CC BY-NC (non-commercial)**, or `--model mapanything` for Apache 2.0 weights; model
 comparison in [docs/model_research.md](docs/model_research.md), whole home and scale in
 [docs/video_scale.md](docs/video_scale.md)); the photo tier runs end to end on room folders
-(same model; on the friend's real photos rooms come out within a median 19 cm with every
-photo, some rooms fail with 8 or fewer, and the whole-home stitch is weak:
+(same model; on the friend's real photos rooms come out within a median 18 cm with every
+photo (19 cm over every photo run), some rooms fail with 8 or fewer, and the whole-home stitch is weak:
 [docs/photo_tier.md](docs/photo_tier.md)). Damage detection runs on all three tiers: Gemini 3.1 Pro (hosted), or Florence-2-base on
 the laptop when offline (`uv sync --extra offline`, then
 `uv run python -m floorplan.damage_local --fetch` once); the staged hole's size is inside the
@@ -87,7 +87,8 @@ committed. How each dataset is used: [docs/data_plan.md](docs/data_plan.md).
 **Raw-data bundle (home C + model replay caches, 2.8 GB).** Home C is a private home, so
 the download link is given in the submission, not here. One command downloads it, checks
 the SHA-256 sums and unpacks it in place; then `scripts/reproduce.sh` regenerates every
-reported number with no GPU and no network:
+reported number with no GPU and no network (A's and B's rows only if those datasets are on
+disk; the live Kaggle timing rows come from a summary file that is not in the bundle):
 
 ```bash
 scripts/fetch_data.sh <bundle URL from the submission>
@@ -150,7 +151,8 @@ uv run floorplan run data/home_c/photos_sim/c_damage_01/k8p
 uv run scripts/make_photo_subsets.py
 uv run floorplan run data/home_c/photo_sets/k8
 # Replay a Kaggle run on the laptop without the model (frames decoded on the laptop are
-# shipped to Kaggle, so both sides use the same pixels; see src/floorplan/video.py)
+# shipped to Kaggle, so both sides use the same pixels; see src/floorplan/video.py).
+# This clip's frames and cache are not in the raw-data bundle; reproduce.sh does not use them
 FLOORPLAN_FRAMES_CACHE=data/home_c/frames FLOORPLAN_RECON_CACHE=outputs/kaggle_house_v2/recon_cache \
   FLOORPLAN_RECON_CACHE_ONLY=1 uv run floorplan run data/home_c/video/c_home_v2.mp4 --tier video --frames 300 --up top
 

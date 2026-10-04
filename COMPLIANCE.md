@@ -7,7 +7,7 @@ mapped to the code that implements it, the artifact that proves it, and an hones
 spec or its gate; Notes say which) · Not done (deliberately cut; Notes say why).
 
 Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
-[docs/data_plan.md](docs/data_plan.md). Last updated: Sun Oct 4, 2026 (night).
+[docs/data_plan.md](docs/data_plan.md). Last updated: Mon Oct 5, 2026.
 
 ## 1. Capture (brief Part 1)
 
@@ -57,7 +57,7 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | ID | Requirement | File path | Artifact | Status | Notes |
 |---|---|---|---|---|---|
 | G1 | Opening widths ≤ 2 cm on ≥ 85% of openings; missed and phantom openings count as misses | `src/floorplan/openings.py` | [docs/openings.md](docs/openings.md) | **Not met** | Bedroom door found in both scans but 34 cm narrow (door leaf / frame in the gap); windows not detected |
-| G2 | Ceiling height ≤ 1.5 cm per room | `scripts/benchmark.py` | `docs/benchmark_report.md` (ceiling table) | Partly met | LiDAR: 3 of 4 room measurements (−2.1 to +1.0 cm; the dining room misses by 0.6 cm); video 3–14 cm |
+| G2 | Ceiling height ≤ 1.5 cm per room | `scripts/benchmark.py` | `docs/benchmark_report.md` (ceiling table) | Partly met | LiDAR: 3 of 4 room measurements (−2.1 to +1.0 cm; the dining room misses by 0.6 cm); video 0.3–14 cm (1 of 6 within 1.5 cm) |
 | G3 | Ceiling spread across repeat captures ≤ 1 cm; report says bias or noise | `scripts/benchmark.py` | `docs/benchmark_report.md` (repeatability table + bias/noise sentence) | Partly met | B: 0.3–0.6 cm across 3 scans (met); C bedroom 0.2 / 1.3 cm; report: LiDAR error is cm-level noise, image tiers a corrected model bias |
 | G4 | Repeatability: two captures of a room agree within 1 cm or 0.5% per wall | `scripts/benchmark.py` | `docs/benchmark_report.md` (repeatability table) | **Not met** | C bedroom scans: short side 0.4 cm, long side 4.6 cm; B scans differ 3–110 cm (coverage, fix map 02b); video v1 vs v2 1.2 cm |
 | G5 | Drift: report states the method used on the multi-room capture | `src/floorplan/drift.py` (`floorplan run --drift`) | [docs/drift_ablation.md](docs/drift_ablation.md), technical report §5 | Done | Method stated: chunked 2D ICP on the walls, off by default because the ablation shows it made two plans worse; the default relies on ARKit's own loop closure plus wall measurement at the centre of the drift band (fix loop) |

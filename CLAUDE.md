@@ -47,6 +47,10 @@ land); datasets: `docs/data_plan.md`. Deadline: Mon Oct 5, 10:00 IST.
   - `damage_geom.py`: mask outline → wall-plane (u, v) area and position, Monte Carlo interval
   - `damage_lidar.py`: LiDAR-tier damage stage (keyframes, upright frames, depth check)
   - `damage_rules.py`: concealed-damage flags (rule ids) and repair scope items
+  - `openings.py`: doors and passages from gaps in each wall's elevation (no windows)
+  - `damage_frames.py`: LiDAR damage keyframes (pauses, coverage) and the two-view rule
+  - `damage_images.py`: damage on the video / photo tiers (the reconstruction's images)
+  - `damage_local.py`: offline damage detector (Florence-2-base on the laptop)
   - `render.py`: `Result` → dimensioned `plan.png`
   - `output.py`: result type and JSON writer (every number is a `Measurement` with an interval)
 - `tests/`: pytest tests

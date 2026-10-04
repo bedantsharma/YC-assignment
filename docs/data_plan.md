@@ -35,8 +35,12 @@ data/home_c/
   photos/<room>/     one folder per room, original photos (+ doorway shots)
   polycam/           Polycam export + floor-plan screenshots (head-to-head)
   notes/             photo of the tape-measured sketch
-data/gt/home_c.yaml  tape measurements, transcribed from the sketch (committed)
+data/gt/home_c.json  architect's drawing + tape measurements, transcribed by hand (committed)
 ```
+
+Update (Oct 5): everything below has since arrived (Camera-app videos, real photos per room,
+Polycam screenshots, the architect's drawing and the friend's tape); the table is the Oct 3
+snapshot.
 
 | Item from the checklist | Status (Sat Oct 3, ~17:45 IST) |
 |---|---|
@@ -101,10 +105,11 @@ an easier input than the walk-in video tier, which is a Camera-app clip from any
    RGB video**. It never reads depth, confidence, poses, stored intrinsics or IMU from that
    recording. This is enforced in code (the tier loaders only receive the video path), not by
    convention.
-2. **Benchmark numbers come from Camera-app video only.** Video-tier gate results in the
-   benchmark report use dataset C's native Camera video. Stray/ARKitScenes video is used for
-   development and for the depth-removal ablation (same frames with and without depth),
-   and is labelled as such wherever it appears.
+2. **Benchmark video rows are labelled by source.** Video-tier gate results in the
+   benchmark report use dataset C's native Camera-app clips and, for the whole home, the
+   LiDAR recording's own RGB video (labelled "LiDAR recording's video" wherever it appears;
+   an easier input than a Camera-app clip). Stray/ARKitScenes video is also used for
+   development and for the depth-removal ablation (same frames with and without depth).
 3. **Ground-truth poses are for diagnosis only.** The recorded poses may be used offline to
    check our estimated camera trajectory, never as input to the video or photo tier.
 
@@ -112,7 +117,9 @@ an easier input than the walk-in video tier, which is a Camera-app clip from any
 
 Develop and tune on A and B. Evaluate on C. Keep one room of C completely untouched until
 the walk-in rehearsal, so at least one result shows how the pipeline does on a space it has
-never seen, which is exactly what the walk-in test measures.
+never seen, which is exactly what the walk-in test measures. (As it turned out every room of C
+entered the benchmark; the rehearsal instead uses a room none of our data has seen:
+[walkin_runbook.md](walkin_runbook.md).)
 
 ## If the friend's data is late or incomplete
 
