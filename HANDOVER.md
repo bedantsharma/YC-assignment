@@ -1,12 +1,11 @@
-# Handover (Sun Oct 4, after the graded fix)
+# Handover (Sun Oct 4 evening)
 
 Cozmo AI take-home: iPhone captures → dimensioned floor plans with intervals. Deadline
 **Mon Oct 5, 10:00 IST**. Read in this order: this file, [NEXT-SESSION.md](NEXT-SESSION.md),
 `CLAUDE.md` (commands, layout, data conventions, **Kaggle rules**), the status section of
 `ROADMAP.md`.
 
-Git: pushed through `2fa5f9e`; later commits are local (push only when the user asks).
-82 tests pass. Every output number is `{value, lo, hi, unit}`.
+Git: everything pushed at the end of the Oct 4 evening session. 89 tests pass. Every output number is `{value, lo, hi, unit}`.
 
 ## Headline: the graded fix is shipped; we beat or tie Polycam on 75%
 
@@ -25,13 +24,45 @@ truth: median **29 → 5 cm** (Polycam 6); area interval holds the truth in 3 of
 the short LiDAR; re-measured (Pi3X 0.964 → 0.890), Camera-app damage clips at 60 frames are
 +5 cm. Predictions met within 3 cm on LiDAR; the first video prediction was wrong (recorded).
 
+## Oct 4 evening session
+
+- **New whole-house clip** (`data/home_c/video/c_home_v2.mp4`: friend's 260 s eye-level
+  walk, transcoded to upright 540×960 Baseline H.264; original `dataset/IMG_1434.MOV`,
+  gitignored). Kaggle `kaggle/house_v2` on both T4s (one queue per GPU), 90-300 frames:
+  **4 of 4 rooms at every count, footprint IoU vs LiDAR 0.72-0.76** (v1 clip: 0.42), but
+  every side 20-50 cm long and ceilings 3.6-3.7 m at 240/300 frames: one common scale
+  error (median |side error| 22-36 cm vs the drawing). Hypothesis: the Pi3X scale bias was
+  measured on compressed clips. Those numbers come from Kaggle's plans; the laptop replay
+  is still to do (NEXT-SESSION §0).
+- **Replay across machines**: ffmpeg on Kaggle (6.1.1, x86) and the Mac (6.1.2 or 7.1.1,
+  ARM) decode the same video to different pixels, so pixel-keyed caches miss. Not the
+  version, not B-frames (both tested). Fix: `FLOORPLAN_FRAMES_CACHE` (`video.py`): frames
+  decoded once on the laptop as PNG (`data/home_c/frames/`), shipped to Kaggle.
+- **Real photos** (friend's iPhone 16 Pro ProRAW → sRGB JPEG via `sips`,
+  `data/home_c/photos/<kitchen|room1|room2>/`, no hall; sets all/k8/k5 by
+  `scripts/make_photo_subsets.py`). Kaggle `kaggle/photos_c`. All photos: kitchen −1/−1 cm,
+  room1 −26/−18, room2 +20/+20 (median 19 cm); k8: kitchen no room, median 22 cm; k5: only
+  room2. Fixed a crash when a folder yields no room. Odd-orientation photos are split into
+  overlapping strips (`photos.load_folder`); effect on room1 mixed.
+- **ARK (B) ground truth** from the architect: `data/gt/arkitscenes_421337.json`
+  (approximate, her words; outer vs inner wall faces unresolved). LiDAR `42444950` matches
+  her shape (two steps on the left): bottom 4.45 vs 4.647 (outer) / ≈4.39 (inner), right 3.83
+  vs 3.824 / ≈3.56, top 4.01 vs 4.049, ceiling 3.05 vs 3.10 (her wall-height parameter).
+  `42444949` 4.23 × 4.17; `42444946` adds an area beyond the room (4.21 × 5.34).
+  No video/photo runs on B.
+- **Damage research** ([docs/damage_research.md](docs/damage_research.md)); plan agreed in
+  NEXT-SESSION §1: Gemini (user brings the key) + Florence-2-base and SAM 2.1 tiny locally
+  as fallback (user allowed these small models on the laptop).
+- Disk: the laptop was nearly full; Pi3X/MapAnything weights and old scratch were deleted
+  (29 GB free after).
+
 ## State of each tier
 
 | Tier | Status vs ground truth | Command |
 |---|---|---|
 | LiDAR | Works end to end (9 captures); walls median 5 cm vs truth (worst −23 cm, an unscanned wall), ceilings ±1 cm | `uv run floorplan run <capture>` |
-| Video | Damage-room clips work (60 frames: +5 cm, in-sample for the scale bias); 5-min whole-house Camera-app clip fails | `uv sync --extra video`; model runs on **Kaggle** (`kaggle/video_runs`), laptop replays the cache |
-| Photo | Works per room on video stills (median 41 cm off); stitch fails; real photos not run yet | `uv run floorplan run <folder of room folders>` (model on Kaggle) |
+| Video | Damage-room clips work (60 frames: +5 cm, in-sample for the scale bias); old 5-min house clip fails; **new house clip: 4/4 rooms, sides 20-50 cm long (scale)** | `uv sync --extra video`; model runs on **Kaggle** (`kaggle/video_runs`), laptop replays the cache |
+| Photo | Real photos: median 19 cm (all photos), kitchen fails at ≤ 8 photos; stitch fails | `uv run floorplan run <folder of room folders>` (model on Kaggle) |
 
 ### LiDAR tier
 
@@ -99,7 +130,7 @@ only on stills cut from the videos (`data/home_c/photos_sim/`). Stitching rooms 
 
 - A = Cozmo's apartment, 3 Stray captures, no ground truth.
 - B = ARKitScenes room + laser scan; architect's blind measurements still pending
-  (`data/gt/arkitscenes_421337.yaml`).
+  (`data/gt/arkitscenes_421337.json`).
 - C = friend's home: LiDAR `c_home_01`, `c_damage_01/02`; Camera-app videos
   `data/home_c/video/`; Polycam screenshots `data/home_c/polycam/` (numbers in
   `data/gt/home_c_polycam.json`); drawing photo `data/home_c/notes/` (address and stamp
@@ -122,6 +153,8 @@ only on stills cut from the videos (`data/home_c/photos_sim/`). Stitching rooms 
   `docs/fix_declaration.md` §5) and `uv run scripts/gt_table.py`.
 - **No model runs on the laptop, ever** (user, Oct 4): Kaggle, dry-run the setup locally
   first (CLAUDE.md), replay the cache locally.
+  Exception (user, Oct 4 evening): the small damage models Florence-2-base and SAM 2.1
+  tiny may run locally as the offline fallback.
 - Data goes to Kaggle only as private datasets.
 
 ## Gotchas

@@ -3,7 +3,7 @@
 Deadline: **Mon Oct 5, 10:00 IST**. Start: Sat Oct 3, ~12:30 IST. About 45 working hours
 including sleep. Scope and scoring are in [requirements.md](requirements.md).
 
-## Status (Sun Oct 4, after the graded fix)
+## Status (Sun Oct 4 evening)
 
 Read this first when resuming (after [HANDOVER.md](HANDOVER.md) and
 [NEXT-SESSION.md](NEXT-SESSION.md)). Details are in the phase sections below.
@@ -17,6 +17,14 @@ LiDAR). `uv run scripts/gt_table.py` ([docs/gt_comparison.md](docs/gt_comparison
 regenerates everything. **No model runs on the laptop (user)**: Kaggle runs, the laptop
 replays cached outputs.
 
+**Evening (Oct 4):** the friend's new eye-level house clip gives 4 of 4 rooms at every frame
+count (footprint IoU 0.72-0.76; the old clip 0.42), but sides come out 20-50 cm long: one
+scale error. Real photos (85, three rooms): median 19 cm with every photo, kitchen fails at
+8 or fewer. ARK (B) ground truth arrived (approximate; face convention unresolved). Damage
+research done; plan agreed (Gemini + small local fallback models). Kaggle runs now use both
+T4s; video frames are decoded on the laptop so Kaggle's results replay. Details:
+[HANDOVER.md](HANDOVER.md), next steps: [NEXT-SESSION.md](NEXT-SESSION.md).
+
 **Finding (user decision, Oct 4): on what was scanned we now measure as accurately as
 Polycam; the remaining large error is missing data, not geometry.** The one dimension we
 clearly lose (dining & living short side, −23 cm vs Polycam's 3 cm) is bounded by a west
@@ -29,14 +37,14 @@ for it. The capture protocol already asks for every wall to be swept top to bott
 
 | Phase | Planned for | State |
 |---|---|---|
-| 0 Scaffolding | Sat 12:30 | **Done**, except device-matrix numbers (need the benchmark) |
-| 1 Data | Sat 12:30 | **Mostly done**: A, B, C in; C's ground truth, Polycam, Camera-app videos in; C's real photos arriving; B's laser measurements pending |
+| 0 Scaffolding | Sat 12:30 | **Done** (device matrix filled from the benchmark) |
+| 1 Data | Sat 12:30 | **Done**: A, B, C in; C's ground truth, Polycam, videos (incl. a new house clip) and real photos in; B's architect measurements in (approximate) |
 | 2 LiDAR backend | Sat 17:00 | **Done**: 9 captures end to end; 5 cm median vs ground truth after fix 09 |
 | 3 Repeatability, drift | Sat 23:00 | **Half**: drift built + ablated (off); damage-room scans now agree to 1 / 5 cm; repeatability table not done |
-| 4 Video, photo | Sun 08:00 | **Done with gaps**: video works on room clips, fails on the 5-min house clip; photo per room on video stills, stitch fails |
-| 5 Openings, damage, scope | Sun 14:00 | Not started (ground truth for doors, windows and the hole now in) |
-| 6 Benchmark, fix loop | Sun 18:00 | **Fix loop done**; head-to-head met (75%); `scripts/gt_table.py` is the benchmark on C; `benchmark.py` (all gates, repeatability) not done |
-| 7 Reports, packaging | Mon 01:00 | Not started |
+| 4 Video, photo | Sun 08:00 | **Done with gaps**: video works on room clips and the new house clip (scale 20-50 cm long); photo per room on real photos (median 19 cm), stitch fails |
+| 5 Openings, damage, scope | Sun 14:00 | **Openings partial** (doors, passages); damage researched and planned (docs/damage_research.md), not built |
+| 6 Benchmark, fix loop | Sun 18:00 | **Done**: fix loop, head-to-head (75%), `scripts/benchmark.py`, calibration; new house/photo/B rows still to add |
+| 7 Reports, packaging | Mon 01:00 | **Drafts done**: benchmark + technical report, reproduce script; presentation format not decided |
 
 By score weight: walk-in (30%) runs all three tiers (photo per room); fix loop (25%) has
 its failing gate (short walls) and evidence; benchmark (15%) has ground truth on C;
@@ -61,14 +69,13 @@ compliance (10%), capture route (5%) and commit history (5%) on track.
     ([docs/lidar_model_research.md](docs/lidar_model_research.md)): not adopted
   - Ground truth for C + `scripts/compare_gt_c.py` + `scripts/gt_table.py`
 - **Waiting on**
-  - User: photo folders sorted by room → photo tier on Kaggle
-  - Friend (one message): original-quality files, Polycam app version + export;
-    optionally a 1-2 min eye-level house video
-  - Architect: blind laser measurements for B → `data/gt/arkitscenes_421337.yaml`
+  - User: Gemini API key (for damage detection)
+  - Architect: outer vs inner wall faces on the ARK plan
 - **Next, in order** (details: [NEXT-SESSION.md](NEXT-SESSION.md))
-  1. The friend's real photo folders on Kaggle (`kaggle/cache_runs`), rows in `gt_table.py`
-  2. Phase 5 damage (the bedroom hole), windows
-  3. Walk-in plan for the image tiers (model on Kaggle or a one-off local run), fresh-clone test
+  1. Collect the house video rerun and photo replays; add house, photo and B rows to `gt_table.py`
+  2. Phase 5 damage: Gemini boxes + SAM 2.1 tiny masks, projected onto walls; rules; scope
+  3. Video scale on the new house clip (without overfitting the benchmark)
+  4. Presentation format; walk-in plan for the image tiers; fresh-clone test
 
 ## Principles
 
@@ -98,15 +105,10 @@ the interface every later phase writes to.
 - [x] Capture protocol draft (`docs/capture_protocol.md`) for all three tiers, including
       the doorway-overlap photo rule (~15 photos per room, minimum 4)
 - [x] Device matrix scaffolding (`docs/device_matrix.md`): hardware per tier fixed
-- [ ] Device matrix accuracy numbers: filled from the benchmark in Phase 6
+- [x] Device matrix accuracy numbers: filled from the benchmark in Phase 6
 - [x] CLI skeleton: `floorplan run <capture_dir> --tier {lidar,video,photo} --out outputs/`
 - [x] Loaders for Stray Scanner and ARKitScenes (common z-up frame, verified on real data),
       video and photo folders (paths only: isolation rule enforced)
-
-> **Warning: Phase 0 is not complete.** `docs/device_matrix.md` is scaffolding only, not the
-> deliverable. Every accuracy cell is `TBD`, and nothing in it has been measured yet. It
-> becomes the real device matrix only once the Phase 6 benchmark fills those cells from
-> ground truth. Do not cite it as done in the compliance matrix or the report until then.
 
 Exit: `uv run floorplan run data/raw/c7d28f72c6` writes a valid (mostly empty) JSON.
 
@@ -129,8 +131,8 @@ Sources and how each is used: [docs/data_plan.md](docs/data_plan.md).
       thinned to 5 mm, E57 / LAS / PLY) with
       [the measurement sheet](docs/laser_measurement_sheet.md);
       zip in `outputs/laser_scan_for_measuring.zip`
-- [ ] Send the zip to the architect; she measures blind (without seeing our output)
-- [ ] Her measurements → `data/gt/arkitscenes_421337.yaml`
+- [x] Send the zip to the architect; she measures blind (without seeing our output)
+- [x] Her measurements → `data/gt/arkitscenes_421337.json` (approximate; outer vs inner faces to confirm)
 - [x] Friend's house: architect's drawing + tape measurements → `data/gt/home_c.json`
       (Sun Oct 4; ceiling 11 ft by user decision); held-out room still to pick
 
