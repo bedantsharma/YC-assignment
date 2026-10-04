@@ -320,7 +320,7 @@ def merge(placed: list[Placed]) -> list[Merged]:
         if g[0].label == "crack" and all(p.length_draws is not None for p in g):
             ldraws = np.concatenate([p.length_draws for p in g])
             lv = float(np.median([p.length for p in g]))
-            llo, lhi = np.percentile(ldraws, [5, 95])
+            llo, lhi = np.percentile(ldraws, [5, 95]) if len(ldraws) else (lv, lv)
             length = (lv, min(float(llo), lv), max(float(lhi), lv))
             # width = area / length only means something for a traced (thin) crack; a crack
             # outlined as a blob from a box would read as centimetres wide

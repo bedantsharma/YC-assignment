@@ -358,3 +358,11 @@ def test_overlay_handles_duplicate_detections():
     )
     assert overlay(image, [a, b], [a, b]).size == (200, 100)
     assert overlay(image, [a, b], [b]).size == (200, 100)
+
+
+def test_merge_survives_a_crack_whose_draws_all_failed():
+    room, crack = _placed_on_w1("crack", _square_mask(640, 480, 30))
+    crack.area_draws, crack.length_draws = np.empty(0), np.empty(0)  # every draw missed
+    m = merge([crack])[0]
+    assert m.area[1] <= m.area[0] <= m.area[2]
+    assert m.length[1] <= m.length[0] <= m.length[2]
