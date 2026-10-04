@@ -48,11 +48,11 @@ for it. The capture protocol already asks for every wall to be swept top to bott
 | 0 Scaffolding | Sat 12:30 | **Done** (device matrix filled from the benchmark) |
 | 1 Data | Sat 12:30 | **Done**: A, B, C in; C's ground truth, Polycam, videos (incl. a new house clip) and real photos in; B's architect measurements in (approximate) |
 | 2 LiDAR backend | Sat 17:00 | **Done**: 9 captures end to end; 5 cm median vs ground truth after fix 09 |
-| 3 Repeatability, drift | Sat 23:00 | **Half**: drift built + ablated (off); damage-room scans now agree to 1 / 5 cm; repeatability table not done |
+| 3 Repeatability, drift | Sat 23:00 | **Done**: drift built + ablated (off); repeatability table in the benchmark report (gate not met: 0.4 / 4.6 cm) |
 | 4 Video, photo | Sun 08:00 | **Done with gaps**: video works on room clips and the new house clip (scale 20-50 cm long); photo per room on real photos (median 19 cm), stitch fails |
-| 5 Openings, damage, scope | Sun 14:00 | **Openings partial** (doors, passages); damage stage built for LiDAR (Gemini + wall-plane sizing + rules + scope), not yet run on real detections |
-| 6 Benchmark, fix loop | Sun 18:00 | **Done**: fix loop, head-to-head (75%), `scripts/benchmark.py`, calibration; new house/photo/B rows still to add |
-| 7 Reports, packaging | Mon 01:00 | **Drafts done**: benchmark + technical report, reproduce script; presentation format not decided |
+| 5 Openings, damage, scope | Sun 14:00 | **Openings partial** (doors, passages); **damage done** on all three tiers (Gemini or Florence-2 + wall-plane sizing + rules + scope; staged hole inside the interval 7 of 7) |
+| 6 Benchmark, fix loop | Sun 18:00 | **Done**: fix loop, head-to-head (75%), `scripts/benchmark.py` (real-photo and B rows in), calibration |
+| 7 Reports, packaging | Mon 01:00 | **Done**: benchmark + technical report, reproduce script, raw-data bundle, fresh-clone test, slide deck; walk-in rehearsal still to do |
 
 By score weight: walk-in (30%) runs all three tiers (photo per room); fix loop (25%) has
 its failing gate (short walls) and evidence; benchmark (15%) has ground truth on C;
@@ -130,9 +130,9 @@ Sources and how each is used: [docs/data_plan.md](docs/data_plan.md).
       `scripts/fetch_arkitscenes.sh`)
 - [x] Capture checklist written and sent to the friend
       ([md](docs/friend_capture_checklist.md), PDF)
-- [ ] **In progress:** Dataset C, friend's home on an iPhone 16 Pro: LiDAR (whole home,
+- [x] Dataset C, friend's home on an iPhone 16 Pro: LiDAR (whole home,
       damage room ×2), Camera-app videos (damage room ×2, whole house), Polycam
-      screenshots, ground truth in; photos arriving (being sorted)
+      screenshots, ground truth and real photos per room in
 - [x] Check B's laser station covers every wall: yes, all four walls are visible (some
       parts in furniture shadow at 1.1 m, visible at other heights); no second station needed
 - [x] Laser cloud prepared for hand measurement (`scripts/prepare_laser_gt.py`: cropped,
@@ -182,7 +182,8 @@ Cut line: if room segmentation fights back, output a single whole-floor polygon 
 Why: two benchmark gates that need no ground truth, using the three provided captures.
 
 - [ ] Align the three captures (ICP on the 2D wall map) and match rooms and walls
-- [ ] Repeatability table: same wall across captures, spread in cm and %
+- [x] Repeatability table: same wall across captures, spread in cm and % (benchmark report;
+      C and B scans)
 - Drift probe (`uv run scripts/drift_probe.py <capture>`, Sat 21:05): revisited walls
   move between time chunks by up to 8.8 cm (`c_home_01`) and 12.9 cm (A `c7d28f72c6`),
   but single-room scans already show 4–6 cm and ±1–2° per chunk (probe noise: partial
@@ -193,7 +194,7 @@ Why: two benchmark gates that need no ground truth, using the three provided cap
       [docs/drift_ablation.md](docs/drift_ablation.md): damage-room repeat scans agree to
       1 cm on the short side (was 21 cm), but A `c00a170fe1` walls lose support. Still to
       do: trace that regression; ablation figure of the stitched footprint
-- [ ] **Tag `fixloop-before`** once the first full benchmark numbers exist
+- [x] **Tag `fixloop-before`** once the first full benchmark numbers exist
 
 Exit: `scripts/benchmark_lidar.py` prints the repeatability table and drift ablation.
 
@@ -222,9 +223,9 @@ Why: Cozmo expects all three tiers working, and the walk-in tier is chosen on th
       reconstructed alone, line-of-sight carving, folder = room label. Rooms with ≥ 4 good
       photos within −7% to +1% of LiDAR area. **Joint reconstruction placed rooms 1–2 m
       wrong, so rooms are not stitched** (cut line taken; documented)
-- [~] Tier-specific interval widening: video (5% / 2%) and photo (10% / 3%) per axis, 1σ;
-      calibration against tape still to do
-- [ ] Run on the provided captures (LiDAR as reference) and on our own captures (tape as
+- [x] Tier-specific interval widening: video (5% / 2%) and photo (14% / 5.5%) per axis, 1σ;
+      calibrated against home C's ground truth (`scripts/calibration.py`)
+- [x] Run on the provided captures (LiDAR as reference) and on our own captures (tape as
       reference)
 
 Exit: one command per tier works on our own captures.
@@ -233,16 +234,18 @@ the doorway photos; if that fails too, document the photo stitch as failing.
 
 ## Phase 5: Openings, damage, scope (Sun 14:00–18:00, 4 h)
 
-- [ ] Openings: gaps in each wall line in the 2D map + depth discontinuities → widths
-- [ ] One shared detector (agreed Sat): open-vocabulary (YOLO-World / Grounding DINO;
+- [~] Openings: gaps in each wall line in the 2D map + depth discontinuities → widths
+      (`openings.py`: doors and passages; windows not detected, gate G1 not met)
+- [x] One shared detector (agreed Sat; built as Gemini 3.1 Pro hosted + Florence-2-base
+      offline): open-vocabulary (YOLO-World / Grounding DINO;
       hosted vision model as fallback) on RGB keyframes, with a text list of classes. Box →
       depth pixels in the box → 3D with the frame's pose (same frame index as the depth; no
       IMU work needed) → footprint on the plan. Built once, used for:
-  - [~] Damage (LiDAR tier, code + synthetic tests in; not yet run on Gemini): Gemini
+  - [x] Damage (LiDAR tier; run on Gemini and Florence-2, docs/damage_hole.md): Gemini
         boxes, model-free masks, outline rays onto the wall plane, Monte Carlo 90% interval,
         views merged (`src/floorplan/damage*.py`, `floorplan run --damage`)
-  - [ ] Damage keyframes, agreed Oct 4, deferred (today: 40 even time slots, sharpest of 3,
-        all sent to Gemini; small damage between slots can be missed):
+  - [~] Damage keyframes, agreed Oct 4 (LiDAR built; video pauses still to do; before:
+        40 even time slots, sharpest of 3, all sent to Gemini):
     - [x] Protocol: pause ~3 s about 1 m in front of each damage during the LiDAR / video
           walk; photo tier: 1-2 close-ups per damage *inside the room's folder* (a loose
           close-up has no pose or scale, so it cannot be sized)
@@ -286,7 +289,7 @@ Cut line: openings as door/passage gaps only, no windows.
 
 Why: fix loop is 25% and benchmark accuracy is 15%; both need everything above to exist.
 
-- [ ] `scripts/benchmark.py`: every gate at every tier vs ground truth; repeatability table;
+- [x] `scripts/benchmark.py`: every gate at every tier vs ground truth; repeatability table;
       timing; one command regenerates all numbers
 - [x] Pick the single worst failing gate; write `docs/fix_declaration.md` (failing number,
       root-cause hypothesis + evidence, fix, predicted number) **before** fixing
@@ -299,16 +302,16 @@ Exit: fix-loop bundle complete with honest numbers.
 
 ## Phase 7: Reports and packaging (Mon 01:00–08:00, incl. ~3 h sleep)
 
-- [ ] Benchmark report (gates at all tiers, repeatability, head-to-head, timing)
-- [ ] Technical report ≤ 6 pages: architecture, tier design + device matrix, drift
+- [x] Benchmark report (gates at all tiers, repeatability, head-to-head, timing)
+- [x] Technical report ≤ 6 pages: architecture, tier design + device matrix, drift
       handling, error budget, calibration, fix-loop story, known failure modes (mirrors,
       glass, wet surfaces, low light)
-- [ ] Final compliance matrix with honest statuses
-- [ ] README: fresh clone → running on a new capture in < 15 min; model weights fetched by
+- [x] Final compliance matrix with honest statuses
+- [x] README: fresh clone → running on a new capture in < 15 min; model weights fetched by
       script
-- [ ] Reproduction bundle: raw captures + ground truth + cached model outputs (deterministic
+- [x] Reproduction bundle: raw captures + ground truth + cached model outputs (deterministic
       replay) packaged for upload
-- [ ] Fresh-clone test in a temp directory
+- [x] Fresh-clone test in a temp directory (install 33 s, first LiDAR capture 27 s)
 
 ## Buffer (Mon 08:00–10:00)
 
