@@ -17,6 +17,14 @@ LiDAR). `uv run scripts/gt_table.py` ([docs/gt_comparison.md](docs/gt_comparison
 regenerates everything. **No model runs on the laptop (user)**: Kaggle runs, the laptop
 replays cached outputs.
 
+**Finding (user decision, Oct 4): on what was scanned we now measure as accurately as
+Polycam; the remaining large error is missing data, not geometry.** The one dimension we
+clearly lose (dining & living short side, −23 cm vs Polycam's 3 cm) is bounded by a west
+wall that has no points at any height in `c_home_01` (fix map 01c). No rescan is possible
+(the friend can't redo it), so this stays as a capture limit: the plan flags that floor as
+low confidence and widens the area interval, and the report states it rather than tuning
+for it. The capture protocol already asks for every wall to be swept top to bottom.
+
 ### Progress at a glance
 
 | Phase | Planned for | State |

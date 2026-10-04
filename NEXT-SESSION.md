@@ -50,6 +50,8 @@ the user has sorted them.
 ## Open, lower priority
 
 - Dining & living room short side −23 cm: its west wall was never scanned (fix map 01c).
+  **Accepted as a capture limit (user, Oct 4): no rescan; do not tune for it**, state it in
+  the report.
 - Whole-house Camera-app video fails: windows fold rooms onto each other
   (`docs/home_c_new_captures.md`). Try shorter windows, skip ceiling frames, or a new clip.
 - Drift correction that does no harm (brief G5).
