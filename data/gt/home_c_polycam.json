@@ -1,0 +1,21 @@
+{
+  "capture": "home C, Polycam (RoomPlan) floor plan on the friend's iPhone 16 Pro",
+  "source": "Transcribed by hand from screenshots of Polycam's 2D floor plan (Oct 4, 2026; images kept in data/home_c/polycam/, gitignored: they show the street address). This is a COMPETITOR's output for the head-to-head, NOT ground truth.",
+  "units": "metres, m2; interior wall-to-wall lengths (blue labels) unless named outer_",
+  "total_area_m2": 79,
+  "rooms": {
+    "kitchen": {"width": 3.57, "depth": 3.04, "area_m2": 11, "outer_width": 3.77, "outer_depth": 3.14},
+    "bedroom_1": {"width": 4.53, "depth": 3.73, "area_m2": 17},
+    "bedroom_2": {"width": 4.53, "depth": 3.27, "area_m2": 14, "note": "closet 1.22 wide in one corner (0.5 m2), so the wall beside it is 2.82; top wall beside the closet 3.02"},
+    "closet": {"area_m2": 0.5},
+    "dining_plus_bedroom_3": {"width": 5.52, "depth": 5.59, "area_m2": 31, "note": "one open space; Polycam splits it with a virtual line into Dining Room 21 m2 and Bedroom 3 10 m2"}
+  },
+  "outer": {"left_column_depth": 7.30, "bedroom_1_width_outer": 6.59, "bedroom_2_width_outer": 4.73, "right_side_depth": 8.93, "dining_width_outer": 5.62},
+  "match_to_lidar_c_home_01": {
+    "how": "Polycam's plan rotated 180 deg onto the plan frame of `floorplan run data/home_c/lidar/c_home_01` (kitchen at -y of the open space, bedrooms at +x), rooms matched by position; labels as in home_c_rooms.json",
+    "hall": "dining_plus_bedroom_3",
+    "kitchen": "kitchen",
+    "room2": "bedroom_1",
+    "room1": "bedroom_2 (the staged-damage room: c_damage_01/02 and the dmg_room videos)"
+  }
+}
