@@ -5,7 +5,7 @@
     "Design dimensions from the drawing, not tape-measured as built: expect a few cm of construction difference",
     "Lengths are interior clear dimensions between wall faces as labelled on the plan",
     "1 ft = 0.3048 m; metres computed from the feet-inch labels by script",
-    "Ceiling 12 ft (3.66 m) from the friend disagrees with every scan: LiDAR 3.33-3.36 m in all three scans, and the damage room's two LiDAR clouds have no points above 3.60 m (ceiling plane at 3.30-3.40 m, phone ~2 m below it, well in range); videos 3.32-3.48 m. Likely rounded or not floor-to-ceiling: ask the friend to re-measure before scoring ceilings"
+    "Ceilings: 11 ft (3.35 m) by user decision; the friend's message said 12 ft, but all scans give 3.33-3.36 m and the LiDAR clouds have no points above 3.60 m"
   ],
   "units": "metres and m2 (feet-inch originals kept as strings)",
   "rooms": {
@@ -46,8 +46,8 @@
       "note": "one open space; Polycam splits it into Dining Room and Bedroom 3",
       "area_m2": 31.355,
       "measured": {
-        "ceiling_height_m": 3.6576,
-        "ceiling_height_ft": 12,
+        "ceiling_height_m": 3.3528,
+        "ceiling_height_ft": 11,
         "openings": [
           {
             "kind": "window",
@@ -77,7 +77,8 @@
             "width_ft": 5,
             "height_ft": 6.5
           }
-        ]
+        ],
+        "ceiling_note": "user decision (Oct 4): 11 ft, replacing the friend's first figure of 12 ft, which disagreed with every scan"
       }
     },
     "drawing": {
@@ -135,8 +136,8 @@
       ],
       "area_m2": 15.329,
       "measured": {
-        "ceiling_height_m": 3.6576,
-        "ceiling_height_ft": 12,
+        "ceiling_height_m": 3.3528,
+        "ceiling_height_ft": 11,
         "window": {
           "height_m": 1.7252,
           "width_m": 2.1336,
@@ -165,7 +166,8 @@
           "from_right_wall_m": 2.286,
           "from_right_wall_ft": 7.5,
           "note": "7.5 ft from the right-side wall, seen facing the damaged wall"
-        }
+        },
+        "ceiling_note": "user decision (Oct 4): 11 ft, replacing the friend's first figure of 12 ft, which disagreed with every scan"
       }
     }
   },
