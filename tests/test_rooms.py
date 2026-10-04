@@ -10,7 +10,7 @@ from floorplan.plan2d import (
     wall_mask,
 )
 from floorplan.rooms import measure_room, rectilinear_outline, signed_area
-from tests.synthetic import two_rooms
+from tests.synthetic import smeared_room, two_rooms
 
 RES = 0.03
 
@@ -49,3 +49,28 @@ def test_room_floor_and_ceiling(measured):
     room = measured[1]
     assert room.floor.z == pytest.approx(0.0, abs=0.003)
     assert room.ceiling.z - room.floor.z == pytest.approx(2.5, abs=0.005)
+
+
+def _rooms(pts):
+    grid = make_grid(pts, dominant_angle(pts), RES)
+    walls = wall_mask(pts, grid, floor_z=0.0)
+    labels, _ = segment_rooms(walls, observed_mask(pts, grid, floor_z=0.0), RES)
+    return [
+        measure_room(labels == k, pts, grid, walls, 0.0, labels) for k in range(1, labels.max() + 1)
+    ]
+
+
+def test_a_smeared_wall_is_measured_at_its_middle_and_furniture_is_not_a_wall():
+    (room,) = _rooms(smeared_room())
+    short, long_ = sorted(np.ptp(room.polygon, axis=0))
+    assert long_ == pytest.approx(4.0, abs=0.03)  # middle of the 3.9 / 4.0 / 4.1 copies
+    assert short == pytest.approx(3.0, abs=0.03)  # behind the wardrobe, not its front (2.6)
+    assert len(room.edges) == 4  # the wardrobe's notch closes
+    assert max(e.sigma for e in room.edges) > 0.05  # a smeared wall gets a wide interval
+
+
+def test_the_far_face_of_an_interior_wall_belongs_to_the_neighbour():
+    rooms = sorted(_rooms(two_rooms(angle_deg=0.0, ceiling=3.0)), key=lambda r: r.area)
+    small, big = rooms
+    assert sorted(np.ptp(big.polygon, axis=0)) == pytest.approx([3, 3.95], abs=0.02)
+    assert sorted(np.ptp(small.polygon, axis=0)) == pytest.approx([2.95, 3], abs=0.02)

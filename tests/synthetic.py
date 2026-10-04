@@ -80,3 +80,24 @@ def kitchen(noise=0.004, ceiling=2.7):
     ]
     pts = np.concatenate(parts)
     return pts + rng.normal(0, noise, pts.shape)
+
+
+def smeared_room(noise=0.004, ceiling=3.0):
+    """Room [0,4]x[0,3] as a drifting scan sees it: the east wall appears three times, at
+    x = 3.9, 4.0 and 4.1 (true wall: the middle), and a wardrobe stands against the north
+    wall (front face at y = 2.6 up to 2.1 m, top at 2.1 m; the wall is at y = 3).
+    """
+    parts = [
+        wall((0, 0), (3.9, 0), z1=ceiling),
+        *[wall((x, 0), (x, 3), z1=ceiling) for x in (3.9, 4.0, 4.1)],
+        wall((4.1, 3), (0, 3), z1=ceiling),
+        wall((0, 3), (0, 0), z1=ceiling),
+        wall((0.2, 2.6), (2.2, 2.6), z1=2.1),  # wardrobe front
+        slab(0.2, 2.2, 2.6, 3.0, 2.1),  # wardrobe top
+        wall((0.2, 2.6), (0.2, 3.0), z1=2.1),  # wardrobe sides
+        wall((2.2, 2.6), (2.2, 3.0), z1=2.1),
+        slab(0, 3.9, 0, 3, 0.0),
+        slab(0, 4.1, 0, 3, ceiling),
+    ]
+    pts = np.concatenate(parts)
+    return pts + rng.normal(0, noise, pts.shape)

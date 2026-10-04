@@ -40,6 +40,9 @@ BOXES = json.loads(Path("data/gt/home_c_rooms.json").read_text())["rooms"]
 BY_LABEL = {r["our_label"]: k for k, r in GT["rooms"].items()}
 LIDAR_HOME = json.loads(Path("outputs/c_home_01_lidar/plan.json").read_text())
 OUT = Path("docs/gt_comparison.md")
+# plans whose model output has no replay cache: geometry from before the wall fix
+# (docs/fix_declaration.md) until they are rerun on Kaggle
+PRE_FIX = "pre-fix geometry (no cache)"
 
 rows: list[dict] = []
 
@@ -64,7 +67,7 @@ def box_room(poly: np.ndarray) -> str | None:
     return None
 
 
-def plan_rows(path: str, method: str, group: str, source: str, how: str) -> None:
+def plan_rows(path: str, method: str, group: str, source: str, how: str, note: str = "") -> None:
     p = Path(path)
     if not p.exists():
         return
@@ -87,7 +90,7 @@ def plan_rows(path: str, method: str, group: str, source: str, how: str) -> None
         seen.add(key)
         c = r["ceiling_height"]
         add(key, method, group, source, *extent(r["polygon"]), r["floor_area"]["value"],
-            c["value"] if c else None)  # fmt: skip
+            c["value"] if c else None, note)  # fmt: skip
     for key in GT["rooms"]:
         if how in ("lidar", "place", "folders") and key not in seen:
             add(key, method, group, source, np.nan, np.nan, note="room not found")
@@ -124,7 +127,7 @@ def collect() -> None:
 
     vid = "ours: video tier (Pi3X)"
     plan_rows("outputs/c_home_01_video/plan.json", vid, "ours",
-              "LiDAR recording's video, 90 fr", "place")  # fmt: skip
+              "LiDAR recording's video, 90 fr", "place", PRE_FIX)  # fmt: skip
     for v in ("c_damage_v1", "c_damage_v2"):
         for n in (30, 60):
             plan_rows(f"outputs/video_c/f{n}/{v}_video/plan.json", vid, "ours",
@@ -138,7 +141,7 @@ def collect() -> None:
                      ("c_damage_02", "single")):  # fmt: skip
         for k in ("k8", "k8p"):
             plan_rows(f"outputs/photo_runs/{cap}_{k}/{k}_photo/plan.json", pho, "ours",
-                      f"{cap} stills {k}", how)  # fmt: skip
+                      f"{cap} stills {k}", how, PRE_FIX)  # fmt: skip
 
     names = {"pi3x": "Pi3X", "mapanything": "MapAnything", "da3_nested": "Depth Anything 3"}
     for f in sorted(Path("outputs/bakeoff").glob("c_damage_*.npz")):

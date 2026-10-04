@@ -3,11 +3,17 @@
 Works in plan coordinates (see plan2d). A room's outline comes from its free-space mask,
 which stops a cell or two short of the walls; each edge is then moved onto the wall
 surface measured from the points behind it, and the wall's sigma is that surface's spread.
+
+Where the room's ceiling was captured, a wall is measured only above furniture and door
+heads (UPPER_WALL_M up to just under the ceiling), at the median of its points: pose drift
+smears a wall into a band 10-40 cm thick, and the free-space edge stops at the band's inner
+side (fix declaration, docs/fix_declaration.md). Elsewhere the nearest face is taken.
 """
 
 from dataclasses import dataclass
 
 import numpy as np
+from scipy.ndimage import distance_transform_edt
 from skimage.measure import approximate_polygon, find_contours
 
 from floorplan.levels import Level, ceiling_level, floor_level
@@ -20,6 +26,10 @@ CORNER_TRIM_M = 0.1  # ignore points this close to the edge's corners
 FACE_MIN_FRACTION = 0.3
 FACE_BIN_M = 0.01
 MIN_FACE_POINTS = 100
+UPPER_WALL_M = 2.3  # above door heads (~2.0 m) and wardrobes / wall cabinets: only wall
+CEILING_CLEAR_M = 0.3  # stay clear of the ceiling and cornices
+UPPER_OUT_M = 0.5  # how far behind the free-space edge a smeared wall can reach
+SNAPPED_STEP_M = 0.1  # steps this short left after snapping (e.g. a notch closed) go
 UNSUPPORTED_SIGMA_M = 0.05  # edge with no wall behind it (open side, cut by segmentation)
 
 
@@ -55,6 +65,11 @@ def rectilinear_outline(mask: np.ndarray, grid: Grid, min_edge: float = MIN_EDGE
         axis = 0 if d[0] <= d[1] else 1
         edges.append(Edge(axis, (p[axis] + q[axis]) / 2, weight=float(np.hypot(*d))))
     edges = _merge_parallel(edges)
+    return _shape(_drop_steps(edges, min_edge))
+
+
+def _drop_steps(edges: list[Edge], min_edge: float) -> list[Edge]:
+    """Remove edges shorter than min_edge (shortest first), merging their neighbours."""
     while len(edges) > 4:
         lengths = _edge_lengths(edges)
         k = int(np.argmin(lengths))
@@ -62,43 +77,84 @@ def rectilinear_outline(mask: np.ndarray, grid: Grid, min_edge: float = MIN_EDGE
             break
         del edges[k]
         edges = _merge_parallel(edges)
-    return _shape(edges)
+    return edges
 
 
 def measure_room(
-    mask: np.ndarray, points: np.ndarray, grid: Grid, walls: np.ndarray, floor_z: float
+    mask: np.ndarray,
+    points: np.ndarray,
+    grid: Grid,
+    walls: np.ndarray,
+    floor_z: float,
+    labels: np.ndarray | None = None,
 ) -> RoomShape:
-    """Outline snapped to wall surfaces, plus the room's own floor and ceiling levels."""
+    """Outline snapped to wall surfaces, plus the room's own floor and ceiling levels.
+
+    labels (all rooms): points nearer another room's floor than this room's are that
+    room's side of an interior wall, and are not used to place this room's walls high up.
+    """
     shape = rectilinear_outline(mask, grid)
     h = points[:, 2] - floor_z
     ij = grid.cells(points[:, :2])
+    z = points[mask[ij[:, 0], ij[:, 1]], 2]
+    floor = ceiling = None
+    if len(z):
+        floor = floor_level(z)
+        ceiling = ceiling_level(z, floor.z)
+
     on_wall = walls[ij[:, 0], ij[:, 1]] & (h > WALL_BAND_M[0]) & (h < WALL_BAND_M[1])
     wall_uv = grid.to_plan(points[on_wall, :2])
+    upper_uv = np.empty((0, 2))
+    if floor and ceiling:
+        hr = points[:, 2] - floor.z
+        upper = (hr > UPPER_WALL_M) & (hr < ceiling.z - floor.z - CEILING_CLEAR_M)
+        if labels is not None and (others := (labels > 0) & ~mask).any():
+            own = distance_transform_edt(~mask) <= distance_transform_edt(~others)
+            upper &= own[ij[:, 0], ij[:, 1]]
+        upper_uv = grid.to_plan(points[upper, :2])
+    n = len(shape.edges)
     for k, edge in enumerate(shape.edges):
-        _snap_to_surface(edge, shape.polygon[k], shape.polygon[(k + 1) % len(shape.edges)], wall_uv)
-    shape = _shape(shape.edges)
-
-    z = points[mask[ij[:, 0], ij[:, 1]], 2]
-    if len(z):
-        shape.floor = floor_level(z)
-        shape.ceiling = ceiling_level(z, shape.floor.z)
+        p, q = shape.polygon[k], shape.polygon[(k + 1) % n]
+        if not _centre_of_wall(edge, p, q, upper_uv):
+            _snap_to_surface(edge, p, q, wall_uv)
+    shape = _shape(_drop_steps(shape.edges, SNAPPED_STEP_M))
+    shape.floor, shape.ceiling = floor, ceiling
     return shape
 
 
-def _snap_to_surface(edge: Edge, p: np.ndarray, q: np.ndarray, wall_uv: np.ndarray) -> None:
+def _behind(edge: Edge, p: np.ndarray, q: np.ndarray, uv: np.ndarray, out_m: float):
+    """Signed outward offsets of the points behind an edge (corners trimmed), and the
+    outward direction along the edge's axis."""
     along = 1 - edge.axis
     lo, hi = sorted((p[along], q[along]))
     # counter-clockwise polygon: outward normal is the edge direction turned clockwise
     direction = np.sign(q[along] - p[along])
     outward = direction if edge.axis == 0 else -direction
-    offset = (wall_uv[:, edge.axis] - edge.coord) * outward
+    offset = (uv[:, edge.axis] - edge.coord) * outward
     near = (
-        (wall_uv[:, along] > lo + CORNER_TRIM_M)
-        & (wall_uv[:, along] < hi - CORNER_TRIM_M)
+        (uv[:, along] > lo + CORNER_TRIM_M)
+        & (uv[:, along] < hi - CORNER_TRIM_M)
         & (offset > -SEARCH_IN_M)
-        & (offset < SEARCH_OUT_M)
+        & (offset < out_m)
     )
-    d = offset[near]
+    return offset[near], outward
+
+
+def _centre_of_wall(edge: Edge, p: np.ndarray, q: np.ndarray, upper_uv: np.ndarray) -> bool:
+    """Edge onto the median of the wall points above furniture; False if too few."""
+    d, outward = _behind(edge, p, q, upper_uv, UPPER_OUT_M)
+    if len(d) < MIN_FACE_POINTS:
+        return False
+    med = float(np.median(d))
+    edge.coord += outward * med
+    edge.sigma = max(float(1.4826 * np.median(np.abs(d - med))), 1e-3)
+    edge.supported = True
+    return True
+
+
+def _snap_to_surface(edge: Edge, p: np.ndarray, q: np.ndarray, wall_uv: np.ndarray) -> None:
+    """Edge onto the nearest wall face (used where the wall was not seen high up)."""
+    d, outward = _behind(edge, p, q, wall_uv, SEARCH_OUT_M)
     if len(d) < MIN_FACE_POINTS:
         return
     counts, bins = np.histogram(d, bins=np.arange(-SEARCH_IN_M, SEARCH_OUT_M, FACE_BIN_M))

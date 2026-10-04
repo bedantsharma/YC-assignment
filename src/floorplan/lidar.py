@@ -64,7 +64,8 @@ def build_plan(
         walls, observed, GRID_RES_M, lintels, floor_seen, enclosed_fraction
     )
     shapes = [
-        measure_room(labels == k, points, grid, walls, floor.z) for k in range(1, labels.max() + 1)
+        measure_room(labels == k, points, grid, walls, floor.z, labels)
+        for k in range(1, labels.max() + 1)
     ]
     if not shapes:
         return Plan([], None, angle, floor.z, ["no rooms found: no enclosed free space"])
