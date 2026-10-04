@@ -61,7 +61,7 @@ horizontally, 0.91 vertically), which is divided out (`intervals.SCALE_BIAS`,
 |---|---|---|
 | A | Cozmo's apartment, 3 Stray Scanner captures | none ("consistent with LiDAR" only) |
 | B | ARKitScenes venue 421337: 3 scans of one room + Faro laser scan | an architect's measurements from the laser scan (approximate; wall-face convention unresolved) |
-| C | A friend's home (iPhone 16 Pro): LiDAR whole home + 2 scans of the staged damage room, 3 Camera-app videos, Polycam scan | architect's drawing (4 rooms), tape: ceilings, doors, windows, closet, cabinets, the damage hole |
+| C | A friend's home (iPhone 16 Pro): LiDAR whole home + 2 scans of the staged damage room, 4 Camera-app videos, photos per room, Polycam scan | architect's drawing (4 rooms), tape: ceilings, doors, windows, closet, cabinets, the damage hole |
 
 Ground truth is transcribed by hand ([data/gt/home_c.json](../data/gt/home_c.json)), never
 produced by our code. The drawing gives design dimensions; built rooms differ by a few cm.
@@ -77,7 +77,7 @@ Home C, our output vs the ground truth (`uv run scripts/benchmark.py`):
 | Repeatability | 1 cm or 0.5% per wall | **not met**: bedroom 0.4 cm short side, 4.6 cm long side | 1.2 cm both sides (v1 vs v2) | – |
 | Openings | ≤ 2 cm on ≥ 85% | **not met**: door found, 34 cm narrow; windows not detected | – | – |
 | 90% interval coverage, sides / ceilings | calibrated | 91% / 100% | 92% / 100% | 80% / 88% |
-| Run time | | 9–20 s per capture on this laptop (M4, 16 GB) | model 60–260 s on a T4, geometry 10–20 s | model 27–75 s per photo set on a T4 |
+| Run time | | 7–22 s per capture on this laptop (M4, 16 GB) | model + geometry 62–203 s on a T4; laptop replay 12–20 s | model 27–75 s per photo set on a T4 |
 
 Photo rows combine the friend's real photos (all, 8 and 5 per room) and stills cut from
 home C's videos. With 8 real photos per room the open space is within 2–4 cm and the
@@ -198,7 +198,7 @@ walk-in. Gemini 2.5 Flash, the first model tried, also called grime marks water 
 the friend's tape: 6.35 cm hole = 31.7 cm², centre 1.420 m up, 2.286 m from the right-hand
 wall). All 7 runs find it and all 7 intervals hold the truth: LiDAR 30.4 / 37.0 cm²
 (Gemini) and 30.4 / 32.9 (Florence-2 offline), video 32.9 / 28.5 (60 frames), photo 28.0
-(8 photos). Height within 3 cm except photo (−11 cm); along the wall LiDAR is +11 to +13 cm
+(8 photos). Height within 3.2 cm except photo (−11 cm); along the wall LiDAR is +11 to +13 cm
 on both scans while video is +3 / +7 cm, so the bias is in our LiDAR corner, not the tape.
 
 **Video and photo tiers** detect on the images the reconstruction used (video: its even

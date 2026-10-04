@@ -33,21 +33,22 @@ the brief.
 | Footprint (stitched) | photos ±8% | one cloud, stitched by construction | stitched on room clips; the 5-min house clip folds | not stitched |
 | Repeatability, per wall | 1 cm or 0.5% | 0.4 / 4.6 cm (bedroom, 2 scans) | 1.2 cm (2 clips) | – |
 | 90% interval coverage, sides / ceilings | ~90% | 91% / 100% | 92% / 100% | 80% / 88% |
-| Run time per capture | (none stated) | 9–20 s on the M4 laptop | model 60–260 s on a T4 + 10–20 s geometry | model 27–75 s on a T4 + ~1 s geometry |
+| Run time per capture | (none stated) | 7–22 s on the M4 laptop | model + geometry 62–203 s on a T4; laptop replay 12–20 s | model 27–75 s on a T4 + ~1 s geometry |
 
-Photo numbers come from stills cut from home C's videos, not from the friend's own photos.
+Photo numbers combine the friend's real photos (all, 8 and 5 per room) and stills cut from
+home C's videos.
 
 ## Where the numbers come from
 
 | Tier | Ground truth | Captures |
 |---|---|---|
-| LiDAR | Laser scan (ARKitScenes 421337) and tape (home C) | B: 3 videos of one room; C: whole home |
-| Video | Tape (home C) | C: Camera-app walkthrough |
-| Photos | Tape (home C) | C: per-room photo folders |
+| LiDAR | Architect's drawing and tape (home C); B's laser-scan measurements for repeatability only (approximate) | B: 3 scans of one room; C: whole home + 2 scans of the damage room |
+| Video | Architect's drawing and tape (home C) | C: Camera-app clips of the damage room and the LiDAR recording's own RGB video |
+| Photos | Architect's drawing and tape (home C) | C: the friend's per-room photo folders and stills cut from the videos |
 
-Dataset A has no ground truth, so it is used only for repeatability and as a check that
-results are "consistent with LiDAR". One room of C is held out for the walk-in rehearsal and
-is reported separately.
+Dataset A has no ground truth, so it is used only for development, the drift ablation and as
+a check that results are "consistent with LiDAR". Every room of C is in the benchmark; the
+walk-in rehearsal is on a room none of our data has seen ([walkin_runbook.md](walkin_runbook.md)).
 
 ## Known limits (to confirm in the benchmark)
 
