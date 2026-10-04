@@ -120,6 +120,17 @@ def main() -> None:
         "PYTHONPATH": f"{data}:{repo}",
         "FLOORPLAN_RECON_CACHE": str(OUT / "recon_cache"),
     }
+    # hash of the decoded frames: the laptop's replay needs the same pixels (cache key);
+    # compare with the same line run locally before trusting a replay
+    frames_sha = (
+        "import hashlib, sys, numpy as np; from floorplan.video import sample_frames; "
+        "h = hashlib.sha1(); [h.update(np.asarray(f).tobytes()) for f in "
+        "sample_frames(__import__('pathlib').Path(sys.argv[1]), 90, 'top')]; print(h.hexdigest())"
+    )
+    sha = subprocess.run(
+        [sys.executable, "-c", frames_sha, str(video)], env=env, capture_output=True, text=True
+    )
+    log(f"frames sha1 (90 frames): {sha.stdout.strip()} {sha.stderr[-500:]}")
     stop, rows = threading.Event(), []
     mon = threading.Thread(target=watch_gpus, args=(stop,), daemon=True)
     mon.start()
