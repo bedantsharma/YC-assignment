@@ -1,0 +1,93 @@
+{
+  "capture": "home C (friend's home): c_home_01, c_damage_01/02, Camera-app videos c_*_v*.mp4",
+  "source": "Architect's floor plan drawing (registered copy), photographed by the friend and given by the user on Oct 4, 2026 (data/home_c/notes/ground_truth_ft.jpeg, gitignored: official document). Transcribed by hand from the drawing's labels, never from our output. Rooms of interest = the ones the user marked in orange.",
+  "caveats": [
+    "Design dimensions from the drawing, not tape-measured as built: expect a few cm of construction difference",
+    "Lengths are interior clear dimensions between wall faces as labelled on the plan",
+    "1 ft = 0.3048 m; metres computed from the feet-inch labels by script"
+  ],
+  "units": "metres and m2 (feet-inch originals kept as strings)",
+  "rooms": {
+    "kitchen": {
+      "plan_label": "KITCHEN 10'0\" X 12'0\"",
+      "width_ftin": "10'0\"",
+      "depth_ftin": "12'0\"",
+      "width_m": 3.048,
+      "depth_m": 3.6576,
+      "our_label": "kitchen",
+      "polycam": "kitchen",
+      "note": "side labels 10' and 12' match the room label",
+      "area_m2": 11.148
+    },
+    "dining_living": {
+      "plan_label": "DINING & LIVING 18'9\"X18'0\"",
+      "width_ftin": "18'9\"",
+      "depth_ftin": "18'0\"",
+      "width_m": 5.715,
+      "depth_m": 5.4864,
+      "our_label": "hall",
+      "polycam": "dining_plus_bedroom_3",
+      "note": "one open space; Polycam splits it into Dining Room and Bedroom 3",
+      "area_m2": 31.355
+    },
+    "drawing": {
+      "plan_label": "DRAWING 12'0\"X15'0\"",
+      "width_ftin": "12'0\"",
+      "depth_ftin": "15'0\"",
+      "width_m": 3.6576,
+      "depth_m": 4.572,
+      "our_label": "room2",
+      "polycam": "bedroom_1",
+      "notch": {
+        "what": "POOJA niche in one corner: the wall beside it is 13'4.5\" instead of 15'",
+        "depth_m": 0.4953,
+        "width_m": null
+      },
+      "openings": [
+        {
+          "kind": "door/window (D/W)",
+          "wall": "12' wall opposite the pooja side",
+          "width_ftin": "8'6\"",
+          "width_m": 2.5908,
+          "offsets_ftin": "1'9\" each side"
+        }
+      ],
+      "note": "area below is the nominal 12' x 15' rectangle; the pooja notch (width not labelled) makes the real floor smaller",
+      "area_m2": 16.723
+    },
+    "bedroom": {
+      "plan_label": "BEDROOM 11'0\"X15'0\"",
+      "width_ftin": "11'0\"",
+      "depth_ftin": "15'0\"",
+      "width_m": 3.3528,
+      "depth_m": 4.572,
+      "our_label": "room1",
+      "polycam": "bedroom_2",
+      "staged_damage_room": true,
+      "openings": [
+        {
+          "kind": "window (W)",
+          "wall": "11' wall",
+          "width_ftin": "7'0\"",
+          "width_m": 2.1336,
+          "offsets_ftin": "2' each side"
+        },
+        {
+          "kind": "door (D)",
+          "wall": "opposite 11' wall",
+          "segments_ftin": [
+            "3'6\"",
+            "5'",
+            "2'6\""
+          ],
+          "note": "the drawing does not say which segment is the door opening"
+        }
+      ],
+      "area_m2": 15.329
+    }
+  },
+  "label_maps": {
+    "our_label": "room names in data/gt/home_c_rooms.json (plan frame of c_home_01)",
+    "polycam": "room keys in data/gt/home_c_polycam.json"
+  }
+}

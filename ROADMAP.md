@@ -11,7 +11,9 @@ model runs on the laptop any more (user)**: Kaggle runs, the laptop replays cach
 reconstructions. Video tier on the damage-room clips: within 5 cm of LiDAR (60 frames).
 Whole-house clip fails (windows fold rooms); chain links fixed (`chunks.fit_shared`).
 Polycam is larger than our LiDAR on every dimension (6-57 cm): doubled walls from drift,
-cabinets; tape decides. LiDAR model survey + SpatialLM bake-off
+cabinets. **Ground truth arrived (architect's drawing, 4 rooms): `data/gt/home_c.json`,
+compare with `uv run scripts/compare_gt_c.py`. Polycam within 12 cm of it; our LiDAR
+11-53 cm short, areas 11-30% low, all outside our intervals: worst failing gate.** LiDAR model survey + SpatialLM bake-off
 ([docs/lidar_model_research.md](docs/lidar_model_research.md)): unstable, larger than
 Polycam, OOM on the whole home; not adopted.
 
