@@ -331,3 +331,17 @@ def test_traced_crack_mask_is_a_clean_writable_bool_and_places():
     assert set(np.unique(mask.view(np.uint8))) <= {0, 1}
     room, crack = _placed_on_w1("crack", mask, source="polyline")
     assert crack is not None and crack.length > 0
+
+
+def test_traced_diagonal_crack_length_comes_from_the_trace():
+    # 400 x 400 px diagonal at 2 m, f = 1000: 0.8 * sqrt(2) = 1.131 m on the wall
+    pts = [(440.0, 280.0), (840.0, 680.0)]
+    room = _room()
+    view, _ = _camera_facing_w1()
+    det = Detection("v0", "crack", 0.9, (440, 280, 840, 680), mask_source="polyline")
+    det.mask, det.points = damage.polyline_mask(pts, (1280, 960)), pts
+    planes = surface_planes([room], FLOOR_Z)
+    crack = place(view, 0.0, planes, [room], det, np.random.default_rng(0))
+    assert crack.length == pytest.approx(0.8 * np.sqrt(2), rel=0.05)
+    lo, hi = np.percentile(crack.length_draws, [5, 95])
+    assert lo <= 0.8 * np.sqrt(2) <= hi

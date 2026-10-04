@@ -254,7 +254,12 @@ def place(
     px_size = float(np.sqrt(area / mask_px)) if mask_px > 0 else 0.0
 
     skel_px = 0.0
-    if det.label == "crack":
+    if det.label == "crack" and det.mask_source == "polyline" and det.points:
+        # traced: length straight from the trace (a skeleton's pixel count reads a diagonal
+        # crack ~30% short)
+        p = np.asarray(det.points, float)
+        skel_px = float(np.linalg.norm(np.diff(p, axis=0), axis=1).sum())
+    elif det.label == "crack":
         skel_px = float(morphology.skeletonize(det.mask).sum())
     r_eq = np.sqrt(max(mask_px, 1.0) / np.pi)
 
