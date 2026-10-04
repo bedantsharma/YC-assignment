@@ -38,6 +38,11 @@ land); datasets: `docs/data_plan.md`. Deadline: Mon Oct 5, 10:00 IST.
   - `chunks.py`: > 30 frames in overlapping windows, chained by similarity fits
   - `intervals.py`: video scale-bias correction and per-axis interval widening
   - `photos.py`: photo folders → upright images; plan rooms named after folders
+  - `damage.py`: Gemini detection per image (credentials from the environment only),
+    JSON response cache in `data/damage_cache/` (committed), model-free masks
+  - `damage_geom.py`: mask outline → wall-plane (u, v) area and position, Monte Carlo interval
+  - `damage_lidar.py`: LiDAR-tier damage stage (keyframes, upright frames, depth check)
+  - `damage_rules.py`: concealed-damage flags (rule ids) and repair scope items
   - `render.py`: `Result` → dimensioned `plan.png`
   - `output.py`: result type and JSON writer (every number is a `Measurement` with an interval)
 - `tests/`: pytest tests
@@ -77,6 +82,15 @@ code only ever sees this frame. Raw-format notes below are for the loaders only.
 - Video/photo tiers on a LiDAR recording read **only the RGB video**: never its depth, poses,
   intrinsics or IMU (see `docs/data_plan.md`). Video-tier benchmark numbers use Camera-app video.
 - Keep one room of the friend's capture (C) untouched until the walk-in rehearsal.
+
+## Damage keyframes (agreed Oct 4, deferred; ROADMAP Phase 5)
+
+Today the LiDAR damage stage sends 40 evenly spaced sharpest frames to Gemini, so damage
+between slots can be missed. Planned: (1) protocol asks for a ~3 s pause about 1 m from
+each damage (photo tier: close-ups inside the room folder, never loose, since a loose photo
+has no pose or scale); (2) detect still-camera segments and sample them densely;
+(3) coverage-based keyframes from the known wall planes and poses; (4) optional low-res
+screening pass.
 
 ## Working rules
 

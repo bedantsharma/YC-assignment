@@ -42,7 +42,7 @@ for it. The capture protocol already asks for every wall to be swept top to bott
 | 2 LiDAR backend | Sat 17:00 | **Done**: 9 captures end to end; 5 cm median vs ground truth after fix 09 |
 | 3 Repeatability, drift | Sat 23:00 | **Half**: drift built + ablated (off); damage-room scans now agree to 1 / 5 cm; repeatability table not done |
 | 4 Video, photo | Sun 08:00 | **Done with gaps**: video works on room clips and the new house clip (scale 20-50 cm long); photo per room on real photos (median 19 cm), stitch fails |
-| 5 Openings, damage, scope | Sun 14:00 | **Openings partial** (doors, passages); damage researched and planned (docs/damage_research.md), not built |
+| 5 Openings, damage, scope | Sun 14:00 | **Openings partial** (doors, passages); damage stage built for LiDAR (Gemini + wall-plane sizing + rules + scope), not yet run on real detections |
 | 6 Benchmark, fix loop | Sun 18:00 | **Done**: fix loop, head-to-head (75%), `scripts/benchmark.py`, calibration; new house/photo/B rows still to add |
 | 7 Reports, packaging | Mon 01:00 | **Drafts done**: benchmark + technical report, reproduce script; presentation format not decided |
 
@@ -230,12 +230,25 @@ the doorway photos; if that fails too, document the photo stitch as failing.
       hosted vision model as fallback) on RGB keyframes, with a text list of classes. Box →
       depth pixels in the box → 3D with the frame's pose (same frame index as the depth; no
       IMU work needed) → footprint on the plan. Built once, used for:
-  - [ ] Damage: hole, crack, water stain → class + metric extent on the wall plane
+  - [~] Damage (LiDAR tier, code + synthetic tests in; not yet run on Gemini): Gemini
+        boxes, model-free masks, outline rays onto the wall plane, Monte Carlo 90% interval,
+        views merged (`src/floorplan/damage*.py`, `floorplan run --damage`)
+  - [ ] Damage keyframes, agreed Oct 4, deferred (today: 40 even time slots, sharpest of 3,
+        all sent to Gemini; small damage between slots can be missed):
+    - [ ] Protocol: pause ~3 s about 1 m in front of each damage during the LiDAR / video
+          walk; photo tier: 1-2 close-ups per damage *inside the room's folder* (a loose
+          close-up has no pose or scale, so it cannot be sized)
+    - [ ] Pause detection: still camera (LiDAR poses; video: frame difference) = the user is
+          showing damage → sample those segments densely
+    - [ ] Coverage keyframes: fewest frames that see every wall patch at least twice, close
+          and near face-on (we know every wall plane and every pose), instead of time slots
+    - [ ] Optional: cheap low-res screening pass, full-res only on frames with a hit
+  - [ ] Damage on the video and photo tiers (poses from the reconstruction)
   - [ ] Fix map 04: wardrobe / fridge / bookshelf boxes removed from the wall mask
   - [ ] Stretch: furniture symbols on the plan (not required by the brief)
-- [ ] Concealed-damage rule table (e.g. ceiling stain → leak above; stain at skirting →
-      rising damp); each flag names its rule
-- [ ] Scope line items keyed to surface ids (repaint wall W3: 12.4 m², etc.)
+- [x] Concealed-damage rule table (e.g. ceiling stain → leak above; stain at skirting →
+      rising damp); each flag names its rule (`damage_rules.py`: R1-R5, R7-R10; R6 not built)
+- [x] Scope line items keyed to surface ids (repaint wall W3: 12.4 m², etc.)
 
 Exit: the damaged room produces damage regions, a flag, and scope lines.
 Cut line: openings as door/passage gaps only, no windows.
