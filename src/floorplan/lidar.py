@@ -10,7 +10,8 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from floorplan.levels import floor_level
-from floorplan.output import Measurement, Room, Wall
+from floorplan.openings import Found, find_openings
+from floorplan.output import Adjacency, Measurement, Opening, Room, Wall
 from floorplan.plan2d import (
     ENCLOSED_FRACTION,
     Sightlines,
@@ -37,6 +38,7 @@ class Plan:
     rotation_deg: float | None
     floor_z: float | None
     warnings: list[str] = field(default_factory=list)
+    adjacency: list[Adjacency] = field(default_factory=list)
 
 
 def build_plan(
@@ -70,7 +72,9 @@ def build_plan(
     if not shapes:
         return Plan([], None, angle, floor.z, ["no rooms found: no enclosed free space"])
 
-    rooms = [_room(f"r{k}", shape) for k, shape in enumerate(shapes, start=1)]
+    found = [find_openings(s, points, grid, labels, k) for k, s in enumerate(shapes, start=1)]
+    rooms = [_room(f"r{k + 1}", s, found[k]) for k, s in enumerate(shapes)]
+    adjacency = _adjacency(rooms)
     warnings = [
         f"{r.id}: ceiling not captured, height unknown" for r in rooms if not r.ceiling_height
     ]
@@ -87,10 +91,22 @@ def build_plan(
             )
     total = sum(r.floor_area.value for r in rooms)
     sigma = np.sqrt(sum(((r.floor_area.hi - r.floor_area.value) / Z90) ** 2 for r in rooms))
-    return Plan(rooms, _measure(total, sigma, "m2"), angle, floor.z, warnings)
+    return Plan(rooms, _measure(total, sigma, "m2"), angle, floor.z, warnings, adjacency)
 
 
-def _room(room_id: str, shape: RoomShape) -> Room:
+def _adjacency(rooms: list[Room]) -> list[Adjacency]:
+    """One entry per room pair, through the first opening found between them."""
+    out, seen = [], set()
+    for room in rooms:
+        for o in room.openings:
+            pair = tuple(sorted((room.id, o.connects_to))) if o.connects_to else None
+            if pair and pair not in seen:
+                seen.add(pair)
+                out.append(Adjacency(pair[0], pair[1], o.id))
+    return out
+
+
+def _room(room_id: str, shape: RoomShape, found: list[Found] = ()) -> Room:
     n = len(shape.edges)
     ceiling = None
     if shape.ceiling and shape.floor:
@@ -110,6 +126,17 @@ def _room(room_id: str, shape: RoomShape) -> Room:
                 observed=edge.supported,
             )
         )
+    openings = [
+        Opening(
+            id=f"{room_id}.o{j}",
+            wall_id=f"{room_id}.w{f.edge + 1}",
+            kind=f.kind,
+            width=_measure(f.width, f.width_sigma, "m"),
+            height=_measure(f.height, 0.03, "m") if f.height else None,
+            connects_to=f"r{f.connects_to}" if f.connects_to else None,
+        )
+        for j, f in enumerate(found, start=1)
+    ]
     area_sigma = float(np.sqrt(sum((e.length * e.sigma) ** 2 for e in shape.edges)))
     return Room(
         id=room_id,
@@ -118,6 +145,7 @@ def _room(room_id: str, shape: RoomShape) -> Room:
         floor_area=_measure(shape.area, area_sigma, "m2"),
         ceiling_height=ceiling,
         walls=walls,
+        openings=openings,
     )
 
 

@@ -78,3 +78,21 @@ def test_a_room_with_an_unscanned_wall_keeps_its_floor_flagged_low_confidence():
     assert any(w.startswith(f"{room_a.id}:") and "low confidence" in w for w in plan.warnings)
     assert room_a.low_confidence_area.value > 0.3
     assert all(r.low_confidence_area is None for r in plan.rooms if r is not room_a)
+
+
+def test_a_door_under_a_lintel_is_found_with_its_width_and_head():
+    plan = build_plan(two_rooms(angle_deg=0.0, ceiling=2.7, lintel=2.0))
+    doors = [o for r in plan.rooms for o in r.openings]
+    assert doors, "no opening found"
+    for o in doors:
+        assert o.kind == "door"
+        assert o.width.value == pytest.approx(0.9, abs=0.1)  # door at y 1.0-1.9
+        assert o.height.value == pytest.approx(2.0, abs=0.06)
+        assert o.connects_to is not None
+    assert len(plan.adjacency) == 1
+
+
+def test_a_doorway_open_to_the_ceiling_is_a_passage():
+    plan = build_plan(two_rooms(angle_deg=0.0, ceiling=2.7))
+    kinds = {o.kind for r in plan.rooms for o in r.openings}
+    assert kinds == {"passage"}

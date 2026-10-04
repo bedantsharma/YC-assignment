@@ -30,8 +30,8 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | O1 | Per-room plan with walls (dimensioned) | `src/floorplan/plan2d.py`, `rooms.py`, `lidar.py` | `rooms[].walls[]` in JSON + `plan.png` | In progress | LiDAR tier works on datasets A and B; not yet checked against ground truth |
 | O2 | Ceiling height per room | `src/floorplan/levels.py`, `rooms.py` | `rooms[].ceiling_height` | In progress | Per-room floor and ceiling planes (LiDAR); `null` + warning when the ceiling was never scanned |
 | O3 | Floor area per room | `src/floorplan/rooms.py`, `lidar.py` | `rooms[].floor_area` | In progress | LiDAR tier; polygon snapped to wall faces |
-| O4 | Openings (doors, windows) per room | `src/floorplan/geometry/openings.py` *(planned)* | `rooms[].openings[]` | Not started | |
-| O5 | Stitched multi-room plan: every room placed, connected, dimensioned, correct adjacency | `src/floorplan/geometry/stitch.py` *(planned)* | `property.adjacency` + stitched plan image | Not started | |
+| O4 | Openings (doors, windows) per room | `src/floorplan/openings.py` | `rooms[].openings[]`, [docs/openings.md](docs/openings.md) | Partial | Doors and passages from gaps in wall elevations, confirmed by seeing through; windows not detected (window walls return points across the glass) |
+| O5 | Stitched multi-room plan: every room placed, connected, dimensioned, correct adjacency | `src/floorplan/lidar.py` (one cloud per capture), `src/floorplan/openings.py` | `adjacency[]` + `plan.png` | In progress | LiDAR and video: rooms placed in one frame by construction; adjacency from detected doors (`c_home_01`: hall-drawing, hall-bedroom; kitchen link missed). Photo tier: not stitched (G7) |
 | O6 | Stitched plan produced from **every** tier, including photos | `src/floorplan/pipeline.py` | LiDAR + video stitched (`c_home_01`); photo not | Partial | LiDAR and video: one stitched plan; photo: rooms measured but not placed |
 | O7 | Per-surface damage regions with class and metric extent | `src/floorplan/damage.py` *(planned)* | `damage[]` | Not started | |
 | O8 | Concealed-damage flags naming the rule that fired | `src/floorplan/damage.py` *(planned)* | `flags[].rule_id`, `flags[].rule` | Not started | |
@@ -56,7 +56,7 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 
 | ID | Requirement | File path | Artifact | Status | Notes |
 |---|---|---|---|---|---|
-| G1 | Opening widths ≤ 2 cm on ≥ 85% of openings; missed and phantom openings count as misses | `scripts/benchmark.py` *(planned)* | Openings table in benchmark report | Not started | |
+| G1 | Opening widths ≤ 2 cm on ≥ 85% of openings; missed and phantom openings count as misses | `src/floorplan/openings.py` | [docs/openings.md](docs/openings.md) | **Not met** | Bedroom door found in both scans but 34 cm narrow (door leaf / frame in the gap); windows not detected |
 | G2 | Ceiling height ≤ 1.5 cm per room | `scripts/benchmark.py` *(planned)* | Ceiling table | Not started | |
 | G3 | Ceiling spread across repeat captures ≤ 1 cm; report says bias or noise | `scripts/benchmark.py` *(planned)* | Ceiling table + report sentence | Not started | |
 | G4 | Repeatability: two captures of a room agree within 1 cm or 0.5% per wall | `scripts/benchmark.py` *(planned)* | Repeatability table | Not started | Datasets A (×3), B (×3), C (×2) |
