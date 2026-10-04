@@ -117,17 +117,22 @@ def pop_notes() -> list[str]:
 
 
 def load(path: Path, model: str) -> Reconstruction:
-    z = np.load(path)
-    return Reconstruction(z["view_points"], z["view_keep"], z["cam_poses"],
-                          float(z["seconds"]), model)  # fmt: skip
+    with np.load(path) as z:
+        return Reconstruction(z["view_points"], z["view_keep"], z["cam_poses"],
+                              float(z["seconds"]), model)  # fmt: skip
 
 
 def save(path: Path, rec: Reconstruction) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_name(path.stem + ".tmp.npz")  # never leave a half-written cache entry
-    np.savez_compressed(tmp, view_points=rec.view_points, view_keep=rec.view_keep,
-                        cam_poses=rec.cam_poses, seconds=rec.seconds)  # fmt: skip
-    tmp.rename(path)
+    # never leave a half-written cache entry: write beside it, then rename (atomic); the
+    # name is unique per process so two runs filling the same entry cannot collide
+    tmp = path.with_name(f"{path.stem}.{os.getpid()}.tmp.npz")
+    try:
+        np.savez_compressed(tmp, view_points=rec.view_points, view_keep=rec.view_keep,
+                            cam_poses=rec.cam_poses, seconds=rec.seconds)  # fmt: skip
+        tmp.replace(path)
+    finally:
+        tmp.unlink(missing_ok=True)
 
 
 def cache_root() -> Path:

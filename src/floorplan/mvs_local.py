@@ -66,7 +66,8 @@ def reconstruct_safe(frames: list[Image.Image], model: str, worker=None) -> Reco
     from floorplan.chunks import chain, windows
 
     run_one = worker or _worker
-    window = int(os.environ.get(WINDOW_ENV) or window_for(ram_gb()))
+    # never below MIN_WINDOW: a window of 2 or less cannot overlap the next one (chunks)
+    window = max(MIN_WINDOW, int(os.environ.get(WINDOW_ENV) or window_for(ram_gb())))
     while True:
         try:
             start = time.perf_counter()
@@ -121,9 +122,9 @@ def _worker(frames: list[Image.Image], model: str) -> Reconstruction:
             why = f"killed by signal {-res.returncode}" if res.returncode < 0 else (
                 res.stderr.strip().splitlines() or ["no output"])[-1]  # fmt: skip
             raise WorkerFailed(why[:300])
-        z = np.load(dst)
-        return Reconstruction(z["view_points"], z["view_keep"], z["cam_poses"],
-                              float(z["seconds"]), model)  # fmt: skip
+        with np.load(dst) as z:
+            return Reconstruction(z["view_points"], z["view_keep"], z["cam_poses"],
+                                  float(z["seconds"]), model)  # fmt: skip
 
 
 def _child(src: Path, dst: Path, model: str) -> None:

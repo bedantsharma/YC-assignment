@@ -103,3 +103,18 @@ def test_child_processes_killed_for_memory_retry_smaller(monkeypatch, capsys):
     assert rec.view_points.shape == (9, 28, 37, 3)
     err = capsys.readouterr().err
     assert "killed by signal 9" in err and "retrying with 5 frames per window" in err
+
+
+def test_tiny_window_setting_is_raised_to_the_minimum(monkeypatch):
+    """FLOORPLAN_LOCAL_WINDOW below MIN_WINDOW cannot overlap: it runs at MIN_WINDOW."""
+    monkeypatch.setenv(mvs_local.WINDOW_ENV, "2")
+    sizes = []
+
+    def worker(frames, model):
+        sizes.append(len(frames))
+        return _rec(frames, model)
+
+    frames = _frames(9)
+    rec = REAL_SAFE(frames, "pi3x", worker)
+    assert max(sizes) == mvs_local.MIN_WINDOW
+    np.testing.assert_allclose(rec.view_points, _rec(frames).view_points, atol=1e-9)

@@ -31,3 +31,18 @@ def test_cache_replays_without_the_model(tmp_path, monkeypatch):
     other = [Image.new("RGB", (8, 6), (9, 9, 9))]
     with pytest.raises(RuntimeError, match="no cached reconstruction"):
         mvs.reconstruct(other, "pi3x")
+
+
+def test_failed_cache_write_leaves_nothing_behind(tmp_path, monkeypatch):
+    """A write that fails part-way leaves neither the entry nor a temp file."""
+    pts = np.zeros((1, 2, 2, 3), np.float32)
+    rec = mvs.Reconstruction(pts, np.ones((1, 2, 2), bool), np.eye(4)[None], 1.0, "pi3x")
+
+    def broken(path, **arrays):
+        open(path, "wb").write(b"half")
+        raise OSError("disk full")
+
+    monkeypatch.setattr(mvs.np, "savez_compressed", broken)
+    with pytest.raises(OSError, match="disk full"):
+        mvs.save(tmp_path / "entry.npz", rec)
+    assert list(tmp_path.iterdir()) == []
