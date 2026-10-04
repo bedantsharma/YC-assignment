@@ -33,13 +33,14 @@ def main(argv: list[str] | None = None) -> int:
         "--model",
         choices=["pi3x", "mapanything"],
         default="pi3x",
-        help="video tier: pi3x (more accurate, CC BY-NC weights) or mapanything (Apache 2.0)",
+        help="video / photo tiers: pi3x (more accurate, CC BY-NC weights) or mapanything "
+        "(Apache 2.0)",
     )
     p_run.add_argument(
         "--damage",
         action="store_true",
-        help="detect damage with Gemini (hosted; credentials from the environment, see "
-        "src/floorplan/damage.py); LiDAR tier only so far",
+        help="detect damage on any tier (Gemini, credentials from the environment; offline "
+        "fallback: see src/floorplan/damage.py)",
     )
     p_run.add_argument("--damage-frames", type=int, help="keyframes sent to the damage detector")
     p_run.add_argument(

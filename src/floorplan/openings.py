@@ -114,7 +114,7 @@ def _runs(mask: np.ndarray) -> list[tuple[int, int]]:
 
 
 def _other_room(f: Found, labels: np.ndarray, grid: Grid, room: int, edge, poly) -> int | None:
-    """Room label 0.6 m past the opening's centre, if another room is there."""
+    """Label of another room 0.4, 0.6 or 0.9 m past the opening's centre (first found)."""
     k = f.edge
     n = len(poly)
     p, q = poly[k], poly[(k + 1) % n]

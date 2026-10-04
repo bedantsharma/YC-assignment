@@ -43,7 +43,8 @@ def run(
     damage_dir: Path | None = None,
     crack_pass: bool = False,
 ) -> Result:
-    """damage: detect damage (hosted Gemini; LiDAR tier only so far), overlays to damage_dir."""
+    """damage: detect damage on any tier (detector choice in damage.py), overlays to
+    damage_dir."""
     path = Path(path)
     fmt = detect_format(path)
     tier = resolve_tier(fmt, tier)
