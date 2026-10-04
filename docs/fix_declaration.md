@@ -111,7 +111,66 @@ In `rooms.measure_room`, for each outline edge, when the room's ceiling was meas
   plans move from ≈ −30 cm toward the truth, within ±15 cm. Photo tier: no cache; not
   rerun here.
 
-## 5. Result
+## 5. Result (commit `c69216d`)
 
-*(after the fix: filled in from `uv run scripts/gt_table.py`, `scripts/compare_gt_c.py`,
-`scripts/lidar_summary.py`; wrong predictions reported as such)*
+### LiDAR tier: as predicted
+
+`uv run scripts/compare_gt_c.py`:
+
+| Room (scan) | Before (m) | After (m) | Error after, long / short (cm) | Predicted | Area after [GT inside?] |
+|---|---|---|---|---|---|
+| Kitchen | 3.20 × 2.72 | 3.58 × 3.05 | −8 / 0 | −5 / 0 | 10.3 (−8%), out |
+| Dining & living | 5.52 × 4.95 | 5.64 × 5.26 | −7 / −22 | −7 / −22 | 25.1 (−20%), out |
+| Drawing | 4.24 × 3.53 | 4.51 × 3.65 | −6 / −1 | −6 / 0 | 16.5 (−1%), **in** |
+| Bedroom (`c_home_01`) | 4.46 × 3.21 | 4.53 × 3.30 | −4 / −5 | −4 / −5 | 13.9 (−9%), out |
+| Bedroom (`c_damage_01`) | 4.24 × 3.30 | 4.62 × 3.39 | +5 / +3 | +5 / +3 | 14.9 (−2%), **in** |
+| Bedroom (`c_damage_02`) | 4.26 × 3.08 | 4.67 × 3.38 | +9 / +3 | +9 / +3 | 15.0 (−2%), **in** |
+
+- **Median absolute wall error 29 → 5 cm** (Polycam: 6 cm); worst −53 → −22 cm (the dining
+  & living room's unscanned west wall). Truth inside the area interval: 0 → 3 of 6.
+- Repeat scans of the bedroom: short side 21 → 1 cm apart, long side 2 → 5 cm apart.
+- Ceilings unchanged (1 cm).
+- All 9 captures (`uv run scripts/lidar_summary.py`): A `1a8384c3f6` and `c00a170fe1`
+  unchanged; A `c7d28f72c6` 11.2 7.0 13.5 10.9 10.6 → 10.9 7.0 13.9 11.7 11.1 m² (each
+  < 1 m², unverified); B 15.0 / 15.0 / 14.8 → 17.2 / 16.4 / 16.0 m², exactly as predicted,
+  including the predicted loss of agreement between B's scans (unverified until B's laser
+  measurements arrive).
+
+### Video tier: prediction wrong
+
+Replayed from the Kaggle cache: the damage-room plans barely moved (60 frames: 4.21 × 3.11
+→ 4.27 × 3.14 and 4.24 × 3.08 → 4.26 × 3.12; still ≈ −30 / −22 cm). Predicted: within
+±15 cm. Why: Pi3X's clouds are not smeared like the LiDAR's (one reconstruction, no drift),
+so the geometry fix has little to move. The video tier is short for another reason: its
+**horizontal scale correction was measured against our LiDAR** (`intervals.SCALE_BIAS`,
+video / LiDAR on the damage room, `docs/video_scale.md`), and that LiDAR was 7–8% short.
+The correction copied the LiDAR's error into the video tier.
+
+## 6. Follow-up (declared before applying): re-measure the video scale bias
+
+**Fix.** Re-derive `SCALE_BIAS` horizontal with the same documented procedure (Pi3X and
+MapAnything Kaggle runs on the damage room, `uv run scripts/video_scale.py
+outputs/bakeoff/c_damage_0*__*.npz outputs/video_eval/*.npz`, mean of longest wall and
+√area), now against the corrected LiDAR:
+
+| Model | Horizontal before | Horizontal now | Vertical (unchanged) |
+|---|---|---|---|
+| Pi3X (video and photo) | 0.964 | **0.890** | 0.914 (video), 0.930 (photo) |
+| MapAnything (video and photo) | 0.935 | **0.877** | 1.035 |
+
+**Predicted** (Camera-app damage-room clips; every horizontal length × 0.964 / 0.890 =
+1.083):
+
+| Clip | Now (m) | Predicted (m) | Predicted error long / short (cm) |
+|---|---|---|---|
+| v1, 60 frames | 4.27 × 3.14 | 4.62 × 3.40 | +5 / +5 |
+| v2, 60 frames | 4.26 × 3.12 | 4.61 × 3.38 | +4 / +3 |
+| v1, 30 frames | 4.41 × 3.24 | 4.78 × 3.51 | +21 / +16 |
+| v2, 30 frames | 4.20 × 3.01 | 4.55 × 3.26 | −2 / −9 |
+
+Video-tier median absolute wall error on these clips ≈ 30 → ≈ 5 cm; ceilings unchanged.
+**This is in-sample:** the bias is fitted on the damage room, where the LiDAR now matches the
+truth, so the damage-room clips agree by construction. The held-out evidence is weaker:
+across the home's other rooms (Pi3X, chained 90-frame run) the horizontal ratio ranges
+0.80–0.99, so a single bias leaves up to ±10% per room (drawing room ≈ +10% after
+correction). Those rooms need the `c_home_01` video rerun on Kaggle (no replay cache).
