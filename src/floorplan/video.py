@@ -12,9 +12,18 @@ against ARKit gravity (evaluation only).
 Vertical. After reconstruction, up starts as the cameras' mean image-up direction and is
 refined to the direction the wall normals are perpendicular to. On c_damage_01 this agrees
 with the floor normals to 0.6 deg.
+
+Frames store. ffmpeg on the laptop (ARM) and on Kaggle (x86) decode the same video to
+slightly different pixels, whatever the version (c_home_v2: 6.1 and 7.1 agree on the Mac,
+Kaggle's 6.1 differs), so a reconstruction cached on Kaggle (keyed by pixels) would not
+replay. With FLOORPLAN_FRAMES_CACHE set, sampled frames are stored as lossless PNG, keyed
+by the video's bytes, frame count and orientation: decode once on the laptop, ship the
+store, and Kaggle reads the same pixels instead of decoding.
 """
 
+import hashlib
 import json
+import os
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -33,6 +42,7 @@ FRAME_LONG_SIDE = 960
 NORMAL_NEIGHBOURS = 12
 PLANAR_MAX = 0.02  # smallest / total local variance: below this a point lies on a plane
 WALL_BAND_DEG = 25.0
+FRAMES_CACHE_ENV = "FLOORPLAN_FRAMES_CACHE"
 
 
 @dataclass
@@ -70,7 +80,32 @@ def orientation(video: Path) -> Orientation:
 
 
 def sample_frames(video: Path, n: int, up_side: str) -> list[Image.Image]:
-    """n upright frames, evenly spaced in time."""
+    """n upright frames, evenly spaced in time (read from the frames store if it has them)."""
+    store = _frames_dir(video, n, up_side)
+    if store and store.is_dir():
+        return [Image.open(p).convert("RGB") for p in sorted(store.glob("*.png"))]
+    frames = _decode_frames(video, n, up_side)
+    if store:
+        tmp = store.with_name(store.name + ".tmp")
+        tmp.mkdir(parents=True, exist_ok=True)
+        for i, f in enumerate(frames):
+            f.save(tmp / f"{i:04d}.png")
+        tmp.rename(store)
+    return frames
+
+
+def _frames_dir(video: Path, n: int, up_side: str) -> Path | None:
+    root = os.environ.get(FRAMES_CACHE_ENV)
+    if not root:
+        return None
+    h = hashlib.sha1()
+    with open(video, "rb") as f:
+        for block in iter(lambda: f.read(1 << 20), b""):
+            h.update(block)
+    return Path(root) / f"{video.stem}_{h.hexdigest()[:12]}_{n}_{up_side}_{FRAME_LONG_SIDE}"
+
+
+def _decode_frames(video: Path, n: int, up_side: str) -> list[Image.Image]:
     rotate = TRANSPOSE[up_side]
     scale = f"scale='if(gt(iw,ih),{FRAME_LONG_SIDE},-2)':'if(gt(iw,ih),-2,{FRAME_LONG_SIDE})'"
     vf = ",".join(f for f in (rotate, scale) if f)

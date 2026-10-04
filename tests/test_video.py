@@ -61,3 +61,44 @@ def test_widen_room_uses_vertical_error_for_ceiling_only():
     assert room.walls[0].length.hi - 4.0 == pytest.approx(1.645 * 0.05 * 4.0, abs=1e-4)
     assert room.ceiling_height.hi == pytest.approx(3.0)
     assert room.floor_area.hi - 16.0 == pytest.approx(1.645 * 0.10 * 16.0, abs=1e-3)
+
+
+def _clip(tmp_path):
+    import subprocess
+
+    path = tmp_path / "clip.mp4"
+    subprocess.run(
+        ["ffmpeg", "-v", "error", "-f", "lavfi", "-i", "testsrc=size=96x160:rate=10:duration=2",
+         "-pix_fmt", "yuv420p", str(path)],
+        check=True,
+    )  # fmt: skip
+    return path
+
+
+def test_frames_cache_replays_the_same_pixels_without_ffmpeg(tmp_path, monkeypatch):
+    # laptop and Kaggle decode the same video to different pixels (ARM vs x86 ffmpeg), so
+    # the frames are decoded once, stored losslessly and read back on the other machine
+    import subprocess
+
+    from floorplan import video
+
+    clip = _clip(tmp_path)
+    monkeypatch.setenv(video.FRAMES_CACHE_ENV, str(tmp_path / "frames"))
+    first = video.sample_frames(clip, 4, "top")
+    assert len(list((tmp_path / "frames").rglob("*.png"))) == 4
+
+    def no_ffmpeg(*args, **kwargs):
+        raise AssertionError("ffmpeg called although the frames are stored")
+
+    monkeypatch.setattr(subprocess, "run", no_ffmpeg)
+    again = video.sample_frames(clip, 4, "top")
+    assert [np.asarray(f).tobytes() for f in again] == [np.asarray(f).tobytes() for f in first]
+
+
+def test_frames_cache_is_keyed_by_frame_count(tmp_path, monkeypatch):
+    from floorplan import video
+
+    clip = _clip(tmp_path)
+    monkeypatch.setenv(video.FRAMES_CACHE_ENV, str(tmp_path / "frames"))
+    assert len(video.sample_frames(clip, 3, "top")) == 3
+    assert len(video.sample_frames(clip, 5, "top")) == 5

@@ -120,6 +120,12 @@ def main() -> None:
         "PYTHONPATH": f"{data}:{repo}",
         "FLOORPLAN_RECON_CACHE": str(OUT / "recon_cache"),
     }
+    # frames decoded on the laptop (src/floorplan/video.py, frames store): Kaggle's x86
+    # ffmpeg decodes other pixels, so it reads these instead and the laptop can replay
+    stored = sorted({p.parent.parent for d in roots for p in d.rglob(f"{VIDEO}_*/0000.png")})
+    if stored:
+        env["FLOORPLAN_FRAMES_CACHE"] = str(stored[0])
+    log(f"frames store: {stored}")
     # hash of the decoded frames: the laptop's replay needs the same pixels (cache key);
     # compare with the same line run locally before trusting a replay
     frames_sha = (
