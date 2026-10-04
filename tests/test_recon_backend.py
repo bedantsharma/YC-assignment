@@ -118,3 +118,25 @@ def test_tiny_window_setting_is_raised_to_the_minimum(monkeypatch):
     rec = REAL_SAFE(frames, "pi3x", worker)
     assert max(sizes) == mvs_local.MIN_WINDOW
     np.testing.assert_allclose(rec.view_points, _rec(frames).view_points, atol=1e-9)
+
+
+def test_kaggle_poll_survives_a_network_blip_but_not_an_outage(monkeypatch):
+    """A failed status call while the GPU job runs does not abandon it; repeated ones do."""
+    import time
+
+    monkeypatch.setattr(remote, "POLL_S", 0)
+    answers = iter([RuntimeError("blip"), False, RuntimeError("blip"), True])
+
+    def done():
+        a = next(answers)
+        if isinstance(a, Exception):
+            raise a
+        return a
+
+    remote._wait(done, time.perf_counter() + 60, "GPU job")  # returns on True
+
+    def down():
+        raise RuntimeError("kaggle kernels status failed: connection refused")
+
+    with pytest.raises(RuntimeError, match="connection refused"):
+        remote._wait(down, time.perf_counter() + 60, "GPU job")

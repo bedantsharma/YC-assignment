@@ -36,6 +36,7 @@ TIMEOUT_ENV = "FLOORPLAN_KAGGLE_TIMEOUT_MIN"
 TIMEOUT_MIN = 40
 POLL_S = 20
 STALE_RETRIES = 2
+POLL_FAILS = 3  # consecutive failed status calls (network blip) before giving up
 
 
 class Unavailable(RuntimeError):
@@ -89,9 +90,14 @@ def run(jobs: list[tuple[Path, list[Image.Image]]], model: str) -> float:
             _say(f"Kaggle: job saw the previous upload; retrying ({attempt + 1})")
         got = {p.name: p for p in out.rglob("*.npz")}
         for path, _ in jobs:
-            if path.name in got:
+            if path.name in got:  # copy beside the entry, then rename: never half-written
                 path.parent.mkdir(parents=True, exist_ok=True)
-                shutil.move(got[path.name], path)
+                part = path.with_name(f"{path.stem}.{os.getpid()}.tmp.npz")
+                try:
+                    shutil.move(got[path.name], part)
+                    part.replace(path)
+                finally:
+                    part.unlink(missing_ok=True)
         missing = [p.name for p, _ in jobs if not p.exists()]
         if missing:
             tail = ""
@@ -183,7 +189,18 @@ def _cli(cli: list[str], *args: str, check: bool = True) -> tuple[int, str]:
 
 
 def _wait(done, deadline: float, what: str) -> None:
-    while not done():
+    """Poll until done(). One failed status call (a network blip over a 40 min wait) does
+    not abandon a job that is still running on Kaggle; POLL_FAILS in a row do."""
+    fails = 0
+    while True:
+        try:
+            if done():
+                return
+            fails = 0
+        except (RuntimeError, subprocess.TimeoutExpired):
+            fails += 1
+            if fails >= POLL_FAILS:
+                raise
         if time.perf_counter() > deadline:
             raise TimeoutError(f"Kaggle {what} not finished within {TIMEOUT_ENV} minutes")
         time.sleep(POLL_S)
