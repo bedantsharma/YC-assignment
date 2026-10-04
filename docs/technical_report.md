@@ -256,5 +256,5 @@ indications, not accuracy figures. Pause-based frame choice is built for LiDAR o
   without a GPU. Without network, a low-memory local mode runs small windows in separate
   processes; Pi3X does not fit this 16 GB laptop, so that mode is for larger machines.
 - **Florence-2-base** (Microsoft, MIT) is the offline damage detector on the laptop.
-- **Competitor:** Polycam (Apple RoomPlan) on the same home; screenshots of its plan,
+- **Competitor:** Polycam 7.0.4 (Apple RoomPlan) on the same home; screenshots of its plan,
   numbers transcribed into [data/gt/home_c_polycam.json](../data/gt/home_c_polycam.json).

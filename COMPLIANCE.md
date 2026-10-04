@@ -72,7 +72,7 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | ID | Requirement | File path | Artifact | Status | Notes |
 |---|---|---|---|---|---|
 | H1 | Our LiDAR-tier output vs a consumer app on 2 benchmark rooms | `scripts/gt_table.py` (head-to-head section) | `docs/gt_comparison.md` | Done | Polycam (RoomPlan) on dataset C, 4 rooms vs the architect's drawing |
-| H2 | Name the app and version; submit its export | `data/home_c/polycam/`, `data/gt/home_c_polycam.json` | Polycam 2D plan | Partial | Polycam (Apple RoomPlan) on the friend's iPhone 16 Pro; plan screenshots in `data/home_c/polycam/` (gitignored locally: they show the street address; go in the raw-data bundle with the address cropped), numbers transcribed in `data/gt/home_c_polycam.json`. **App version not recorded** |
+| H2 | Name the app and version; submit its export | `data/home_c/polycam/`, `data/gt/home_c_polycam.json` | Polycam 2D plan | Done | **Polycam 7.0.4** (Apple RoomPlan) on the friend's iPhone 16 Pro; plan screenshots in `data/home_c/polycam/` (gitignored locally: they show the street address; go in the raw-data bundle with the address cropped), numbers transcribed in `data/gt/home_c_polycam.json` |
 | H3 | One table, our error and theirs, dimension by dimension; beat or tie on ≥ 70% | `scripts/gt_table.py` | `docs/gt_comparison.md` (last section) | **Met** | Beat or tie 6 of 8 (75%) after fix 09 (0 of 8 before); ties judged at Polycam's 1 cm precision |
 
 ## 6. Fix loop (brief Part 4)
@@ -127,8 +127,8 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 
 | Status | Count |
 |---|---|
-| Done / met | 42 |
-| Partial / partly met | 13 |
+| Done / met | 43 |
+| Partial / partly met | 12 |
 | Not met | 3 |
 | In progress | 3 |
 | Not started | 3 |

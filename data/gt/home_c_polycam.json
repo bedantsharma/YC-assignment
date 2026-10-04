@@ -1,5 +1,5 @@
 {
-  "capture": "home C, Polycam (RoomPlan) floor plan on the friend's iPhone 16 Pro",
+  "capture": "home C, Polycam 7.0.4 (RoomPlan) floor plan on the friend's iPhone 16 Pro",
   "source": "Transcribed by hand from screenshots of Polycam's 2D floor plan (Oct 4, 2026; images kept in data/home_c/polycam/, gitignored: they show the street address). This is a COMPETITOR's output for the head-to-head, NOT ground truth.",
   "units": "metres, m2; interior wall-to-wall lengths (blue labels) unless named outer_",
   "total_area_m2": 79,
