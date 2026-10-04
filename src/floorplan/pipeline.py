@@ -188,7 +188,7 @@ def _from_images(
             labels.append(f"dropped {dropped:.1f} m2 seen through doorways (other rooms)")
         plan.rooms = [plan.rooms[k]]
         plan.rooms[0].label = folders[0] if folders else plan.rooms[0].label
-    elif folders is not None:
+    elif folders is not None and plan.rooms:  # no rooms: no plan rotation to name them by
         from floorplan.photos import label_rooms
 
         labels = label_rooms(plan.rooms, plan.rotation_deg, cams[:, :2], folders)

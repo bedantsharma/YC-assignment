@@ -123,3 +123,23 @@ def test_photo_tier_end_to_end_names_rooms_from_folders(photo_capture, monkeypat
 def test_warns_about_folders_with_too_few_photos():
     w = few_photo_warnings({"hall": [Path("a")] * 3, "kitchen": [Path("b")] * 6})
     assert len(w) == 1 and "'hall': 3 photos" in w[0]
+
+
+def test_folder_that_yields_no_room_is_skipped_not_fatal(photo_capture, monkeypatch):
+    # a folder whose photos give no usable geometry (k5 kitchen of home C on Kaggle crashed
+    # here: no plan rotation to name rooms with). The tier must warn and go on.
+    from floorplan import mvs
+    from floorplan.pipeline import run
+
+    pts = np.random.default_rng(0).uniform(-0.2, 0.2, (40, 3))
+
+    def fake(images, model):
+        n = len(images)
+        poses = np.tile(np.eye(4), (n, 1, 1))
+        keep = np.ones((1, len(pts), 1), bool)
+        return mvs.Reconstruction(pts[None, :, None, :], keep, poses, 0.1, model)
+
+    monkeypatch.setattr(mvs, "reconstruct", fake)
+    result = run(photo_capture)
+    assert result.rooms == []
+    assert any("no room found" in w for w in result.warnings)
