@@ -1,4 +1,37 @@
-# Handover (Sun Oct 4 evening)
+# Handover (Mon Oct 5, early morning: submission state)
+
+Cozmo AI take-home: iPhone captures → dimensioned floor plans with intervals. Deadline
+**Mon Oct 5, 10:00 IST**. Read in this order: this section, [NEXT-SESSION.md](NEXT-SESSION.md),
+`CLAUDE.md`, the status section of `ROADMAP.md`. 130 tests pass; everything is pushed.
+
+## Oct 4 night / Oct 5 session
+
+- **Model backend** (`mvs.py`, `remote.py`, `kaggle_kernel.py`, `mvs_local.py`): video and
+  photo runs send every model pass to Kaggle in one job (`--recon auto`, default), ~4-5 min,
+  0.66 GB on the laptop; without Kaggle a low-memory local mode (small windows, one child
+  process each, retried smaller when killed). Pi3X does not fit this 16 GB laptop: its
+  weights are deliberately NOT on this machine (user); the local mode is tested with a fake
+  model in `tests/` only.
+- **MAGMA removed** (`mvs.py`): it moved Pi3X's points by 1.4 m; the 24-photo hall
+  "room not found" was that bug (rerun: found, −17 / −16 cm). Bad cache moved to
+  `outputs/magma_invalid/`.
+- **ffmpeg without Homebrew** (`ffmpeg.py`, imageio-ffmpeg): identical length / rotation
+  on all 10 iPhone videos, pixel-identical frames.
+- **Walk-in**: [docs/walkin_runbook.md](docs/walkin_runbook.md), `uv run floorplan check`
+  (all tiers ready), zipped captures accepted (`capture.unpack`), macOS `._` files ignored.
+- **Raw-data bundle**: `scripts/make_bundle.py` → Google Cloud Storage bucket in the user's
+  project (public-read files, random name; the URL is NOT in the repo, it goes in the
+  submission email; it is in this session's scratchpad and the Gmail draft).
+  `scripts/fetch_data.sh <URL>` downloads, checks SHA-256, unpacks. Polycam address blacked
+  out; the drawing photo is not included.
+- **reproduce.sh** now regenerates real photos, damage and calibration too (verified:
+  identical tables, 7.5 min). Fresh clone: install 33 s, first LiDAR capture 27 s.
+- **Docs**: [docs/decisions.md](docs/decisions.md) (41 decisions), compliance pass (47 done,
+  12 partial, 3 not met, 2 in progress), [docs/plain_guide.md](docs/plain_guide.md),
+  `setup.sh` / `run.sh`, slide deck (claude.ai artifact, private until shared).
+- **Photo tier now scored on the real photos**: 29 of 40 sides within ±8%, median 19 cm.
+
+# Earlier: Handover (Sun Oct 4 evening)
 
 Cozmo AI take-home: iPhone captures → dimensioned floor plans with intervals. Deadline
 **Mon Oct 5, 10:00 IST**. Read in this order: this file, [NEXT-SESSION.md](NEXT-SESSION.md),

@@ -50,7 +50,7 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | B3 | Same rooms at all three tiers, multi-room set included | `data/home_c/` | LiDAR, video and real photos of the same rooms | Done | |
 | B4 | At least one room captured twice at the same tier | `data/home_c/`, `data/arkitscenes/` | C bedroom ×2 (LiDAR) and ×2 (video); B room ×3 | Done | Results in G4 |
 | B5 | Laser or tape ground truth on everything | `data/gt/` | `home_c.json` (architect's drawing + tape), `arkitscenes_421337.json` | Done | C: drawing for room sizes, tape for ceilings, doors, windows and the staged hole. B: architect's measurements from the laser scan (approximate; inner vs outer face unresolved) |
-| B6 | Raw sensor data and measurements submitted | `data/` + upload bundle | Reproduction bundle | Not started | Friend agreed (Oct 4) to submitting home C's raw captures and ground truth; bundle next |
+| B6 | Raw sensor data and measurements submitted | `scripts/make_bundle.py`, `scripts/fetch_data.sh` | Raw-data bundle on Google Cloud Storage (link in the submission; checksums in `outputs/bundle/SHA256SUMS`) | Done | Home C (owner agreed): 3 LiDAR recordings, 4 videos, photos, Polycam screenshots with the address blacked out (1.05 GB) + replay caches (1.76 GB); upload verified by size and MD5; ground truth in git |
 
 ## 4. Gates (brief Part 2)
 
@@ -98,19 +98,19 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 |---|---|---|---|---|---|
 | D1 | Compliance matrix: requirement → file path → artifact → status | `COMPLIANCE.md` | This file | Done | Statuses checked against the generated reports on Oct 4-5 |
 | D2 | Capture route plus device matrix | see C1, C2, C9 | `docs/capture_protocol.md`, `docs/device_matrix.md` | Done | |
-| D3 | README: fresh clean machine → running on a new capture in < 15 min, one command per capture | `README.md`, `setup.sh`, `run.sh`, `docs/plain_guide.md` | Timed fresh-clone test | In progress | Quick start for non-engineers (`./setup.sh`, `./run.sh <capture>`), no Homebrew needed (ffmpeg bundled). Fresh-clone timing still to do |
-| D4 | Reproduction bundle regenerates every reported number from raw inputs | `scripts/reproduce.sh` | Bundle + script | Done | LiDAR live; video/photo replay the Kaggle model cache; then `gt_table.py`, `benchmark.py` |
+| D3 | README: fresh clean machine → running on a new capture in < 15 min, one command per capture | `README.md`, `setup.sh`, `run.sh`, `docs/plain_guide.md` | Timed fresh-clone test (Oct 5) | Done | Clean clone with an empty package cache and a fresh Python: install 33 s, first LiDAR capture 27 s. The video / offline-damage extras (PyTorch, several GB) were not timed on this machine (disk) |
+| D4 | Reproduction bundle regenerates every reported number from raw inputs | `scripts/reproduce.sh`, `scripts/fetch_data.sh` | Bundle + script | Done | `fetch_data.sh <URL>` then `reproduce.sh`: LiDAR live; video / photo replay the Kaggle model cache; damage replays cached model answers; then the comparison tables, calibration and benchmark. Verified Oct 5: every table identical except run times, 7.5 min |
 | D5 | Cached model outputs replay deterministically **and** the live path also runs | `src/floorplan/mvs.py`, `remote.py`, `mvs_local.py` | `outputs/kaggle_*/recon_cache`, `outputs/recon_cache_photos` | Done | Replay: cache keyed by frame pixels (`FLOORPLAN_RECON_CACHE_ONLY=1` never runs a model). Live: `--recon auto` sends every model pass of a run to Kaggle and fills the cache (k8 photos end to end: rooms within 3% of the cached run); `--recon local` runs on the laptop in small windows, one child process each, retried smaller when killed for memory (tested with a fake model: Pi3X does not fit the 16 GB laptop) |
 | D6 | Benchmark report: gates at all three tiers, repeatability, head-to-head, timing | `scripts/benchmark.py` | [docs/benchmark_report.md](docs/benchmark_report.md) | Done | Generated, not hand-edited |
 | D7 | Fix-loop bundle | see F1–F5 | [docs/fix_declaration.md](docs/fix_declaration.md), tags `fixloop-before` / `fixloop-after` | Done | |
 | D8 | Technical report ≤ 6 pages: architecture, tiers + device matrix, drift handling, error budget, calibration, fix-loop story, known failure modes | `docs/technical_report.md` | [docs/technical_report.md](docs/technical_report.md) (+ PDF via `scripts/md_to_pdf.py`) | Done | 6 pages incl. damage (§8) and disclosure (§10); a plain-language companion for non-engineers: `docs/plain_guide.md` |
-| D9 | Raw benchmark data: sensor logs, ground truth, app exports | `data/` + upload | Bundle | Not started | Same bundle as B6 (home C captures, Polycam export with the address cropped, ground truth; A and B by their own sources) |
+| D9 | Raw benchmark data: sensor logs, ground truth, app exports | same as B6 | Bundle + `data/gt/` | Done | Sensor logs and app exports in the bundle, ground truth committed; A is Cozmo's own, B public (`scripts/fetch_arkitscenes.sh`) |
 
 ## 9. Walk-in test
 
 | ID | Requirement | File path | Artifact | Status | Notes |
 |---|---|---|---|---|---|
-| W1 | All three tiers ready to run cold on an unseen space, their iPhone 15+, tier chosen on the day | `src/floorplan/cli.py`, `run.sh`, `docs/capture_protocol.md` | Walk-in runbook + rehearsal on the held-back room | In progress | All three tiers run from one command; video / photo through Kaggle (needs network, ~5 min), LiDAR fully on the laptop. Runbook and rehearsal still to do |
+| W1 | All three tiers ready to run cold on an unseen space, their iPhone 15+, tier chosen on the day | `run.sh`, `src/floorplan/check.py`, `docs/walkin_runbook.md` | Runbook + preflight check; live rehearsal still to do | In progress | `floorplan check` says ready for all tiers; zipped Stray Scanner recording → plan verified (identical to the folder run). Live rehearsal on an unseen room needs a person with an iPhone |
 | W2 | Runs on our laptop, in person (Cozmo answer) | `setup.sh` | Rehearsal on this Mac | In progress | Apple Silicon M4, 16 GB: LiDAR, geometry and damage (Gemini or Florence-2) run here; the reconstruction model runs on Kaggle (it does not fit 16 GB) |
 
 ## 10. Constraints
@@ -127,9 +127,9 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 
 | Status | Count |
 |---|---|
-| Done / met | 44 |
+| Done / met | 47 |
 | Partial / partly met | 12 |
 | Not met | 3 |
-| In progress | 3 |
-| Not started | 2 |
+| In progress | 2 |
+| Not started | 0 |
 | **Total** | **64** |

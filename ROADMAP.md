@@ -3,7 +3,15 @@
 Deadline: **Mon Oct 5, 10:00 IST**. Start: Sat Oct 3, ~12:30 IST. About 45 working hours
 including sleep. Scope and scoring are in [requirements.md](requirements.md).
 
-## Status (Sun Oct 4 evening)
+## Status (Mon Oct 5, submission)
+
+**Submission state:** every deliverable exists and is checked (COMPLIANCE.md: 47 done / met,
+12 partial, 3 not met, 2 in progress = the live walk-in rehearsal). Raw-data bundle on Google
+Cloud Storage (link in the submission), reproduce.sh verified end to end, fresh clone runs
+LiDAR in about a minute, walk-in runbook + `floorplan check`. Video / photo model on Kaggle
+by default. Details: HANDOVER.md (Oct 5 section).
+
+## Earlier status (Sun Oct 4 evening)
 
 Read this first when resuming (after [HANDOVER.md](HANDOVER.md) and
 [NEXT-SESSION.md](NEXT-SESSION.md)). Details are in the phase sections below.
