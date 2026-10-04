@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "fbdcce442e222d168f0498d974ee2ec43bc00a92",
+ "raw": "[\n  {\"box_2d\": [289, 500, 441, 659], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"Exposed wiring coming out of the wall.\"},\n  {\"box_2d\": [638, 582, 654, 603], \"label\": \"hole\", \"confidence\": 0.8, \"note\": \"Small hole in the wall.\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    289,
+    500,
+    441,
+    659
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "Exposed wiring coming out of the wall."
+  },
+  {
+   "box_2d": [
+    638,
+    582,
+    654,
+    603
+   ],
+   "label": "hole",
+   "confidence": 0.8,
+   "note": "Small hole in the wall."
+  }
+ ]
+}

@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "f2344b361428e60939049c32dda61826d4361a8b",
+ "raw": "[\n  {\"box_2d\": [648, 521, 677, 585], \"label\": \"water_stain\", \"confidence\": 0.6, \"note\": \"Faint discolouration on the wall below the window, possibly a water stain or just uneven paint/shadow.\"},\n  {\"box_2d\": [15, 248, 42, 282], \"label\": \"outlet_or_switch\", \"confidence\": 0.8, \"note\": \"Circular cover plate or junction box on the ceiling.\"},\n  {\"box_2d\": [6, 675, 34, 712], \"label\": \"outlet_or_switch\", \"confidence\": 0.8, \"note\": \"Circular cover plate or junction box on the ceiling.\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    648,
+    521,
+    677,
+    585
+   ],
+   "label": "water_stain",
+   "confidence": 0.6,
+   "note": "Faint discolouration on the wall below the window, possibly a water stain or just uneven paint/shadow."
+  },
+  {
+   "box_2d": [
+    15,
+    248,
+    42,
+    282
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.8,
+   "note": "Circular cover plate or junction box on the ceiling."
+  },
+  {
+   "box_2d": [
+    6,
+    675,
+    34,
+    712
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.8,
+   "note": "Circular cover plate or junction box on the ceiling."
+  }
+ ]
+}

@@ -186,8 +186,10 @@ def _scope(
 
 
 def _width_band(m: Merged) -> str | None:
-    if m.label != "crack" or m.width_m is None:
+    if m.label != "crack":
         return None
+    if m.width_m is None:
+        return "not measured (crack outlined from a box, not traced)"
     res = 2 * m.px_size_m  # two pixels: the narrowest width an image can show
     if m.width_m <= res:
         return f"not resolved (below {1000 * res:.1f} mm, 2 px)"

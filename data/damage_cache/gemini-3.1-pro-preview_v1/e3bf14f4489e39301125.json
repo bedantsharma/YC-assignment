@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "b7c7bd4d002ac02c888611cbeb8655e755aea245",
+ "raw": "[\n  {\"box_2d\": [651, 698, 708, 762], \"label\": \"water_stain\", \"confidence\": 0.6, \"note\": \"Faint yellowish discolouration on the wall below the window, possibly a water stain.\"},\n  {\"box_2d\": [651, 108, 677, 272], \"label\": \"water_stain\", \"confidence\": 0.5, \"note\": \"Slight discolouration on the wall below the window sill, could be a faint water stain.\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    651,
+    698,
+    708,
+    762
+   ],
+   "label": "water_stain",
+   "confidence": 0.6,
+   "note": "Faint yellowish discolouration on the wall below the window, possibly a water stain."
+  },
+  {
+   "box_2d": [
+    651,
+    108,
+    677,
+    272
+   ],
+   "label": "water_stain",
+   "confidence": 0.5,
+   "note": "Slight discolouration on the wall below the window sill, could be a faint water stain."
+  }
+ ]
+}

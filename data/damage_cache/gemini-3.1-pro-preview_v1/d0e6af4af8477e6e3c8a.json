@@ -1,0 +1,19 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "f15344e96e15c8a9b24507287af3f887d1de81fe",
+ "raw": "[\n  {\n    \"label\": \"water_stain\",\n    \"box_2d\": [\n      761,\n      118,\n      799,\n      328\n    ],\n    \"confidence\": 0.8,\n    \"note\": \"water_stain\"\n  }\n]",
+ "items": [
+  {
+   "label": "water_stain",
+   "box_2d": [
+    761,
+    118,
+    799,
+    328
+   ],
+   "confidence": 0.8,
+   "note": "water_stain"
+  }
+ ]
+}

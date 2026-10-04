@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "1b5c0722a9d80ace4be3dbd413f43ac9c7e6e567",
+ "raw": "[\n  {\"box_2d\": [200, 182, 238, 220], \"label\": \"crack\", \"confidence\": 0.8, \"note\": \"crack\"},\n  {\"box_2d\": [126, 356, 194, 488], \"label\": \"hole\", \"confidence\": 0.8, \"note\": \"hole\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    200,
+    182,
+    238,
+    220
+   ],
+   "label": "crack",
+   "confidence": 0.8,
+   "note": "crack"
+  },
+  {
+   "box_2d": [
+    126,
+    356,
+    194,
+    488
+   ],
+   "label": "hole",
+   "confidence": 0.8,
+   "note": "hole"
+  }
+ ]
+}

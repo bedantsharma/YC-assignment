@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "361028bd495457daac6e15ac25642784a661a437",
+ "raw": "[\n  {\n    \"label\": \"water_stain\",\n    \"box_2d\": [\n      458,\n      731,\n      518,\n      881\n    ],\n    \"confidence\": 0.8,\n    \"note\": \"water_stain\"\n  },\n  {\n    \"label\": \"crack\",\n    \"box_2d\": [\n      458,\n      731,\n      518,\n      881\n    ],\n    \"confidence\": 0.8,\n    \"note\": \"crack\"\n  },\n  {\n    \"label\": \"outlet_or_switch\",\n    \"box_2d\": [\n      778,\n      288,\n      804,\n      321\n    ],\n    \"confidence\": 0.9,\n    \"note\": \"outlet_or_switch\"\n  }\n]",
+ "items": [
+  {
+   "label": "water_stain",
+   "box_2d": [
+    458,
+    731,
+    518,
+    881
+   ],
+   "confidence": 0.8,
+   "note": "water_stain"
+  },
+  {
+   "label": "crack",
+   "box_2d": [
+    458,
+    731,
+    518,
+    881
+   ],
+   "confidence": 0.8,
+   "note": "crack"
+  },
+  {
+   "label": "outlet_or_switch",
+   "box_2d": [
+    778,
+    288,
+    804,
+    321
+   ],
+   "confidence": 0.9,
+   "note": "outlet_or_switch"
+  }
+ ]
+}

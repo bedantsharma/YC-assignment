@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "fa61fcbe11c15c9bdb8827ae92f2a5bfdcc25129",
+ "raw": "[\n  {\"box_2d\": [880, 257, 1000, 531], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"A black electrical cord is lying on the floor.\"},\n  {\"box_2d\": [785, 665, 952, 812], \"label\": \"exposed_wiring\", \"confidence\": 0.9, \"note\": \"A black electrical cord is visible near the bottom right corner of the door.\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    880,
+    257,
+    1000,
+    531
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "A black electrical cord is lying on the floor."
+  },
+  {
+   "box_2d": [
+    785,
+    665,
+    952,
+    812
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.9,
+   "note": "A black electrical cord is visible near the bottom right corner of the door."
+  }
+ ]
+}

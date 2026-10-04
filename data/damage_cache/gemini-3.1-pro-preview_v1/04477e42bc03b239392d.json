@@ -1,0 +1,19 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "fc4d63bd325f0592dc81c270f059b85ebeaf77ad",
+ "raw": "[\n  {\"box_2d\": [198, 293, 368, 442], \"label\": \"crack\", \"confidence\": 0.85, \"note\": \"A thin, faint crack is visible on the ceiling surface, extending diagonally from the top left towards the center.\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    198,
+    293,
+    368,
+    442
+   ],
+   "label": "crack",
+   "confidence": 0.85,
+   "note": "A thin, faint crack is visible on the ceiling surface, extending diagonally from the top left towards the center."
+  }
+ ]
+}

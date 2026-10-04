@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "7addd57e33041173550f20aa68c2f20ee6b3e9d3",
+ "raw": "[\n  {\"box_2d\": [234, 225, 270, 282], \"label\": \"outlet_or_switch\", \"confidence\": 0.9, \"note\": \"Circular cover plate on wall\"},\n  {\"box_2d\": [285, 775, 318, 819], \"label\": \"outlet_or_switch\", \"confidence\": 0.9, \"note\": \"Circular cover plate on wall\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    234,
+    225,
+    270,
+    282
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.9,
+   "note": "Circular cover plate on wall"
+  },
+  {
+   "box_2d": [
+    285,
+    775,
+    318,
+    819
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.9,
+   "note": "Circular cover plate on wall"
+  }
+ ]
+}

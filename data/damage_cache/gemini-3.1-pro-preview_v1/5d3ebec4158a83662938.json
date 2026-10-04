@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "9a2ef58ac9de346742436bf82032173443bce9ed",
+ "raw": "[\n  {\n    \"label\": \"water_stain\",\n    \"box_2d\": [\n      653,\n      153,\n      731,\n      418\n    ],\n    \"confidence\": 0.85,\n    \"note\": \"A yellowish-brown stain on the wall, likely from water damage.\"\n  },\n  {\n    \"label\": \"outlet_or_switch\",\n    \"box_2d\": [\n      682,\n      684,\n      748,\n      831\n    ],\n    \"confidence\": 0.95,\n    \"note\": \"A white electrical switch plate with multiple switches.\"\n  }\n]",
+ "items": [
+  {
+   "label": "water_stain",
+   "box_2d": [
+    653,
+    153,
+    731,
+    418
+   ],
+   "confidence": 0.85,
+   "note": "A yellowish-brown stain on the wall, likely from water damage."
+  },
+  {
+   "label": "outlet_or_switch",
+   "box_2d": [
+    682,
+    684,
+    748,
+    831
+   ],
+   "confidence": 0.95,
+   "note": "A white electrical switch plate with multiple switches."
+  }
+ ]
+}

@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "9a535bce40b25a2d1b2a6c2537c90ac8e7c45102",
+ "raw": "[\n  {\n    \"label\": \"hole\",\n    \"box_2d\": [\n      507,\n      421,\n      546,\n      469\n    ],\n    \"confidence\": 0.95,\n    \"note\": \"hole\"\n  },\n  {\n    \"label\": \"exposed_wiring\",\n    \"box_2d\": [\n      511,\n      424,\n      544,\n      466\n    ],\n    \"confidence\": 0.9,\n    \"note\": \"exposed_wiring\"\n  },\n  {\n    \"label\": \"water_stain\",\n    \"box_2d\": [\n      751,\n      0,\n      988,\n      1000\n    ],\n    \"confidence\": 0.8,\n    \"note\": \"water_stain\"\n  }\n]",
+ "items": [
+  {
+   "label": "hole",
+   "box_2d": [
+    507,
+    421,
+    546,
+    469
+   ],
+   "confidence": 0.95,
+   "note": "hole"
+  },
+  {
+   "label": "exposed_wiring",
+   "box_2d": [
+    511,
+    424,
+    544,
+    466
+   ],
+   "confidence": 0.9,
+   "note": "exposed_wiring"
+  },
+  {
+   "label": "water_stain",
+   "box_2d": [
+    751,
+    0,
+    988,
+    1000
+   ],
+   "confidence": 0.8,
+   "note": "water_stain"
+  }
+ ]
+}

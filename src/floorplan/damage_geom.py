@@ -83,6 +83,7 @@ class Placed:
     px_size_m: float = 0.0  # one image pixel on the surface, metres
     note: str = ""
     distance_m: float = 0.0  # camera to the surface hit, along the centre ray
+    traced: bool = False  # crack traced as a polyline: only then is its width measurable
 
 
 @dataclass
@@ -287,6 +288,7 @@ def place(
         px_size_m=px_size,
         note=det.note,
         distance_m=dist,
+        traced=det.mask_source == "polyline",
     )
 
 
@@ -315,7 +317,10 @@ def merge(placed: list[Placed]) -> list[Merged]:
             lv = float(np.median([p.length for p in g]))
             llo, lhi = np.percentile(ldraws, [5, 95])
             length = (lv, min(float(llo), lv), max(float(lhi), lv))
-            width = value / lv if lv > 0 else None
+            # width = area / length only means something for a traced (thin) crack; a crack
+            # outlined as a blob from a box would read as centimetres wide
+            traced = all(p.traced for p in g)
+            width = value / lv if lv > 0 and traced else None
         region = tuple(float(np.median([p.region[i] for p in g])) for i in range(4))
         centre = tuple(float(np.median([p.centre[i] for p in g])) for i in range(2))
         out.append(

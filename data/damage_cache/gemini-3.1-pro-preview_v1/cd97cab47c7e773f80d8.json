@@ -1,0 +1,19 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "db1922034f404995ce33c358e158f4c4f3350cef",
+ "raw": "[\n  {\"box_2d\": [482, 134, 523, 251], \"label\": \"outlet_or_switch\", \"confidence\": 0.99, \"note\": \"outlet_or_switch\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    482,
+    134,
+    523,
+    251
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.99,
+   "note": "outlet_or_switch"
+  }
+ ]
+}

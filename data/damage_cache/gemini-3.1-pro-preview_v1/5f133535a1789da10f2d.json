@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "56e99859a4b89a34b1087359881bbcde02fef86e",
+ "raw": "[\n  {\n    \"label\": \"exposed_wiring\",\n    \"box_2d\": [\n      886,\n      257,\n      1000,\n      531\n    ],\n    \"confidence\": 0.95,\n    \"note\": \"exposed_wiring\"\n  },\n  {\n    \"label\": \"exposed_wiring\",\n    \"box_2d\": [\n      791,\n      667,\n      996,\n      863\n    ],\n    \"confidence\": 0.95,\n    \"note\": \"exposed_wiring\"\n  }\n]",
+ "items": [
+  {
+   "label": "exposed_wiring",
+   "box_2d": [
+    886,
+    257,
+    1000,
+    531
+   ],
+   "confidence": 0.95,
+   "note": "exposed_wiring"
+  },
+  {
+   "label": "exposed_wiring",
+   "box_2d": [
+    791,
+    667,
+    996,
+    863
+   ],
+   "confidence": 0.95,
+   "note": "exposed_wiring"
+  }
+ ]
+}

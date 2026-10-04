@@ -1,0 +1,85 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "b769c689edb34b75f159484bf7b1a377853f7123",
+ "raw": "[\n  {\n    \"label\": \"hole\",\n    \"box_2d\": [\n      324,\n      442,\n      344,\n      493\n    ],\n    \"confidence\": 0.9,\n    \"note\": \"hole\"\n  },\n  {\n    \"label\": \"exposed_wiring\",\n    \"box_2d\": [\n      184,\n      623,\n      437,\n      691\n    ],\n    \"confidence\": 0.9,\n    \"note\": \"exposed_wiring\"\n  },\n  {\n    \"label\": \"hole\",\n    \"box_2d\": [\n      314,\n      513,\n      331,\n      559\n    ],\n    \"confidence\": 0.9,\n    \"note\": \"hole\"\n  },\n  {\n    \"label\": \"exposed_wiring\",\n    \"box_2d\": [\n      326,\n      468,\n      403,\n      560\n    ],\n    \"confidence\": 0.9,\n    \"note\": \"exposed_wiring\"\n  },\n  {\n    \"label\": \"hole\",\n    \"box_2d\": [\n      860,\n      617,\n      897,\n      657\n    ],\n    \"confidence\": 0.9,\n    \"note\": \"hole\"\n  },\n  {\n    \"label\": \"exposed_wiring\",\n    \"box_2d\": [\n      285,\n      565,\n      326,\n      701\n    ],\n    \"confidence\": 0.9,\n    \"note\": \"exposed_wiring\"\n  },\n  {\n    \"label\": \"hole\",\n    \"box_2d\": [\n      285,\n      565,\n      326,\n      701\n    ],\n    \"confidence\": 0.9,\n    \"note\": \"hole\"\n  }\n]",
+ "items": [
+  {
+   "label": "hole",
+   "box_2d": [
+    324,
+    442,
+    344,
+    493
+   ],
+   "confidence": 0.9,
+   "note": "hole"
+  },
+  {
+   "label": "exposed_wiring",
+   "box_2d": [
+    184,
+    623,
+    437,
+    691
+   ],
+   "confidence": 0.9,
+   "note": "exposed_wiring"
+  },
+  {
+   "label": "hole",
+   "box_2d": [
+    314,
+    513,
+    331,
+    559
+   ],
+   "confidence": 0.9,
+   "note": "hole"
+  },
+  {
+   "label": "exposed_wiring",
+   "box_2d": [
+    326,
+    468,
+    403,
+    560
+   ],
+   "confidence": 0.9,
+   "note": "exposed_wiring"
+  },
+  {
+   "label": "hole",
+   "box_2d": [
+    860,
+    617,
+    897,
+    657
+   ],
+   "confidence": 0.9,
+   "note": "hole"
+  },
+  {
+   "label": "exposed_wiring",
+   "box_2d": [
+    285,
+    565,
+    326,
+    701
+   ],
+   "confidence": 0.9,
+   "note": "exposed_wiring"
+  },
+  {
+   "label": "hole",
+   "box_2d": [
+    285,
+    565,
+    326,
+    701
+   ],
+   "confidence": 0.9,
+   "note": "hole"
+  }
+ ]
+}

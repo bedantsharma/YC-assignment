@@ -1,0 +1,52 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "57119e387bd68d46f3f9902fbde3072497d2f2f4",
+ "raw": "[\n  {\"box_2d\": [509, 279, 535, 312], \"label\": \"hole\", \"confidence\": 0.95, \"note\": \"hole\"},\n  {\"box_2d\": [718, 781, 758, 858], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"outlet_or_switch\"},\n  {\"box_2d\": [0, 282, 128, 386], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"exposed_wiring\"},\n  {\"box_2d\": [678, 503, 720, 641], \"label\": \"water_stain\", \"confidence\": 0.95, \"note\": \"water_stain\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    509,
+    279,
+    535,
+    312
+   ],
+   "label": "hole",
+   "confidence": 0.95,
+   "note": "hole"
+  },
+  {
+   "box_2d": [
+    718,
+    781,
+    758,
+    858
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "outlet_or_switch"
+  },
+  {
+   "box_2d": [
+    0,
+    282,
+    128,
+    386
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "exposed_wiring"
+  },
+  {
+   "box_2d": [
+    678,
+    503,
+    720,
+    641
+   ],
+   "label": "water_stain",
+   "confidence": 0.95,
+   "note": "water_stain"
+  }
+ ]
+}

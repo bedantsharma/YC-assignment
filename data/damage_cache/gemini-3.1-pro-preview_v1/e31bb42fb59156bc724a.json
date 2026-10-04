@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "ff5ae918fe224b2cd62481f37f1e3891c0db299f",
+ "raw": "[\n  {\"box_2d\": [213, 137, 228, 156], \"label\": \"hole\", \"confidence\": 0.8, \"note\": \"hole\"},\n  {\"box_2d\": [216, 176, 229, 195], \"label\": \"hole\", \"confidence\": 0.8, \"note\": \"hole\"},\n  {\"box_2d\": [216, 11, 231, 35], \"label\": \"hole\", \"confidence\": 0.8, \"note\": \"hole\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    213,
+    137,
+    228,
+    156
+   ],
+   "label": "hole",
+   "confidence": 0.8,
+   "note": "hole"
+  },
+  {
+   "box_2d": [
+    216,
+    176,
+    229,
+    195
+   ],
+   "label": "hole",
+   "confidence": 0.8,
+   "note": "hole"
+  },
+  {
+   "box_2d": [
+    216,
+    11,
+    231,
+    35
+   ],
+   "label": "hole",
+   "confidence": 0.8,
+   "note": "hole"
+  }
+ ]
+}

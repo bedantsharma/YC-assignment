@@ -1,0 +1,19 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "04ad97c5f12992624dae0892cd5377b7a514c83f",
+ "raw": "[\n  {\"box_2d\": [875, 175, 920, 278], \"label\": \"outlet_or_switch\", \"confidence\": 0.99, \"note\": \"electrical switch plate\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    875,
+    175,
+    920,
+    278
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.99,
+   "note": "electrical switch plate"
+  }
+ ]
+}

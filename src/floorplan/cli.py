@@ -4,6 +4,7 @@ import argparse
 import sys
 from pathlib import Path
 
+from floorplan.capture import detect_format, resolve_tier
 from floorplan.output import TIERS, write_json
 from floorplan.pipeline import run
 from floorplan.render import render_plan
@@ -56,8 +57,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "damage":
         return _damage_photos(args.images, args.out, args.crack_pass)
 
-    out_dir = args.out / f"{_capture_id(args.capture)}_{args.tier or 'auto'}"
     try:
+        tier = resolve_tier(detect_format(args.capture), args.tier)
+        out_dir = args.out / f"{_capture_id(args.capture)}_{tier}"
         result = run(
             args.capture,
             args.tier,
@@ -74,12 +76,6 @@ def main(argv: list[str] | None = None) -> int:
         print(f"floorplan: {err}", file=sys.stderr)
         return 2
 
-    final_dir = args.out / f"{result.capture.id}_{result.capture.tier}"
-    if (out_dir / "damage").is_dir() and out_dir != final_dir:
-        final_dir.mkdir(parents=True, exist_ok=True)
-        (out_dir / "damage").replace(final_dir / "damage")
-        out_dir.rmdir() if not any(out_dir.iterdir()) else None
-    out_dir = final_dir
     path = write_json(result, out_dir / "plan.json")
     render_plan(result, out_dir / "plan.png")
     print(f"{result.capture.id} [{result.capture.tier}] -> {path} (+ plan.png)")

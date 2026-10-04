@@ -1,0 +1,74 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "1a333eb23fed159a83fe70848df6ca9205b8fec0",
+ "raw": "[\n  {\"box_2d\": [447, 619, 478, 667], \"label\": \"outlet_or_switch\", \"confidence\": 0.9, \"note\": \"a small circular outlet or junction box\"},\n  {\"box_2d\": [578, 451, 663, 575], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"a thick wire or conduit coming out of the wall\"},\n  {\"box_2d\": [458, 637, 707, 714], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"several wires hanging down from the wall\"},\n  {\"box_2d\": [578, 451, 596, 504], \"label\": \"hole\", \"confidence\": 0.85, \"note\": \"a hole in the wall where a wire comes out\"},\n  {\"box_2d\": [551, 577, 573, 621], \"label\": \"hole\", \"confidence\": 0.8, \"note\": \"a hole in the wall where wires come out\"},\n  {\"box_2d\": [573, 525, 587, 570], \"label\": \"hole\", \"confidence\": 0.7, \"note\": \"a small hole or damage in the wall surface\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    447,
+    619,
+    478,
+    667
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.9,
+   "note": "a small circular outlet or junction box"
+  },
+  {
+   "box_2d": [
+    578,
+    451,
+    663,
+    575
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "a thick wire or conduit coming out of the wall"
+  },
+  {
+   "box_2d": [
+    458,
+    637,
+    707,
+    714
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "several wires hanging down from the wall"
+  },
+  {
+   "box_2d": [
+    578,
+    451,
+    596,
+    504
+   ],
+   "label": "hole",
+   "confidence": 0.85,
+   "note": "a hole in the wall where a wire comes out"
+  },
+  {
+   "box_2d": [
+    551,
+    577,
+    573,
+    621
+   ],
+   "label": "hole",
+   "confidence": 0.8,
+   "note": "a hole in the wall where wires come out"
+  },
+  {
+   "box_2d": [
+    573,
+    525,
+    587,
+    570
+   ],
+   "label": "hole",
+   "confidence": 0.7,
+   "note": "a small hole or damage in the wall surface"
+  }
+ ]
+}

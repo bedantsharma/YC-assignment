@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "95c6c93d8a4dfb67df700ebca0d3251e1b13da74",
+ "raw": "[\n  {\"box_2d\": [206, 218, 243, 275], \"label\": \"outlet_or_switch\", \"confidence\": 0.9, \"note\": \"round electrical cover plate\"},\n  {\"box_2d\": [258, 774, 292, 819], \"label\": \"outlet_or_switch\", \"confidence\": 0.9, \"note\": \"round electrical cover plate\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    206,
+    218,
+    243,
+    275
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.9,
+   "note": "round electrical cover plate"
+  },
+  {
+   "box_2d": [
+    258,
+    774,
+    292,
+    819
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.9,
+   "note": "round electrical cover plate"
+  }
+ ]
+}

@@ -1,0 +1,19 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "17139c4fe933e62b3b061699c7fd6f94993a38c7",
+ "raw": "[\n  {\n    \"label\": \"hole\",\n    \"box_2d\": [\n      223,\n      410,\n      276,\n      512\n    ],\n    \"confidence\": 0.9,\n    \"note\": \"A circular hole in the ceiling, possibly for a light fixture or vent.\"\n  }\n]",
+ "items": [
+  {
+   "label": "hole",
+   "box_2d": [
+    223,
+    410,
+    276,
+    512
+   ],
+   "confidence": 0.9,
+   "note": "A circular hole in the ceiling, possibly for a light fixture or vent."
+  }
+ ]
+}

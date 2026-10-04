@@ -16,8 +16,8 @@ adjacency, and a 90% interval on every number. The tier is inferred from the inp
 | Video | one Camera-app walkthrough (RGB only) | any iPhone 15 or newer |
 | Photos | a folder per room of stills (RGB only) | any iPhone 15 or newer |
 
-Damage (§8) is built for the LiDAR tier: detection is benchmarked on photos, sizing on the
-wall plane is not yet checked against the staged hole. Not built: damage on the video and
+Damage (§8) is built for the LiDAR tier: detection benchmarked on photos, sizing checked
+against the staged hole on both scans. Not built: damage on the video and
 photo tiers, window detection, the photo tier's stitch into one plan.
 
 ## 2. Architecture: one geometry backend for every tier
@@ -193,6 +193,12 @@ a clean photo, and the fastest. A false alarm costs more here than a missed blem
 one becomes a flag and a scope line a homeowner pays to check. Speed matters at the
 walk-in. Gemini 2.5 Flash, the first model tried, also called grime marks water stains.
 `FLOORPLAN_GEMINI_MODEL` switches models; each model's answers are cached separately.
+
+**Sizing check** (`uv run scripts/damage_hole_check.py`, the friend's tape: 6.35 cm hole,
+centre 1.420 m up, 2.286 m from the right-hand wall). Both scans find it in 4–6 views:
+area 30.4 cm² [18.4, 47.6] and 37.0 [26.0, 52.5] against 31.7, so both intervals hold the
+truth; height −1.5 / +2.8 cm; along the wall +12 / +11 cm, the same on both scans
+(repeatable but biased: tape start or our corner, not resolved).
 
 **Limits.** Every model calls grime from hands on a white wall "water stain"; a prompt
 change would likely fix it but would be tuned on this same test set, so it is not made. A

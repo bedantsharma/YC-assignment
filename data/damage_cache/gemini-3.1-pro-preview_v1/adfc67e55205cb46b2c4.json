@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "9d899afa72b087757c455b8f92564f4b65f28002",
+ "raw": "[\n  {\"box_2d\": [328, 663, 483, 837], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"Exposed wiring coming out of the wall.\"},\n  {\"box_2d\": [692, 762, 710, 786], \"label\": \"hole\", \"confidence\": 0.8, \"note\": \"Small hole in the wall.\"},\n  {\"box_2d\": [390, 728, 413, 809], \"label\": \"outlet_or_switch\", \"confidence\": 0.7, \"note\": \"Electrical junction box or outlet without a cover plate.\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    328,
+    663,
+    483,
+    837
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "Exposed wiring coming out of the wall."
+  },
+  {
+   "box_2d": [
+    692,
+    762,
+    710,
+    786
+   ],
+   "label": "hole",
+   "confidence": 0.8,
+   "note": "Small hole in the wall."
+  },
+  {
+   "box_2d": [
+    390,
+    728,
+    413,
+    809
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.7,
+   "note": "Electrical junction box or outlet without a cover plate."
+  }
+ ]
+}

@@ -1,0 +1,85 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "eb4cac39917e97a929c05ab64d12d8e7a802e6af",
+ "raw": "[\n  {\"box_2d\": [264, 433, 285, 488], \"label\": \"hole\", \"confidence\": 0.9, \"note\": \"hole in wall\"},\n  {\"box_2d\": [222, 564, 267, 706], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"exposed wiring\"},\n  {\"box_2d\": [104, 612, 142, 667], \"label\": \"outlet_or_switch\", \"confidence\": 0.9, \"note\": \"outlet or switch\"},\n  {\"box_2d\": [264, 433, 346, 559], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"exposed wiring\"},\n  {\"box_2d\": [222, 564, 267, 706], \"label\": \"hole\", \"confidence\": 0.9, \"note\": \"hole in wall\"},\n  {\"box_2d\": [104, 612, 382, 706], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"exposed wiring\"},\n  {\"box_2d\": [814, 618, 848, 658], \"label\": \"hole\", \"confidence\": 0.9, \"note\": \"hole in wall\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    264,
+    433,
+    285,
+    488
+   ],
+   "label": "hole",
+   "confidence": 0.9,
+   "note": "hole in wall"
+  },
+  {
+   "box_2d": [
+    222,
+    564,
+    267,
+    706
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "exposed wiring"
+  },
+  {
+   "box_2d": [
+    104,
+    612,
+    142,
+    667
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.9,
+   "note": "outlet or switch"
+  },
+  {
+   "box_2d": [
+    264,
+    433,
+    346,
+    559
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "exposed wiring"
+  },
+  {
+   "box_2d": [
+    222,
+    564,
+    267,
+    706
+   ],
+   "label": "hole",
+   "confidence": 0.9,
+   "note": "hole in wall"
+  },
+  {
+   "box_2d": [
+    104,
+    612,
+    382,
+    706
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "exposed wiring"
+  },
+  {
+   "box_2d": [
+    814,
+    618,
+    848,
+    658
+   ],
+   "label": "hole",
+   "confidence": 0.9,
+   "note": "hole in wall"
+  }
+ ]
+}

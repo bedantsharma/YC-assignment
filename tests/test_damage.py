@@ -174,10 +174,10 @@ def test_parse_json_strips_fences():
     assert damage._parse_json("nonsense") == []
 
 
-def _placed_on_w1(label, mask, x=1.5, score=0.9):
+def _placed_on_w1(label, mask, x=1.5, score=0.9, source=""):
     room = _room()
     view, _ = _camera_facing_w1(x=x)
-    det = Detection("v0", label, score, (0, 0, 1, 1), mask=mask)
+    det = Detection("v0", label, score, (0, 0, 1, 1), mask=mask, mask_source=source)
     planes = surface_planes([room], FLOOR_Z)
     return room, place(view, 0.0, planes, [room], det, np.random.default_rng(0))
 
@@ -208,7 +208,7 @@ def test_large_mould_fires_professional_remediation():
 def test_crack_gets_length_and_aesthetic_band():
     mask = np.zeros((960, 1280), bool)
     mask[478:482, 440:840] = True  # 400 px long, 4 px wide: 0.8 m x 8 mm at 2 m
-    room, crack = _placed_on_w1("crack", mask)
+    room, crack = _placed_on_w1("crack", mask, source="polyline")
     _, dmg, flags, _ = build(merge([crack]), [room])
     assert dmg[0].length.value == pytest.approx(0.8, rel=0.05)
     assert dmg[0].length.lo <= 0.8 <= dmg[0].length.hi
@@ -260,3 +260,11 @@ def test_crack_pass_drops_degenerate_answers(tmp_path, monkeypatch):
         path.write_text(json.dumps({"items": items}))
     with pytest.warns(UserWarning, match="degenerate"):
         assert damage.detect("x", image, crack_pass=True) == []
+
+
+def test_blob_crack_gets_no_width_and_no_structural_flag():
+    mask = _square_mask(640, 480, 40)  # a crack outlined from a box: a blob, not a line
+    room, crack = _placed_on_w1("crack", mask, source="contrast")
+    _, dmg, flags, _ = build(merge([crack]), [room])
+    assert dmg[0].width_band.startswith("not measured")
+    assert not {f.rule_id for f in flags} & {"R7", "R8"}

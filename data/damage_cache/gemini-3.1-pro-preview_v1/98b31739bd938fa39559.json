@@ -1,0 +1,74 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "88e0c075c81248a0e1ee96b2b94ba845089e2353",
+ "raw": "[\n  {\"box_2d\": [477, 480, 488, 498], \"label\": \"peeling_paint\", \"confidence\": 0.8, \"note\": \"peeling paint\"},\n  {\"box_2d\": [914, 718, 940, 890], \"label\": \"outlet_or_switch\", \"confidence\": 0.9, \"note\": \"outlet or switch\"},\n  {\"box_2d\": [51, 514, 66, 531], \"label\": \"peeling_paint\", \"confidence\": 0.8, \"note\": \"peeling paint\"},\n  {\"box_2d\": [476, 772, 488, 788], \"label\": \"peeling_paint\", \"confidence\": 0.8, \"note\": \"peeling paint\"},\n  {\"box_2d\": [390, 862, 400, 875], \"label\": \"peeling_paint\", \"confidence\": 0.8, \"note\": \"peeling paint\"},\n  {\"box_2d\": [101, 694, 114, 705], \"label\": \"peeling_paint\", \"confidence\": 0.8, \"note\": \"peeling paint\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    477,
+    480,
+    488,
+    498
+   ],
+   "label": "peeling_paint",
+   "confidence": 0.8,
+   "note": "peeling paint"
+  },
+  {
+   "box_2d": [
+    914,
+    718,
+    940,
+    890
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.9,
+   "note": "outlet or switch"
+  },
+  {
+   "box_2d": [
+    51,
+    514,
+    66,
+    531
+   ],
+   "label": "peeling_paint",
+   "confidence": 0.8,
+   "note": "peeling paint"
+  },
+  {
+   "box_2d": [
+    476,
+    772,
+    488,
+    788
+   ],
+   "label": "peeling_paint",
+   "confidence": 0.8,
+   "note": "peeling paint"
+  },
+  {
+   "box_2d": [
+    390,
+    862,
+    400,
+    875
+   ],
+   "label": "peeling_paint",
+   "confidence": 0.8,
+   "note": "peeling paint"
+  },
+  {
+   "box_2d": [
+    101,
+    694,
+    114,
+    705
+   ],
+   "label": "peeling_paint",
+   "confidence": 0.8,
+   "note": "peeling paint"
+  }
+ ]
+}
