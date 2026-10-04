@@ -22,7 +22,6 @@ store, and Kaggle reads the same pixels instead of decoding.
 """
 
 import hashlib
-import json
 import os
 import subprocess
 from dataclasses import dataclass
@@ -32,6 +31,7 @@ import numpy as np
 from PIL import Image
 from scipy.spatial import cKDTree
 
+from floorplan import ffmpeg
 from floorplan.cloud import voxel_downsample
 
 SIDES = ("top", "right", "bottom", "left")
@@ -53,20 +53,11 @@ class Orientation:
 
 
 def duration(video: Path) -> float:
-    out = _run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "json"])
-    return float(json.loads(out(video))["format"]["duration"])
+    return ffmpeg.duration(video)
 
 
 def orientation(video: Path) -> Orientation:
-    out = _run(
-        ["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries"]
-        + ["stream_side_data=rotation:stream_tags=rotate", "-of", "json"]
-    )
-    stream = json.loads(out(video))["streams"][0]
-    tagged = stream.get("tags", {}).get("rotate") or any(
-        "rotation" in d for d in stream.get("side_data_list", [])
-    )
-    if tagged:
+    if ffmpeg.has_rotation(video):
         return Orientation("top", "metadata", 0.0)  # ffmpeg rotates on decode
     score = np.zeros(4)
     for t in np.linspace(0.5, duration(video) - 0.5, PROBE_FRAMES):
@@ -112,7 +103,7 @@ def _decode_frames(video: Path, n: int, up_side: str) -> list[Image.Image]:
     frames = []
     for t in np.linspace(0.5, duration(video) - 0.5, n):
         png = subprocess.run(
-            ["ffmpeg", "-v", "error", "-ss", f"{t:.3f}", "-i", str(video), "-frames:v", "1"]
+            [ffmpeg.exe(), "-v", "error", "-ss", f"{t:.3f}", "-i", str(video), "-frames:v", "1"]
             + ["-vf", vf, "-f", "image2pipe", "-vcodec", "png", "-"],
             capture_output=True,
             check=True,
@@ -160,16 +151,9 @@ def z_up(points: np.ndarray, up: np.ndarray) -> np.ndarray:
 
 def _gray(video: Path, t: float, w: int = 160, h: int = 120) -> np.ndarray:
     raw = subprocess.run(
-        ["ffmpeg", "-v", "error", "-noautorotate", "-ss", f"{t:.3f}", "-i", str(video)]
+        [ffmpeg.exe(), "-v", "error", "-noautorotate", "-ss", f"{t:.3f}", "-i", str(video)]
         + ["-frames:v", "1", "-vf", f"scale={w}:{h},format=gray", "-f", "rawvideo", "-"],
         capture_output=True,
         check=True,
     ).stdout
     return np.frombuffer(raw, np.uint8)[: w * h].reshape(h, w).astype(float)
-
-
-def _run(cmd: list[str]):
-    def call(video: Path) -> str:
-        return subprocess.run(cmd + [str(video)], capture_output=True, text=True, check=True).stdout
-
-    return call

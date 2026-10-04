@@ -21,6 +21,7 @@ floorplan = "floorplan.cli:main"
 
 [project.optional-dependencies]
 video = [
+    "imageio-ffmpeg>=0.6.0",
     "mapanything",
     "pi3",
     "pillow-heif>=1.8.0",

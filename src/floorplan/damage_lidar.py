@@ -27,6 +27,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 from scipy import ndimage
 
+from floorplan import ffmpeg
 from floorplan.capture import STRAY_RGB_SIZE, LidarCapture, detect_format, load_lidar
 from floorplan.damage import Detection, detect, model_name
 from floorplan.damage_frames import MIN_VIEWS, NEED, confirm, select
@@ -245,7 +246,7 @@ def _sharpest(video: Path, centres: list[int], n: int) -> dict[int, Image.Image]
     w, h = STRAY_RGB_SIZE
     expr = "+".join(f"eq(n\\,{c})" for c in cands)
     proc = subprocess.Popen(
-        ["ffmpeg", "-v", "error", "-noautorotate", "-i", str(video), "-vf", f"select='{expr}'"]
+        [ffmpeg.exe(), "-v", "error", "-noautorotate", "-i", str(video), "-vf", f"select='{expr}'"]
         + ["-vsync", "0", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
         stdout=subprocess.PIPE,
     )

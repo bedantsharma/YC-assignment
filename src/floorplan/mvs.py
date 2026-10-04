@@ -181,12 +181,10 @@ def _load(model: str, device: str):
     # the camera head's SVD fails (MPS SVD is float32 only). Run the heads in float32.
     backbone_head = net.forward_head
 
-    # On a 15 GB T4, 24 full-HD photos in one pass left no room for cuSOLVER to start
-    # (CUSOLVER_STATUS_INTERNAL_ERROR in the camera head's SVD, hall photos, Oct 4): free the
-    # cached blocks first and use MAGMA, which needs no cuSOLVER handle. U V^T is unique, so
-    # the poses do not depend on the backend.
-    if device == "cuda":
-        torch.backends.cuda.preferred_linalg_library("magma")
+    # Cached GPU blocks are freed before the heads (a 15 GB T4 with 24 full-HD photos in one
+    # pass had no room left for cuSOLVER, Oct 4). Never switch linear algebra to MAGMA to
+    # get around that: tried on Oct 4, it moved the hall's points by 1.4 m against the same
+    # photos without it (scale 0.77), and its rooms vanished; without it, runs agree to 0.7 cm.
 
     def forward_head(hidden, *args, **kwargs):
         if device == "cuda":

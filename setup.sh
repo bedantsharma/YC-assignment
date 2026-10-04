@@ -22,5 +22,6 @@ else
   echo "== Downloading the reconstruction model (Pi3X, 5.4 GB) for runs without Kaggle"
   uv run python -m floorplan.mvs_local --fetch pi3x
 fi
-command -v ffmpeg >/dev/null 2>&1 || echo "NOTE: video tier needs ffmpeg: brew install ffmpeg"
+# ffmpeg: the system one if present (e.g. Homebrew), else the copy bundled with the video
+# extra (imageio-ffmpeg), so no Homebrew is needed
 echo "== Done. Run a capture with:  ./run.sh <capture folder or video file>"

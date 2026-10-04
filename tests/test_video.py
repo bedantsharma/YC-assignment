@@ -102,3 +102,32 @@ def test_frames_cache_is_keyed_by_frame_count(tmp_path, monkeypatch):
     monkeypatch.setenv(video.FRAMES_CACHE_ENV, str(tmp_path / "frames"))
     assert len(video.sample_frames(clip, 3, "top")) == 3
     assert len(video.sample_frames(clip, 5, "top")) == 5
+
+
+def test_length_and_rotation_without_ffprobe(tmp_path, monkeypatch):
+    """No Homebrew: ffmpeg comes from imageio-ffmpeg and ffprobe is missing; the length
+    (from the MP4 headers) and rotation must equal what ffprobe reports."""
+    import shutil
+    import subprocess
+
+    import pytest
+
+    from floorplan import ffmpeg
+
+    if not shutil.which("ffprobe"):
+        pytest.skip("needs ffprobe as the reference")
+    clip = tmp_path / "clip.mp4"
+    subprocess.run(
+        [ffmpeg.exe(), "-v", "error", "-f", "lavfi", "-i", "testsrc=size=64x48:rate=30",
+         "-t", "2.3", "-pix_fmt", "yuv420p", "-metadata:s:v", "rotate=90", str(clip)],
+        check=True,
+    )  # fmt: skip
+    want = (ffmpeg.duration(clip), ffmpeg.has_rotation(clip))
+    real = shutil.which
+    monkeypatch.setattr(shutil, "which", lambda n: None if n in ("ffprobe", "ffmpeg") else real(n))
+    ffmpeg.exe.cache_clear()
+    try:
+        assert "imageio_ffmpeg" in ffmpeg.exe()
+        assert (ffmpeg.duration(clip), ffmpeg.has_rotation(clip)) == want
+    finally:
+        ffmpeg.exe.cache_clear()
