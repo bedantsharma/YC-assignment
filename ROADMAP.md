@@ -3,7 +3,17 @@
 Deadline: **Mon Oct 5, 10:00 IST**. Start: Sat Oct 3, ~12:30 IST. About 45 working hours
 including sleep. Scope and scoring are in [requirements.md](requirements.md).
 
-## Status (Sun Oct 4, ~04:00 IST)
+## Status (Sun Oct 4, ~14:00 IST)
+
+**Update Sun ~14:00:** friend sent Camera-app videos (damage room ×2, whole house) and
+Polycam screenshots ([docs/home_c_new_captures.md](docs/home_c_new_captures.md)). **No
+model runs on the laptop any more (user)**: Kaggle runs, the laptop replays cached
+reconstructions. Video tier on the damage-room clips: within 5 cm of LiDAR (60 frames).
+Whole-house clip fails (windows fold rooms); chain links fixed (`chunks.fit_shared`).
+Polycam is larger than our LiDAR on every dimension (6-57 cm): doubled walls from drift,
+cabinets; tape decides. LiDAR model survey + SpatialLM bake-off
+([docs/lidar_model_research.md](docs/lidar_model_research.md)): unstable, larger than
+Polycam, OOM on the whole home; not adopted.
 
 Read this first when resuming (after [HANDOVER.md](HANDOVER.md) and
 [NEXT-SESSION.md](NEXT-SESSION.md)). Details are in the phase sections below.
@@ -56,7 +66,7 @@ route (5%) and commit history (5%) are on track.
   - **Friend: house measurement plan (tape dimensions of C's rooms), user asks him Sun
     Oct 4.** When it arrives: transcribe → `data/gt/home_c.yaml` (by hand, never from our
     output), then C becomes a second ground-truth dataset (all three tiers on one home)
-  - Friend, otherwise: not in hand: Camera-app videos, photo folders, Polycam export,
+  - Friend: photos and tape measurements (Camera-app videos and Polycam screenshots arrived Sun ~11:00). Before that: not in hand: Camera-app videos, photo folders, Polycam export,
     so the fallbacks in
     `docs/data_plan.md` apply (B's laser is the only absolute ground truth; C's `rgb.mp4`
     stands in for Camera-app video; stills sampled from video stand in for photo folders;

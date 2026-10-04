@@ -144,3 +144,5 @@ uv run pytest               # tests
 - [docs/device_matrix.md](docs/device_matrix.md): which tier runs on which iPhone, and its
   measured accuracy
 - [docs/friend_capture_checklist.md](docs/friend_capture_checklist.md): capture instructions
+- [docs/home_c_new_captures.md](docs/home_c_new_captures.md): Camera-app videos and Polycam on home C
+- [docs/lidar_model_research.md](docs/lidar_model_research.md): pretrained LiDAR models (survey + SpatialLM bake-off)

@@ -5,6 +5,15 @@ Cozmo AI take-home: iPhone captures → dimensioned floor plans with intervals. 
 `CLAUDE.md` (commands, layout, data conventions, **Kaggle rules**), the status section of
 `ROADMAP.md`.
 
+## Update Sun Oct 4 ~14:00
+
+- **No model runs on the laptop (user).** Kaggle fills `FLOORPLAN_RECON_CACHE`; replay with
+  `FLOORPLAN_RECON_CACHE=outputs/kaggle_video_runs/recon_cache FLOORPLAN_RECON_CACHE_ONLY=1`.
+- New data: `data/home_c/video/` (Camera-app clips, 464×832), `data/home_c/polycam/`
+  (screenshots, address visible: never commit). ffmpeg in the sandbox cannot open the
+  originals (macOS file protection); a copy in the session scratchpad works.
+- Results and diagnosis: `docs/home_c_new_captures.md`; LiDAR models: `docs/lidar_model_research.md`.
+
 ## State of each tier
 
 | Tier | Status | Command |

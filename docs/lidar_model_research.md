@@ -45,4 +45,33 @@ point clouds reconstructed from video, SpatialLM's zero-shot wall F1@0.25 is 68-
   depth, and whether doors and windows are found. Tape measurements replace both
   references when they arrive.
 
-Results: pending.
+### Results (round 3, run 1)
+
+`uv run scripts/score_spatiallm.py`. Damage room only: the whole-home cloud (3.4 M points)
+and every Llama-1B run ran **out of GPU memory** on the T4 (attention without flash
+attention needs 5-13 GB more), so 6 of 18 runs produced a layout.
+
+| Scan | Seed | SpatialLM room (m) | vs our LiDAR | vs Polycam | Wall height | Doors / windows |
+|---|---|---|---|---|---|---|
+| `c_damage_01` (ours 4.24 × 3.30) | 0 | 4.67 × 3.42 | +43 / +12 cm | +14 / +15 cm | 3.58 | 4 / 1 |
+| | 1 | 4.70 × 3.50 | +46 / +20 cm | +17 / +23 cm | 3.54 | 3 / 3 |
+| | 2 | 4.65 × 3.40 | +41 / +10 cm | +12 / +13 cm | 3.54 | 2 / 3 |
+| `c_damage_02` (ours 4.26 × 3.08) | 0 | broken outline (16 walls, several of zero length) | | | 3.52 | 2 / 1 |
+| | 1 | broken outline (8 walls) | | | 3.46 | 2 / 2 |
+| | 2 | 4.58 × 3.45 | +32 / +37 cm | +4 / +18 cm | 3.54 | 2 / 2 |
+
+Polycam: 4.53 × 3.27 m; our ceiling 3.35-3.36 m.
+
+- **Dimensions:** where SpatialLM gives a room, it is *larger* than Polycam by 4-23 cm,
+  while ours is smaller by up to 29 cm. It puts walls near the outer copy of the doubled
+  walls, we use the inner one; Polycam sits in between. The tape decides.
+- **Height:** 3.46-3.58 m vs our ceiling 3.35 m (+11 to +23 cm on every run).
+- **Reliability:** 2 of 6 outlines are broken, and seeds disagree by up to 8 cm on the same
+  scan and on the number of doors (2-4) and windows (1-3). Our backend is deterministic.
+- **Openings:** it does propose doors and windows at plausible places (the large window
+  wall, the entrance), which we have not built yet (Phase 5).
+
+**Verdict so far:** not a replacement for our wall geometry (unstable, no better against
+the only other reference, cannot run the whole home on a T4). Possibly useful for doors and
+windows, if several seeds are voted. Next steps if pursued: crop the whole-home cloud per
+room (or a smaller voxel budget) to fit the T4; vote over seeds.
