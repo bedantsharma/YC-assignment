@@ -362,16 +362,16 @@ def _local_call(data: bytes, version: str) -> list:
 
     if version != PROMPT_VERSION:
         return []
-    path = _cache_path(data, damage_local.NAME, version)
+    path = _cache_path(data, damage_local.NAME, damage_local.CACHE_VERSION)
     if path.exists():
-        return json.loads(path.read_text())["items"]
+        return damage_local.to_items(json.loads(path.read_text())["proposals"])
     if os.environ.get(CACHE_ONLY_ENV) == "1":
         raise RuntimeError(f"damage cache miss ({path}) and {CACHE_ONLY_ENV}=1")
     with _lock:  # one model on the laptop's GPU: no parallel calls
-        items = damage_local.detect_items(Image.open(io.BytesIO(data)))
+        props = damage_local.proposals(Image.open(io.BytesIO(data)))
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps({"model": damage_local.NAME, "items": items}, indent=1))
-    return items
+    path.write_text(json.dumps({"model": damage_local.NAME, "proposals": props}, indent=1))
+    return damage_local.to_items(props)
 
 
 def _parse_json(text: str) -> list:

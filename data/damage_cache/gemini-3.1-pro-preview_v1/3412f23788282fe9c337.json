@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "f974c399f513a84af778c399516fb4cedf2757d2",
+ "raw": "[\n  {\"box_2d\": [368, 467, 395, 492], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"A light switch plate on the wall.\"},\n  {\"box_2d\": [0, 227, 61, 262], \"label\": \"exposed_wiring\", \"confidence\": 0.9, \"note\": \"Exposed wiring coming out of the ceiling.\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    368,
+    467,
+    395,
+    492
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "A light switch plate on the wall."
+  },
+  {
+   "box_2d": [
+    0,
+    227,
+    61,
+    262
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.9,
+   "note": "Exposed wiring coming out of the ceiling."
+  }
+ ]
+}

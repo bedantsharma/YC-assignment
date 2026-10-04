@@ -281,9 +281,9 @@ def test_auto_mode_falls_back_to_local_detector(tmp_path, monkeypatch):
     def offline(*args, **kwargs):
         raise ConnectionError("no network")
 
-    local = [{"label": "hole", "box_2d": [400, 400, 600, 600], "confidence": 0.5, "note": "x"}]
     monkeypatch.setattr(damage, "_call_gemini", offline)
-    monkeypatch.setattr(damage_local, "detect_items", lambda image: local)
+    props = [{"box_2d": [400, 400, 600, 600], "caption": "a hole in a wall"}]
+    monkeypatch.setattr(damage_local, "proposals", lambda image: props)
     image = Image.new("RGB", (200, 100), (180, 180, 180))
     with pytest.warns(UserWarning, match="Gemini unavailable"):
         dets = damage.detect("x", image)
@@ -304,3 +304,13 @@ def test_gemini_mode_does_not_fall_back(tmp_path, monkeypatch):
     monkeypatch.setattr(damage, "_call_gemini", offline)
     with pytest.raises(ConnectionError):
         damage.detect("x", Image.new("RGB", (200, 100), (180, 180, 180)))
+
+
+def test_walls_of_a_room_without_ceiling_are_still_surfaces():
+    from floorplan.damage_rules import surfaces
+
+    room = _room()
+    room.ceiling_height = None
+    walls = [s for s in surfaces([room]) if s.kind == "wall"]
+    assert len(walls) == 4
+    assert walls[0].area.lo < walls[0].area.value < walls[0].area.hi

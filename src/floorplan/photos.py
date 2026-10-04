@@ -113,6 +113,22 @@ def main_room(rooms: list[Room], angle_deg: float, cams_xy: np.ndarray) -> int:
     return max(range(len(rooms)), key=lambda k: (inside[k], rooms[k].floor_area.value))
 
 
+def rename_room(room: Room, room_id: str) -> Room:
+    """Give a folder's room its own id (every folder's plan starts at r1). Openings to other
+    rooms of that folder are cut: those rooms are dropped."""
+    old = room.id
+    room.id = room_id
+    if room.label == old:
+        room.label = room_id
+    for w in room.walls:
+        w.id = room_id + w.id[len(old) :]
+    for o in room.openings:
+        o.id = room_id + o.id[len(old) :]
+        o.wall_id = room_id + o.wall_id[len(old) :]
+        o.connects_to = None
+    return room
+
+
 def shift_room(room: Room, dx: float, dy: float) -> Room:
     room.polygon = [(round(x + dx, 4), round(y + dy, 4)) for x, y in room.polygon]
     for w in room.walls:

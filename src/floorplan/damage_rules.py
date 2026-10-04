@@ -16,6 +16,8 @@ NEAR_MOULD_M = 0.5
 NEAR_WIRING_M = 0.3
 PATCH_MAX_M2 = 0.37  # 4 sq ft: larger holes need a section of board replaced
 MARGIN_M = 0.15  # board cut back past the damage on each side
+# value, lo, hi: a typical storey, for walls of a room whose ceiling was never seen
+UNKNOWN_HEIGHT_M = (2.7, 2.2, 3.6)
 
 RULES = {
     "R1": "Water stain on a ceiling: possible roof or plumbing leak above. Moisture-meter "
@@ -43,9 +45,8 @@ def surfaces(rooms: list[Room]) -> list[Surface]:
     out = []
     for room in rooms:
         for wall in room.walls:
-            h = room.ceiling_height
-            if h is None:
-                continue
+            # ceiling never seen: the wall still exists; its height is a wide guess
+            h = room.ceiling_height or Measurement(*UNKNOWN_HEIGHT_M, "m")
             area = _product(wall.length, h)
             out.append(Surface(f"{wall.id}.face", room.id, "wall", area, wall.id))
         out.append(Surface(f"{room.id}.floor", room.id, "floor", room.floor_area))

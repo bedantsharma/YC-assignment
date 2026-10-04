@@ -26,6 +26,7 @@ no network. User's rule: no models on the laptop, except Florence-2-base and SAM
 for this fallback (Oct 4).
 """
 
+import re
 import sys
 from functools import cache
 
@@ -33,17 +34,18 @@ from PIL import Image
 
 MODEL_ID = "florence-community/Florence-2-base"
 NAME = "florence-2-base"
+CACHE_VERSION = "props-v1"  # cache holds boxes + captions; classes mapped on read
 TASK = "<OPEN_VOCABULARY_DETECTION>"
 CAPTION = "<CAPTION>"
 PROPOSAL_PHRASES = ("hole", "crack", "stain", "electric wires")
-KEYWORDS = {  # caption word stems -> class (a caption may give several)
-    "hole": ("hole",),
-    "crack": ("crack",),
-    "water_stain": ("stain", "discolo", "water damage", "damp"),
-    "mould": ("mould", "mold", "mildew"),
-    "peeling_paint": ("peel", "flak", "chipped", "blister"),
-    "exposed_wiring": ("wire", "cable"),
-    "outlet_or_switch": ("socket", "outlet", "switch", "plug"),
+KEYWORDS = {  # caption words -> class (regex, word starts only: "molding" is not mould)
+    "hole": r"\bholes?\b",
+    "crack": r"\bcrack",
+    "water_stain": r"\bstain|\bdiscolou?r|\bwater damage|\bdamp\b",
+    "mould": r"\bmou?lds?\b|\bmouldy\b|\bmoldy\b|\bmildew",
+    "peeling_paint": r"\bpeel|\bflak|\bchipped|\bblister",
+    "exposed_wiring": r"\bwires?\b|\bwiring\b|\bcables?\b",
+    "outlet_or_switch": r"\bsockets?\b|\boutlets?\b|\bswitch|\bplugs?\b",
 }
 LOCAL_SCORE = 0.5
 MAX_BOX_FRAC = 0.5  # a box covering half the image is the model grounding nothing
@@ -54,6 +56,12 @@ INPUT_LONG_SIDE = 768  # Florence-2 resizes to 768 x 768 anyway
 
 def detect_items(image: Image.Image) -> list[dict]:
     """Detections on one upright image, in Gemini's item format."""
+    return to_items(proposals(image))
+
+
+def proposals(image: Image.Image) -> list[dict]:
+    """Model output for one image: boxes (0-1000, Gemini's box_2d order) with the caption
+    of a crop around each. Cached as is, so the keyword map can change without a rerun."""
     im = image.convert("RGB")
     small = im.copy()
     small.thumbnail((INPUT_LONG_SIDE, INPUT_LONG_SIDE), Image.LANCZOS)
@@ -70,21 +78,29 @@ def detect_items(image: Image.Image) -> list[dict]:
                 boxes.append(list(b))
             elif _area(b) < _area(boxes[same[0]]):  # nested proposals: keep the tighter
                 boxes[same[0]] = list(b)
-    items = []
+    out = []
     sx, sy = im.width / w, im.height / h
     for x0, y0, x1, y1 in boxes:
         cx, cy = (x0 + x1) / 2 * sx, (y0 + y1) / 2 * sy
         hw, hh = (x1 - x0) * sx * CROP_PAD / 2, (y1 - y0) * sy * CROP_PAD / 2
         crop = im.crop((int(max(0, cx - hw)), int(max(0, cy - hh)),
                         int(min(im.width, cx + hw)), int(min(im.height, cy + hh))))  # fmt: skip
-        caption = str(_run(crop, CAPTION))
-        text = caption.lower()
         box = [1000 * y0 / h, 1000 * x0 / w, 1000 * y1 / h, 1000 * x1 / w]
-        for label, stems in KEYWORDS.items():
-            if any(st in text for st in stems):
+        out.append({"box_2d": box, "caption": str(_run(crop, CAPTION))})
+    return out
+
+
+def to_items(props: list[dict]) -> list[dict]:
+    """Classes from each crop's caption (a caption may name several; none: not damage)."""
+    items = []
+    for p in props:
+        text = p["caption"].lower()
+        for label, pattern in KEYWORDS.items():
+            if re.search(pattern, text):
                 items.append(
-                    {"label": label, "box_2d": box, "confidence": LOCAL_SCORE, "note": caption}
-                )
+                    {"label": label, "box_2d": p["box_2d"], "confidence": LOCAL_SCORE,
+                     "note": p["caption"]}
+                )  # fmt: skip
     return items
 
 

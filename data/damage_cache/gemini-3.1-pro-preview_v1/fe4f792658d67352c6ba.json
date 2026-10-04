@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "63417df21e49eb4059d1b11d0c547b8597cb95f1",
+ "raw": "[\n  {\"box_2d\": [808, 274, 840, 321], \"label\": \"outlet_or_switch\", \"confidence\": 0.99, \"note\": \"outlet_or_switch\"},\n  {\"box_2d\": [375, 954, 445, 1000], \"label\": \"exposed_wiring\", \"confidence\": 0.99, \"note\": \"exposed_wiring\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    808,
+    274,
+    840,
+    321
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.99,
+   "note": "outlet_or_switch"
+  },
+  {
+   "box_2d": [
+    375,
+    954,
+    445,
+    1000
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.99,
+   "note": "exposed_wiring"
+  }
+ ]
+}

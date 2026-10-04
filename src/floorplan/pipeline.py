@@ -50,15 +50,22 @@ def run(
     capture = Capture(path.stem if path.is_file() else path.name, tier=tier, source=str(path))
     if tier == "lidar":
         return _run_lidar(path, capture, drift, damage, damage_frames, damage_dir, crack_pass)
-    if damage:
-        raise ValueError("--damage is only built for the LiDAR tier so far")
     if tier == "video":
-        return _run_video(path, capture, frames, up, model)
+        extra = {"damage": True, "damage_dir": damage_dir, "crack_pass": crack_pass}
+        return _run_video(path, capture, frames, up, model, **(extra if damage else {}))
+    return _run_photos(path, capture, model, (damage_dir, crack_pass) if damage else None)
 
-    return _run_photos(path, capture, model)
 
-
-def _run_video(path: Path, capture: Capture, n_frames: int, up: str, model: str) -> Result:
+def _run_video(
+    path: Path,
+    capture: Capture,
+    n_frames: int,
+    up: str,
+    model: str,
+    damage: bool = False,
+    damage_dir: Path | None = None,
+    crack_pass: bool = False,
+) -> Result:
     from floorplan.video import Orientation, orientation, sample_frames
 
     timing = {}
@@ -71,10 +78,13 @@ def _run_video(path: Path, capture: Capture, n_frames: int, up: str, model: str)
     note = (
         f"used {len(frames)} frames of {video.name}; up = stored frame's {orient.up_side} ({how})"
     )
-    return _from_images(capture, frames, model, "video", timing, [note])
+    dmg = (damage_dir, crack_pass) if damage else None
+    return _from_images(capture, frames, model, "video", timing, [note], damage=dmg)
 
 
-def _run_photos(path: Path, capture: Capture, model: str) -> Result:
+def _run_photos(
+    path: Path, capture: Capture, model: str, damage: tuple[Path | None, bool] | None = None
+) -> Result:
     """Each folder reconstructed on its own; its main room kept and named after it. Rooms
     are laid out side by side: their relative positions are not measured."""
     from floorplan.photos import few_photo_warnings, load_folder, shift_room
@@ -82,15 +92,18 @@ def _run_photos(path: Path, capture: Capture, model: str) -> Result:
     folders = load_photos(path).rooms
     timing: dict[str, float] = {}
     rooms, warnings, x = [], [], 0.0
+    found: dict[str, list] = {"surfaces": [], "damage": [], "flags": [], "scope": []}
     for name, photos in folders.items():
         start = time.perf_counter()
         images, split = load_folder(photos)
         warnings += [f"{name}: {note}" for note in split]
         timing["load"] = round(timing.get("load", 0.0) + time.perf_counter() - start, 3)
         sub_timing: dict[str, float] = {}
+        rid = f"r{len(rooms) + 1}"
         res = _from_images(
-            capture, images, model, "photo", sub_timing, [], [name] * len(images), True
-        )
+            capture, images, model, "photo", sub_timing, [], [name] * len(images), True,
+            damage=damage, room_id=rid,
+        )  # fmt: skip
         for k, v in sub_timing.items():
             timing[k] = round(timing.get(k, 0.0) + v, 3)
         warnings += [
@@ -101,9 +114,11 @@ def _run_photos(path: Path, capture: Capture, model: str) -> Result:
             continue
         room = res.rooms[0]
         poly = np.asarray(room.polygon)
-        shift_room(room, x - poly[:, 0].min(), -poly[:, 1].min())
+        dx, dy = x - poly[:, 0].min(), -poly[:, 1].min()
+        shift_room(room, dx, dy)
         x += float(np.ptp(poly[:, 0])) + 1.0
         rooms.append(room)
+        _collect_damage(res, rid, dx, dy, found)
     rel_h, rel_v = RESIDUAL_REL[("photo", model)]
     bias_h, bias_v = SCALE_BIAS[("photo", model)]
     header = [
@@ -125,10 +140,37 @@ def _run_photos(path: Path, capture: Capture, model: str) -> Result:
         capture=capture,
         rooms=rooms,
         footprint_area=_footprint(rooms),
+        surfaces=found["surfaces"],
+        damage=found["damage"],
+        flags=found["flags"],
+        scope=found["scope"],
         drift_correction="none needed: each room's photos reconstructed jointly in one pass",
         timing_s=timing,
         warnings=header + warnings,
     )
+
+
+def _collect_damage(res: Result, rid: str, dx: float, dy: float, found: dict) -> None:
+    """One folder's damage into the whole result: ids prefixed with the room (each folder
+    numbers from d1), floor / ceiling positions moved with the room's layout shift."""
+    for s in res.surfaces:
+        if s.room_id == rid:
+            found["surfaces"].append(s)
+    for d in res.damage:
+        d.id = f"{rid}.{d.id}"
+        if not d.surface_id.endswith(".face"):  # floor / ceiling: plan (x, y)
+            u0, v0, u1, v1 = d.region
+            d.region = (u0 + dx, v0 + dy, u1 + dx, v1 + dy)
+            d.centre = (d.centre[0] + dx, d.centre[1] + dy) if d.centre else None
+        found["damage"].append(d)
+    for f in res.flags:
+        f.id = f"{rid}.{f.id}"
+        f.damage_ids = [f"{rid}.{i}" for i in f.damage_ids]
+        found["flags"].append(f)
+    for sc in res.scope:
+        sc.id = f"{rid}.{sc.id}"
+        sc.reason_ids = [f"{rid}.{i}" for i in sc.reason_ids]
+        found["scope"].append(sc)
 
 
 def _footprint(rooms: list) -> Measurement | None:
@@ -148,6 +190,8 @@ def _from_images(
     notes: list[str],
     folders: list[str] | None = None,
     single_room: bool = False,
+    damage: tuple[Path | None, bool] | None = None,
+    room_id: str | None = None,
 ) -> Result:
     """Shared geometry of the video and photo tiers: images -> metric cloud -> plan."""
     from floorplan.chunks import chain
@@ -194,6 +238,10 @@ def _from_images(
         if dropped:
             labels.append(f"dropped {dropped:.1f} m2 seen through doorways (other rooms)")
         plan.rooms = [plan.rooms[k]]
+        if room_id:
+            from floorplan.photos import rename_room
+
+            rename_room(plan.rooms[0], room_id)
         plan.rooms[0].label = folders[0] if folders else plan.rooms[0].label
     elif folders is not None and plan.rooms:  # no rooms: no plan rotation to name them by
         from floorplan.photos import label_rooms
@@ -203,6 +251,20 @@ def _from_images(
     bias_h, bias_v = SCALE_BIAS[(tier, model)]
     rooms = [widen_room(r, rel_h, rel_v, VIDEO_SURFACE_M) for r in plan.rooms]
     timing["geometry"] = round(time.perf_counter() - start, 3)
+
+    found, damage_notes = ([], [], [], []), []
+    if damage is not None and rooms:
+        from floorplan.damage_images import run_damage
+
+        start = time.perf_counter()
+        stem = folders[0] if folders else tier
+        ids = [f"{stem}_{k:03d}" for k in range(len(images))]
+        *found, damage_notes = run_damage(
+            images, ids, rec, vertical, model, tier, rooms, plan.rotation_deg, plan.floor_z,
+            damage[0], damage[1],
+        )  # fmt: skip
+        timing["damage"] = round(time.perf_counter() - start, 3)
+    surfaces, damage_items, flags, scope = found
 
     footprint = _footprint(rooms)
     warnings = [
@@ -220,12 +282,17 @@ def _from_images(
         ],
         *labels,
         *plan.warnings,
+        *damage_notes,
     ]
     return Result(
         capture=capture,
         rooms=rooms,
         footprint_area=footprint,
         adjacency=plan.adjacency,
+        surfaces=surfaces,
+        damage=damage_items,
+        flags=flags,
+        scope=scope,
         plan_rotation_deg=plan.rotation_deg,
         drift_correction=joint,
         timing_s=timing,

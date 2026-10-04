@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "dff22c1a87db2934865f4d10b96e2ac58ceaa831",
+ "raw": "[\n  {\"box_2d\": [284, 165, 309, 205], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"outlet_or_switch\"},\n  {\"box_2d\": [291, 810, 320, 834], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"outlet_or_switch\"},\n  {\"box_2d\": [0, 232, 80, 280], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"exposed_wiring\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    284,
+    165,
+    309,
+    205
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "outlet_or_switch"
+  },
+  {
+   "box_2d": [
+    291,
+    810,
+    320,
+    834
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "outlet_or_switch"
+  },
+  {
+   "box_2d": [
+    0,
+    232,
+    80,
+    280
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "exposed_wiring"
+  }
+ ]
+}

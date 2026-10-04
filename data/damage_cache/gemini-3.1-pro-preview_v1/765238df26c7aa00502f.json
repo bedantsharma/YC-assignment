@@ -1,0 +1,85 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "c99cd504ea1281e2a7cfcb4c99fa66b332e5cab2",
+ "raw": "[\n  {\"box_2d\": [55, 382, 183, 460], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"A white circular junction box or outlet cover on the wall.\"},\n  {\"box_2d\": [111, 412, 997, 543], \"label\": \"exposed_wiring\", \"confidence\": 0.98, \"note\": \"Several electrical wires, some with exposed ends, coming out of the wall and junction box.\"},\n  {\"box_2d\": [552, 65, 627, 166], \"label\": \"hole\", \"confidence\": 0.9, \"note\": \"A hole in the wall with a pipe or conduit coming out.\"},\n  {\"box_2d\": [555, 204, 608, 284], \"label\": \"hole\", \"confidence\": 0.85, \"note\": \"A small hole in the wall.\"},\n  {\"box_2d\": [480, 300, 563, 384], \"label\": \"hole\", \"confidence\": 0.88, \"note\": \"A hole in the wall with wires coming out.\"},\n  {\"box_2d\": [583, 121, 1000, 283], \"label\": \"exposed_wiring\", \"confidence\": 0.92, \"note\": \"A thick cable or conduit coming out of a hole in the wall.\"},\n  {\"box_2d\": [488, 308, 625, 523], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"A bundle of wires and a pipe coming out of a hole in the wall.\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    55,
+    382,
+    183,
+    460
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "A white circular junction box or outlet cover on the wall."
+  },
+  {
+   "box_2d": [
+    111,
+    412,
+    997,
+    543
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.98,
+   "note": "Several electrical wires, some with exposed ends, coming out of the wall and junction box."
+  },
+  {
+   "box_2d": [
+    552,
+    65,
+    627,
+    166
+   ],
+   "label": "hole",
+   "confidence": 0.9,
+   "note": "A hole in the wall with a pipe or conduit coming out."
+  },
+  {
+   "box_2d": [
+    555,
+    204,
+    608,
+    284
+   ],
+   "label": "hole",
+   "confidence": 0.85,
+   "note": "A small hole in the wall."
+  },
+  {
+   "box_2d": [
+    480,
+    300,
+    563,
+    384
+   ],
+   "label": "hole",
+   "confidence": 0.88,
+   "note": "A hole in the wall with wires coming out."
+  },
+  {
+   "box_2d": [
+    583,
+    121,
+    1000,
+    283
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.92,
+   "note": "A thick cable or conduit coming out of a hole in the wall."
+  },
+  {
+   "box_2d": [
+    488,
+    308,
+    625,
+    523
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "A bundle of wires and a pipe coming out of a hole in the wall."
+  }
+ ]
+}
