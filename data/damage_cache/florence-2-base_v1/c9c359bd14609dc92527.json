@@ -1,0 +1,38 @@
+{
+ "model": "florence-2-base",
+ "items": [
+  {
+   "label": "exposed_wiring",
+   "box_2d": [
+    0.0,
+    201.82291666666666,
+    231.4814814814815,
+    264.3229166666667
+   ],
+   "confidence": 0.5,
+   "note": "A bunch of wires that are laying on a table."
+  },
+  {
+   "label": "hole",
+   "box_2d": [
+    699.074074074074,
+    294.2708333333333,
+    768.5185185185185,
+    359.375
+   ],
+   "confidence": 0.5,
+   "note": "a white wall with a small hole in it"
+  },
+  {
+   "label": "exposed_wiring",
+   "box_2d": [
+    46.2962962962963,
+    131.51041666666666,
+    182.87037037037038,
+    209.63541666666666
+   ],
+   "confidence": 0.5,
+   "note": "a bunch of wires that are laying on a table"
+  }
+ ]
+}

@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 LABELS = ROOT / "data/gt/home_c_damage_labels.json"
 RUNS = ROOT / "outputs/damage_cmp"
 OUT = ROOT / "docs/damage_models.md"
-MODELS = ["gemini-3.1-pro-preview", "gemini-3.8-flash", "gemini-3.6-flash"]
+MODELS = ["gemini-3.1-pro-preview", "gemini-3.8-flash", "gemini-3.6-flash", "florence-2-base"]
 
 
 def main(models: list[str]) -> None:

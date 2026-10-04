@@ -1,0 +1,27 @@
+{
+ "model": "florence-2-base",
+ "items": [
+  {
+   "label": "exposed_wiring",
+   "box_2d": [
+    226.85185185185185,
+    550.78125,
+    506.94444444444446,
+    596.3541666666666
+   ],
+   "confidence": 0.5,
+   "note": "a close up of a wire on a white surface"
+  },
+  {
+   "label": "exposed_wiring",
+   "box_2d": [
+    356.48148148148147,
+    475.2604166666667,
+    474.537037037037,
+    541.6666666666666
+   ],
+   "confidence": 0.5,
+   "note": "A pair of wires that are connected to each other."
+  }
+ ]
+}

@@ -11,6 +11,11 @@ environment. Vertex AI: `GOOGLE_GENAI_USE_VERTEXAI=true`, `GOOGLE_CLOUD_PROJECT`
 or `gcloud auth application-default login`; or Vertex express mode / the Gemini Developer
 API with `GOOGLE_API_KEY`. Model: `FLOORPLAN_GEMINI_MODEL` (default `DEFAULT_MODEL`).
 
+Detector. `FLOORPLAN_DAMAGE_DETECTOR`: `auto` (default), `gemini` or `florence`. In `auto`,
+cached Gemini answers are used first; the first Gemini call that fails (no network, no
+credentials) switches the rest of the run to Florence-2-base on the laptop
+(damage_local.py), and `fallback_reason` says why. The crack pass is Gemini only.
+
 Cache. A hosted model cannot be rerun to the same answer later, so every response is stored
 as JSON in `FLOORPLAN_DAMAGE_CACHE` (default `data/damage_cache`), keyed by the image bytes
 sent, the model and the prompt version. `FLOORPLAN_DAMAGE_CACHE_ONLY=1` makes a miss an error:
@@ -31,6 +36,7 @@ import hashlib
 import io
 import json
 import os
+import threading
 import warnings
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -43,6 +49,7 @@ DAMAGE_CLASSES = ("crack", "water_stain", "mould", "hole", "peeling_paint")
 CONTEXT_CLASSES = ("outlet_or_switch", "exposed_wiring")
 DEFAULT_MODEL = "gemini-3.1-pro-preview"  # cleanest of 2.5 Flash, 3.8 Flash, 3.1 Pro on IMG_1371
 MODEL_ENV = "FLOORPLAN_GEMINI_MODEL"
+DETECTOR_ENV = "FLOORPLAN_DAMAGE_DETECTOR"
 CACHE_ENV = "FLOORPLAN_DAMAGE_CACHE"
 CACHE_ONLY_ENV = "FLOORPLAN_DAMAGE_CACHE_ONLY"
 DEFAULT_CACHE = Path("data/damage_cache")
@@ -50,6 +57,7 @@ PROMPT_VERSION = "v1"
 SEND_LONG_SIDE = 1536  # px; boxes are normalised, so the size only limits detail and cost
 JPEG_QUALITY = 92
 MIN_SCORE = 0.3
+_lock = threading.Lock()
 
 PROMPT = f"""You are a building surveyor inspecting the interior surfaces (walls, ceiling,
 floor) of a home in this photo for damage.
@@ -118,8 +126,25 @@ class Detection:
         return self.label in DAMAGE_CLASSES
 
 
-def model_name() -> str:
+fallback_reason: str | None = None  # set when auto mode switched to the local model
+
+
+def gemini_model() -> str:
     return os.environ.get(MODEL_ENV, DEFAULT_MODEL)
+
+
+def _local() -> bool:
+    mode = os.environ.get(DETECTOR_ENV, "auto")
+    if mode not in ("auto", "gemini", "florence"):
+        raise ValueError(f"{DETECTOR_ENV} must be auto, gemini or florence, got {mode!r}")
+    return mode == "florence" or (mode == "auto" and fallback_reason is not None)
+
+
+def model_name() -> str:
+    """The detector in use (after any fallback)."""
+    from floorplan import damage_local
+
+    return damage_local.NAME if _local() else gemini_model()
 
 
 def detect(
@@ -293,13 +318,31 @@ def _cache_path(data: bytes, model: str, version: str = PROMPT_VERSION) -> Path:
 
 
 def _cached_call(data: bytes, prompt: str, version: str) -> list:
-    model = model_name()
-    path = _cache_path(data, model, version)
-    if path.exists():
-        return json.loads(path.read_text())["items"]
+    global fallback_reason
+    from floorplan import damage_local
+
+    gemini = _cache_path(data, gemini_model(), version)
+    if not _local() and gemini.exists():
+        return json.loads(gemini.read_text())["items"]
+    if _local() or os.environ.get(DETECTOR_ENV, "auto") == "florence":
+        return _local_call(data, version)
     if os.environ.get(CACHE_ONLY_ENV) == "1":
-        raise RuntimeError(f"damage cache miss ({path}) and {CACHE_ONLY_ENV}=1")
-    text = _call_gemini(data, model, prompt)
+        raise RuntimeError(f"damage cache miss ({gemini}) and {CACHE_ONLY_ENV}=1")
+    try:
+        text = _call_gemini(data, gemini_model(), prompt)
+    except Exception as err:  # no network, no credentials, quota: fall back if allowed
+        if os.environ.get(DETECTOR_ENV, "auto") != "auto":
+            raise
+        with _lock:
+            if fallback_reason is None:
+                fallback_reason = f"{type(err).__name__}: {str(err)[:150]}"
+                warnings.warn(
+                    f"Gemini unavailable ({fallback_reason}); using {damage_local.NAME} "
+                    "on this laptop for the rest of the run",
+                    stacklevel=2,
+                )
+        return _local_call(data, version)
+    path, model = gemini, gemini_model()
     items = _parse_json(text)
     path.parent.mkdir(parents=True, exist_ok=True)
     record = {
@@ -310,6 +353,24 @@ def _cached_call(data: bytes, prompt: str, version: str) -> list:
         "items": items,
     }
     path.write_text(json.dumps(record, indent=1))
+    return items
+
+
+def _local_call(data: bytes, version: str) -> list:
+    """Florence-2 answer for these image bytes (cached like Gemini's; no crack pass)."""
+    from floorplan import damage_local
+
+    if version != PROMPT_VERSION:
+        return []
+    path = _cache_path(data, damage_local.NAME, version)
+    if path.exists():
+        return json.loads(path.read_text())["items"]
+    if os.environ.get(CACHE_ONLY_ENV) == "1":
+        raise RuntimeError(f"damage cache miss ({path}) and {CACHE_ONLY_ENV}=1")
+    with _lock:  # one model on the laptop's GPU: no parallel calls
+        items = damage_local.detect_items(Image.open(io.BytesIO(data)))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({"model": damage_local.NAME, "items": items}, indent=1))
     return items
 
 

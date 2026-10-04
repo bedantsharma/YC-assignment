@@ -117,7 +117,7 @@ def run_damage(
         f"{len(sel.pauses)} pauses, the rest for coverage); wall and ceiling patches seen "
         f"up close by 1+ keyframes: {100 * sel.seen_once:.0f}%, by {NEED}+: "
         f"{100 * sel.seen_need:.0f}%",
-        f"damage: {model_name()} (hosted, Google) on {len(idx)} keyframes: "
+        f"damage: {model_name()} ({_where()}) on {len(idx)} keyframes: "
         f"{counts['detections']} detections, {counts['occluded']} dropped as in front of the "
         f"surface (LiDAR depth), {counts['off_surface']} not on a measured surface; "
         f"{len(damage)} damage items after merging views; masks are model-free (contrast, "
@@ -208,6 +208,15 @@ def _occluded(det: Detection, view, frames, i, turns, raw_size, angle_deg, plane
     if not len(vals):
         return False
     return float(np.median(vals)) < z_surface - OCCLUDED_M
+
+
+def _where() -> str:
+    from floorplan import damage, damage_local
+
+    if model_name() != damage_local.NAME:
+        return "hosted, Google"
+    why = f"; Gemini unavailable: {damage.fallback_reason}" if damage.fallback_reason else ""
+    return f"local offline fallback, weaker than Gemini{why}"
 
 
 def _fps(path: Path) -> float:

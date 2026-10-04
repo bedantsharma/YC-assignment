@@ -268,3 +268,39 @@ def test_blob_crack_gets_no_width_and_no_structural_flag():
     _, dmg, flags, _ = build(merge([crack]), [room])
     assert dmg[0].width_band.startswith("not measured")
     assert not {f.rule_id for f in flags} & {"R7", "R8"}
+
+
+def test_auto_mode_falls_back_to_local_detector(tmp_path, monkeypatch):
+    from floorplan import damage_local
+
+    monkeypatch.setenv(damage.CACHE_ENV, str(tmp_path))
+    monkeypatch.delenv(damage.CACHE_ONLY_ENV, raising=False)
+    monkeypatch.setenv(damage.DETECTOR_ENV, "auto")
+    monkeypatch.setattr(damage, "fallback_reason", None)
+
+    def offline(*args, **kwargs):
+        raise ConnectionError("no network")
+
+    local = [{"label": "hole", "box_2d": [400, 400, 600, 600], "confidence": 0.5, "note": "x"}]
+    monkeypatch.setattr(damage, "_call_gemini", offline)
+    monkeypatch.setattr(damage_local, "detect_items", lambda image: local)
+    image = Image.new("RGB", (200, 100), (180, 180, 180))
+    with pytest.warns(UserWarning, match="Gemini unavailable"):
+        dets = damage.detect("x", image)
+    assert [d.label for d in dets] == ["hole"]
+    assert damage.model_name() == damage_local.NAME
+    assert "ConnectionError" in damage.fallback_reason
+
+
+def test_gemini_mode_does_not_fall_back(tmp_path, monkeypatch):
+    monkeypatch.setenv(damage.CACHE_ENV, str(tmp_path))
+    monkeypatch.delenv(damage.CACHE_ONLY_ENV, raising=False)
+    monkeypatch.setenv(damage.DETECTOR_ENV, "gemini")
+    monkeypatch.setattr(damage, "fallback_reason", None)
+
+    def offline(*args, **kwargs):
+        raise ConnectionError("no network")
+
+    monkeypatch.setattr(damage, "_call_gemini", offline)
+    with pytest.raises(ConnectionError):
+        damage.detect("x", Image.new("RGB", (200, 100), (180, 180, 180)))

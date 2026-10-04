@@ -1,0 +1,16 @@
+{
+ "model": "florence-2-base",
+ "items": [
+  {
+   "label": "outlet_or_switch",
+   "box_2d": [
+    145.83333333333334,
+    822.9166666666666,
+    437.5,
+    867.1875
+   ],
+   "confidence": 0.5,
+   "note": "a close up of a light switch on a wall"
+  }
+ ]
+}

@@ -1,0 +1,16 @@
+{
+ "model": "florence-2-base",
+ "items": [
+  {
+   "label": "exposed_wiring",
+   "box_2d": [
+    0.0,
+    838.5416666666666,
+    157.40740740740742,
+    876.3020833333334
+   ],
+   "confidence": 0.5,
+   "note": "a bunch of wires sitting on top of a table"
+  }
+ ]
+}

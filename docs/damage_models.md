@@ -17,46 +17,51 @@ person), so this measures which photos each class is found in, not box accuracy.
 | gemini-3.6-flash | hole | 9 | 0 | 1 | 0.90 | 1.00 |
 | gemini-3.6-flash | water_stain | 0 | 5 | 0 | - | 0.00 |
 | gemini-3.6-flash | exposed_wiring | 7 | 0 | 0 | 1.00 | 1.00 |
+| florence-2-base | hole | 4 | 2 | 6 | 0.40 | 0.67 |
+| florence-2-base | water_stain | 0 | 0 | 0 | - | - |
+| florence-2-base | exposed_wiring | 6 | 0 | 1 | 0.86 | 1.00 |
 
 | Model | Damage-free photos with no damage reported | Wall-clock (26 photos, 2 calls each, 3 models in parallel) |
 |---|---|---|
 | gemini-3.1-pro-preview | 16 of 16 | 207 s (8 s per photo) |
 | gemini-3.8-flash | 12 of 16 | 636 s (24 s per photo) |
 | gemini-3.6-flash | 11 of 16 | 355 s (14 s per photo) |
+| florence-2-base | 14 of 16 | 76 s (3 s per photo) |
 
 Unscored detections (crack, peeling paint, mould, sockets), by prompt:
 
 - gemini-3.1-pro-preview: crack (crack) 8, outlet_or_switch (main) 36, peeling_paint (main) 1
 - gemini-3.8-flash: crack (crack) 2, outlet_or_switch (main) 42, peeling_paint (main) 2
 - gemini-3.6-flash: crack (crack) 9, outlet_or_switch (main) 36, peeling_paint (main) 3
+- florence-2-base: outlet_or_switch (main) 2
 
 Per photo (classes reported):
 
-| Photo | Eye label | gemini-3.1-pro-preview | gemini-3.8-flash | gemini-3.6-flash |
-|---|---|---|---|---|
-| IMG_1349 | - | outlet_or_switch | outlet_or_switch, water_stain | outlet_or_switch |
-| IMG_1350 | hole, exposed_wiring | exposed_wiring, hole, outlet_or_switch | exposed_wiring, hole, outlet_or_switch, water_stain | exposed_wiring, hole, outlet_or_switch, water_stain |
-| IMG_1351 | hole, exposed_wiring | exposed_wiring, hole | exposed_wiring, outlet_or_switch | exposed_wiring |
-| IMG_1352 | hole | hole, outlet_or_switch, water_stain | hole, outlet_or_switch, water_stain | hole, outlet_or_switch, water_stain |
-| IMG_1353 | hole | crack, hole, outlet_or_switch, water_stain | hole, outlet_or_switch | hole, outlet_or_switch, water_stain |
-| IMG_1354 | hole, exposed_wiring | exposed_wiring, hole, outlet_or_switch | exposed_wiring, hole, outlet_or_switch | exposed_wiring, hole, outlet_or_switch |
-| IMG_1355 | hole, exposed_wiring | exposed_wiring, hole, outlet_or_switch | exposed_wiring, hole, outlet_or_switch | exposed_wiring, hole, outlet_or_switch, water_stain |
-| IMG_1356 | hole | hole, outlet_or_switch | hole, outlet_or_switch, water_stain | hole, outlet_or_switch, water_stain |
-| IMG_1357 | - | outlet_or_switch | outlet_or_switch | outlet_or_switch |
-| IMG_1358 | - | outlet_or_switch | outlet_or_switch | outlet_or_switch |
-| IMG_1359 | - | outlet_or_switch | outlet_or_switch | outlet_or_switch |
-| IMG_1360 | - | outlet_or_switch | outlet_or_switch | outlet_or_switch |
-| IMG_1361 | - | outlet_or_switch | outlet_or_switch | outlet_or_switch |
-| IMG_1362 | - | outlet_or_switch | outlet_or_switch | crack, outlet_or_switch |
-| IMG_1363 | - | outlet_or_switch | outlet_or_switch | crack, outlet_or_switch |
-| IMG_1364 | - | outlet_or_switch | outlet_or_switch | crack, outlet_or_switch |
-| IMG_1365 | - | - | hole | - |
-| IMG_1366 | - | outlet_or_switch | outlet_or_switch, water_stain | crack, outlet_or_switch |
-| IMG_1367 | - | outlet_or_switch | outlet_or_switch | crack, outlet_or_switch |
-| IMG_1368 | - | outlet_or_switch | hole, outlet_or_switch | outlet_or_switch |
-| IMG_1369 | hole, exposed_wiring | crack, exposed_wiring, hole, peeling_paint | crack, exposed_wiring, hole | crack, exposed_wiring, hole, peeling_paint |
-| IMG_1370 | hole, exposed_wiring | crack, exposed_wiring, hole, outlet_or_switch | exposed_wiring, hole, outlet_or_switch | exposed_wiring, hole, outlet_or_switch |
-| IMG_1371 | hole, exposed_wiring | crack, exposed_wiring, hole | crack, exposed_wiring, hole, peeling_paint | crack, exposed_wiring, hole, peeling_paint |
-| IMG_1372 | - | outlet_or_switch | outlet_or_switch | outlet_or_switch |
-| IMG_1373 | - | outlet_or_switch | outlet_or_switch | outlet_or_switch |
-| IMG_1374 | - | outlet_or_switch | - | - |
+| Photo | Eye label | gemini-3.1-pro-preview | gemini-3.8-flash | gemini-3.6-flash | florence-2-base |
+|---|---|---|---|---|---|
+| IMG_1349 | - | outlet_or_switch | outlet_or_switch, water_stain | outlet_or_switch | - |
+| IMG_1350 | hole, exposed_wiring | exposed_wiring, hole, outlet_or_switch | exposed_wiring, hole, outlet_or_switch, water_stain | exposed_wiring, hole, outlet_or_switch, water_stain | exposed_wiring, hole |
+| IMG_1351 | hole, exposed_wiring | exposed_wiring, hole | exposed_wiring, outlet_or_switch | exposed_wiring | exposed_wiring |
+| IMG_1352 | hole | hole, outlet_or_switch, water_stain | hole, outlet_or_switch, water_stain | hole, outlet_or_switch, water_stain | - |
+| IMG_1353 | hole | crack, hole, outlet_or_switch, water_stain | hole, outlet_or_switch | hole, outlet_or_switch, water_stain | - |
+| IMG_1354 | hole, exposed_wiring | exposed_wiring, hole, outlet_or_switch | exposed_wiring, hole, outlet_or_switch | exposed_wiring, hole, outlet_or_switch | outlet_or_switch |
+| IMG_1355 | hole, exposed_wiring | exposed_wiring, hole, outlet_or_switch | exposed_wiring, hole, outlet_or_switch | exposed_wiring, hole, outlet_or_switch, water_stain | exposed_wiring |
+| IMG_1356 | hole | hole, outlet_or_switch | hole, outlet_or_switch, water_stain | hole, outlet_or_switch, water_stain | - |
+| IMG_1357 | - | outlet_or_switch | outlet_or_switch | outlet_or_switch | - |
+| IMG_1358 | - | outlet_or_switch | outlet_or_switch | outlet_or_switch | - |
+| IMG_1359 | - | outlet_or_switch | outlet_or_switch | outlet_or_switch | hole |
+| IMG_1360 | - | outlet_or_switch | outlet_or_switch | outlet_or_switch | - |
+| IMG_1361 | - | outlet_or_switch | outlet_or_switch | outlet_or_switch | - |
+| IMG_1362 | - | outlet_or_switch | outlet_or_switch | crack, outlet_or_switch | - |
+| IMG_1363 | - | outlet_or_switch | outlet_or_switch | crack, outlet_or_switch | - |
+| IMG_1364 | - | outlet_or_switch | outlet_or_switch | crack, outlet_or_switch | - |
+| IMG_1365 | - | - | hole | - | - |
+| IMG_1366 | - | outlet_or_switch | outlet_or_switch, water_stain | crack, outlet_or_switch | - |
+| IMG_1367 | - | outlet_or_switch | outlet_or_switch | crack, outlet_or_switch | - |
+| IMG_1368 | - | outlet_or_switch | hole, outlet_or_switch | outlet_or_switch | - |
+| IMG_1369 | hole, exposed_wiring | crack, exposed_wiring, hole, peeling_paint | crack, exposed_wiring, hole | crack, exposed_wiring, hole, peeling_paint | exposed_wiring, hole |
+| IMG_1370 | hole, exposed_wiring | crack, exposed_wiring, hole, outlet_or_switch | exposed_wiring, hole, outlet_or_switch | exposed_wiring, hole, outlet_or_switch | exposed_wiring, hole, outlet_or_switch |
+| IMG_1371 | hole, exposed_wiring | crack, exposed_wiring, hole | crack, exposed_wiring, hole, peeling_paint | crack, exposed_wiring, hole, peeling_paint | exposed_wiring, hole |
+| IMG_1372 | - | outlet_or_switch | outlet_or_switch | outlet_or_switch | hole |
+| IMG_1373 | - | outlet_or_switch | outlet_or_switch | outlet_or_switch | - |
+| IMG_1374 | - | outlet_or_switch | - | - | - |
