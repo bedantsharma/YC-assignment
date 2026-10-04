@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    300.78125,
+    513.8888888888889,
+    338.5416666666667,
+    576.3888888888889
+   ],
+   "caption": "a close up of a white object on a table"
+  },
+  {
+   "box_2d": [
+    441.40625,
+    315.97222222222223,
+    542.96875,
+    482.6388888888889
+   ],
+   "caption": "A hammer that is sitting on top of a table."
+  }
+ ]
+}

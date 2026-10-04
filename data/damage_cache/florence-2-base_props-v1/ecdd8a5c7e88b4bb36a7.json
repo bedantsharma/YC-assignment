@@ -1,0 +1,41 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    57.291666666666664,
+    513.8888888888889,
+    92.44791666666667,
+    557.2916666666666
+   ],
+   "caption": "a close up of a white button on a white surface"
+  },
+  {
+   "box_2d": [
+    949.21875,
+    0.0,
+    997.3958333333334,
+    998.2638888888889
+   ],
+   "caption": "a black wire is laying on the floor next to a window"
+  },
+  {
+   "box_2d": [
+    411.4583333333333,
+    119.79166666666667,
+    481.7708333333333,
+    157.98611111111111
+   ],
+   "caption": "a door with a pink towel hanging on it"
+  },
+  {
+   "box_2d": [
+    919.2708333333334,
+    663.1944444444445,
+    990.8854166666666,
+    852.4305555555555
+   ],
+   "caption": "A black cord is laying on the floor next to a window."
+  }
+ ]
+}

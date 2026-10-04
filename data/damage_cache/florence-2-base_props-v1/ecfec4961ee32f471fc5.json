@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    493.4895833333333,
+    906.7599067599068,
+    528.6458333333334,
+    972.027972027972
+   ],
+   "caption": "a small black object on a white surface"
+  },
+  {
+   "box_2d": [
+    0.0,
+    927.7389277389277,
+    19.53125,
+    997.6689976689977
+   ],
+   "caption": "a black and white photo of a woman's face"
+  }
+ ]
+}

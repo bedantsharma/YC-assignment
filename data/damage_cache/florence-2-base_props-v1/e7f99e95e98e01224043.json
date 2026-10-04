@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    622.3958333333334,
+    417.24941724941726,
+    661.4583333333334,
+    501.16550116550115
+   ],
+   "caption": "a close up of a worm on a white surface"
+  },
+  {
+   "box_2d": [
+    773.4375,
+    90.9090909090909,
+    907.5520833333334,
+    321.67832167832165
+   ],
+   "caption": "A hammer with a wooden handle on a white surface."
+  }
+ ]
+}

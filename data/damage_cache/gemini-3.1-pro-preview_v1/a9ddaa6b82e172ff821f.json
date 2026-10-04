@@ -1,0 +1,19 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "bf54ad3736ae5427b5ffd144657b097efc86e85f",
+ "raw": "[\n  {\"box_2d\": [496, 913, 526, 969], \"label\": \"hole\", \"confidence\": 0.9, \"note\": \"hole\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    496,
+    913,
+    526,
+    969
+   ],
+   "label": "hole",
+   "confidence": 0.9,
+   "note": "hole"
+  }
+ ]
+}

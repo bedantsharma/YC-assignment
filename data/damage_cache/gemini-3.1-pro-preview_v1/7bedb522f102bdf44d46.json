@@ -1,0 +1,19 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "5030664492816873fa60c0deb66ff44d40c47d5d",
+ "raw": "[\n  {\"box_2d\": [492, 427, 517, 511], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"A white electrical switch plate on the wall.\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    492,
+    427,
+    517,
+    511
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "A white electrical switch plate on the wall."
+  }
+ ]
+}

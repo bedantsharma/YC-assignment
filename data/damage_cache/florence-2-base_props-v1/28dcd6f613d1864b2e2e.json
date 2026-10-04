@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    924.4791666666666,
+    39.93055555555556,
+    993.4895833333334,
+    164.93055555555554
+   ],
+   "caption": "a close up of a door handle on a white door"
+  },
+  {
+   "box_2d": [
+    196.61458333333334,
+    288.19444444444446,
+    389.3229166666667,
+    454.8611111111111
+   ],
+   "caption": "A crack in the ceiling of a building."
+  },
+  {
+   "box_2d": [
+    0.0,
+    0.0,
+    339.84375,
+    85.06944444444444
+   ],
+   "caption": "a close up of a window with a white background"
+  }
+ ]
+}

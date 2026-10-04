@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "f060418f352870920f986cf1c42838c722bfcd37",
+ "raw": "[\n  {\n    \"label\": \"hole\",\n    \"box_2d\": [\n      505,\n      106,\n      542,\n      171\n    ],\n    \"confidence\": 0.95,\n    \"note\": \"hole in wall\"\n  },\n  {\n    \"label\": \"water_stain\",\n    \"box_2d\": [\n      745,\n      382,\n      805,\n      833\n    ],\n    \"confidence\": 0.85,\n    \"note\": \"water stain on wall\"\n  }\n]",
+ "items": [
+  {
+   "label": "hole",
+   "box_2d": [
+    505,
+    106,
+    542,
+    171
+   ],
+   "confidence": 0.95,
+   "note": "hole in wall"
+  },
+  {
+   "label": "water_stain",
+   "box_2d": [
+    745,
+    382,
+    805,
+    833
+   ],
+   "confidence": 0.85,
+   "note": "water stain on wall"
+  }
+ ]
+}

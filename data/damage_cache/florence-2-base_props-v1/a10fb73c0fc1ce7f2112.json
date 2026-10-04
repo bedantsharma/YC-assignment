@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    100.26041666666667,
+    461.53846153846155,
+    136.71875,
+    540.7925407925408
+   ],
+   "caption": "a black and white photo of a spiral vortex"
+  },
+  {
+   "box_2d": [
+    118.48958333333333,
+    0.0,
+    191.40625,
+    997.6689976689977
+   ],
+   "caption": "a white light that is on top of a table"
+  }
+ ]
+}

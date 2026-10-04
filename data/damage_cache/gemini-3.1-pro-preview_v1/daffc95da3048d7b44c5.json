@@ -1,0 +1,129 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "b9458f2e277bf48a6f1ab892ea8e629551d955d1",
+ "raw": "[\n  {\"box_2d\": [218, 430, 257, 512], \"label\": \"outlet_or_switch\", \"confidence\": 0.9, \"note\": \"Circular cover plate or junction box\"},\n  {\"box_2d\": [371, 168, 475, 347], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"Thick cable protruding from the wall\"},\n  {\"box_2d\": [233, 407, 528, 575], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"Bundle of wires protruding from and running along the wall\"},\n  {\"box_2d\": [368, 125, 391, 222], \"label\": \"hole\", \"confidence\": 0.9, \"note\": \"Hole in the wall where a cable is protruding\"},\n  {\"box_2d\": [366, 258, 385, 335], \"label\": \"hole\", \"confidence\": 0.85, \"note\": \"Small hole in the wall\"},\n  {\"box_2d\": [346, 348, 378, 487], \"label\": \"hole\", \"confidence\": 0.9, \"note\": \"Large, messy hole in the wall with wires coming out\"},\n  {\"box_2d\": [280, 427, 293, 443], \"label\": \"hole\", \"confidence\": 0.8, \"note\": \"Small hole in the wall\"},\n  {\"box_2d\": [298, 661, 312, 685], \"label\": \"hole\", \"confidence\": 0.8, \"note\": \"Small hole in the wall\"},\n  {\"box_2d\": [280, 835, 292, 854], \"label\": \"hole\", \"confidence\": 0.8, \"note\": \"Small hole in the wall, likely from a wall plug\"},\n  {\"box_2d\": [279, 895, 293, 915], \"label\": \"hole\", \"confidence\": 0.8, \"note\": \"Small hole in the wall, likely from a wall plug\"},\n  {\"box_2d\": [381, 873, 393, 911], \"label\": \"hole\", \"confidence\": 0.8, \"note\": \"Small hole in the wall, likely from a wall plug\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    218,
+    430,
+    257,
+    512
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.9,
+   "note": "Circular cover plate or junction box"
+  },
+  {
+   "box_2d": [
+    371,
+    168,
+    475,
+    347
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "Thick cable protruding from the wall"
+  },
+  {
+   "box_2d": [
+    233,
+    407,
+    528,
+    575
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "Bundle of wires protruding from and running along the wall"
+  },
+  {
+   "box_2d": [
+    368,
+    125,
+    391,
+    222
+   ],
+   "label": "hole",
+   "confidence": 0.9,
+   "note": "Hole in the wall where a cable is protruding"
+  },
+  {
+   "box_2d": [
+    366,
+    258,
+    385,
+    335
+   ],
+   "label": "hole",
+   "confidence": 0.85,
+   "note": "Small hole in the wall"
+  },
+  {
+   "box_2d": [
+    346,
+    348,
+    378,
+    487
+   ],
+   "label": "hole",
+   "confidence": 0.9,
+   "note": "Large, messy hole in the wall with wires coming out"
+  },
+  {
+   "box_2d": [
+    280,
+    427,
+    293,
+    443
+   ],
+   "label": "hole",
+   "confidence": 0.8,
+   "note": "Small hole in the wall"
+  },
+  {
+   "box_2d": [
+    298,
+    661,
+    312,
+    685
+   ],
+   "label": "hole",
+   "confidence": 0.8,
+   "note": "Small hole in the wall"
+  },
+  {
+   "box_2d": [
+    280,
+    835,
+    292,
+    854
+   ],
+   "label": "hole",
+   "confidence": 0.8,
+   "note": "Small hole in the wall, likely from a wall plug"
+  },
+  {
+   "box_2d": [
+    279,
+    895,
+    293,
+    915
+   ],
+   "label": "hole",
+   "confidence": 0.8,
+   "note": "Small hole in the wall, likely from a wall plug"
+  },
+  {
+   "box_2d": [
+    381,
+    873,
+    393,
+    911
+   ],
+   "label": "hole",
+   "confidence": 0.8,
+   "note": "Small hole in the wall, likely from a wall plug"
+  }
+ ]
+}

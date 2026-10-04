@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    808.59375,
+    235.43123543123542,
+    841.1458333333334,
+    289.04428904428903
+   ],
+   "caption": "a black hole in the wall of a bathroom"
+  },
+  {
+   "box_2d": [
+    0.0,
+    30.303030303030305,
+    79.42708333333333,
+    871.7948717948718
+   ],
+   "caption": "a room with a window and a ceiling fan"
+  },
+  {
+   "box_2d": [
+    929.6875,
+    149.1841491841492,
+    963.5416666666666,
+    326.3403263403263
+   ],
+   "caption": "a black and white photo of a hook on a wall"
+  }
+ ]
+}

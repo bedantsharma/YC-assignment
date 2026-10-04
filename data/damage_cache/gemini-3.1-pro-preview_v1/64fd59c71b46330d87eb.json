@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "4147f4c749236c6b790717d5e7089f5b78f87daa",
+ "raw": "[\n  {\"box_2d\": [386, 390, 438, 524], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"A white electrical switch plate with multiple switches on the wall.\"},\n  {\"box_2d\": [869, 858, 929, 1000], \"label\": \"exposed_wiring\", \"confidence\": 0.85, \"note\": \"Black electrical wires are visible on the floor near the door frame.\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    386,
+    390,
+    438,
+    524
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "A white electrical switch plate with multiple switches on the wall."
+  },
+  {
+   "box_2d": [
+    869,
+    858,
+    929,
+    1000
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.85,
+   "note": "Black electrical wires are visible on the floor near the door frame."
+  }
+ ]
+}

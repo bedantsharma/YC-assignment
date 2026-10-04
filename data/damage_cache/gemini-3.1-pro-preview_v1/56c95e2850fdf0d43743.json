@@ -1,0 +1,19 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "506461e1b148e69a5f992a4fd6d3585701a2317f",
+ "raw": "[\n  {\"box_2d\": [434, 128, 478, 181], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"A light switch plate on the wall.\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    434,
+    128,
+    478,
+    181
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "A light switch plate on the wall."
+  }
+ ]
+}

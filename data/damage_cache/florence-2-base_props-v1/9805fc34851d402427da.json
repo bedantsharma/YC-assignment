@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    67.70833333333333,
+    829.8368298368298,
+    91.14583333333333,
+    871.7948717948718
+   ],
+   "caption": "a black and white photo of a man in a suit"
+  },
+  {
+   "box_2d": [
+    173.17708333333334,
+    0.0,
+    242.1875,
+    997.6689976689977
+   ],
+   "caption": "a close up of a metal pole on a wall"
+  }
+ ]
+}

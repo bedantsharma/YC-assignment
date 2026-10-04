@@ -1,0 +1,50 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    764.3229166666666,
+    631.7016317016318,
+    997.3958333333334,
+    997.6689976689977
+   ],
+   "caption": "A broom is sitting on the floor next to a piece of paper."
+  },
+  {
+   "box_2d": [
+    618.4895833333334,
+    398.6013986013986,
+    770.8333333333334,
+    559.4405594405595
+   ],
+   "caption": "A large vase sitting on top of a table in a room."
+  },
+  {
+   "box_2d": [
+    82.03125,
+    307.6923076923077,
+    148.4375,
+    997.6689976689977
+   ],
+   "caption": "a window with a curtain rod in the middle of it"
+  },
+  {
+   "box_2d": [
+    710.9375,
+    0.0,
+    838.5416666666666,
+    212.12121212121212
+   ],
+   "caption": "a close up of a bed with a blanket on it"
+  },
+  {
+   "box_2d": [
+    553.3854166666666,
+    375.2913752913753,
+    614.5833333333334,
+    510.4895104895105
+   ],
+   "caption": "a close up of a toilet with a hose attached to it"
+  }
+ ]
+}

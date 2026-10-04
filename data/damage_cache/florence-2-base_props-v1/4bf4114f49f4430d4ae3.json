@@ -1,0 +1,41 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    671.875,
+    654.5138888888889,
+    738.28125,
+    779.5138888888889
+   ],
+   "caption": "a close up of a sink with a drain in it"
+  },
+  {
+   "box_2d": [
+    845.0520833333334,
+    809.0277777777778,
+    906.25,
+    885.4166666666666
+   ],
+   "caption": "a black and white photo of a fish in the water"
+  },
+  {
+   "box_2d": [
+    816.40625,
+    227.43055555555554,
+    997.3958333333334,
+    736.1111111111111
+   ],
+   "caption": "a room with a door and a window in it"
+  },
+  {
+   "box_2d": [
+    0.0,
+    411.4583333333333,
+    70.3125,
+    741.3194444444445
+   ],
+   "caption": "a close up of a wall with a light on it"
+  }
+ ]
+}

@@ -1,0 +1,68 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    178.38541666666666,
+    404.5138888888889,
+    256.5104166666667,
+    527.7777777777778
+   ],
+   "caption": "a close up of a ceiling fan in a room"
+  },
+  {
+   "box_2d": [
+    885.4166666666666,
+    421.875,
+    951.8229166666666,
+    519.0972222222222
+   ],
+   "caption": "a close up of a piece of metal on a table"
+  },
+  {
+   "box_2d": [
+    286.4583333333333,
+    748.2638888888889,
+    407.5520833333333,
+    998.2638888888889
+   ],
+   "caption": "a close up of a ceiling with a light on it"
+  },
+  {
+   "box_2d": [
+    339.84375,
+    406.25,
+    472.65625,
+    645.8333333333334
+   ],
+   "caption": "A room with a door and a ceiling fan."
+  },
+  {
+   "box_2d": [
+    385.4166666666667,
+    727.4305555555555,
+    511.71875,
+    998.2638888888889
+   ],
+   "caption": "A room with a ceiling that has a light on it."
+  },
+  {
+   "box_2d": [
+    618.4895833333334,
+    0.0,
+    692.7083333333334,
+    364.5833333333333
+   ],
+   "caption": "a room with a window and a wall with a painting on it"
+  },
+  {
+   "box_2d": [
+    391.9270833333333,
+    1.7361111111111112,
+    476.5625,
+    251.73611111111111
+   ],
+   "caption": "a close up of a ceiling with a crown molding"
+  }
+ ]
+}

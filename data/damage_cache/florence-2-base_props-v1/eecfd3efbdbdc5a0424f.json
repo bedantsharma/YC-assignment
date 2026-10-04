@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    221.35416666666666,
+    407.9861111111111,
+    277.34375,
+    515.625
+   ],
+   "caption": "A black and white photo of a spiral staircase."
+  },
+  {
+   "box_2d": [
+    630.2083333333334,
+    395.8333333333333,
+    997.3958333333334,
+    765.625
+   ],
+   "caption": "A room with a glass door and a window."
+  }
+ ]
+}

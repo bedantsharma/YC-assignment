@@ -258,10 +258,13 @@ the doorway photos; if that fails too, document the photo stitch as failing.
             on the same cameras; sizes carry the video tier's scale interval
       - [ ] test on the Camera-app damage-room clips (they have the staged hole) and score
             with `scripts/damage_hole_check.py`
-    - [ ] Photo tier damage: every photo goes to the detector; sizes from the photo
-          reconstruction's poses
+    - [x] Photo tier damage: every photo goes to the detector (staged hole from 8 photos:
+          28.0 cm2 [15.4, 46.4] vs 31.7)
+    - [x] Offline fallback: Florence-2-base proposes boxes, crop captions classify
+          (`damage_local.py`; auto on Gemini failure after retries)
     - [ ] Optional: cheap low-res screening pass, full-res only on frames with a hit
-  - [ ] Damage on the video and photo tiers (poses from the reconstruction)
+  - [x] Damage on the video and photo tiers (`damage_images.py`: the reconstruction's own
+        images; sizes from its per-pixel points projected onto the walls)
   - [ ] Fix map 04: wardrobe / fridge / bookshelf boxes removed from the wall mask
   - [ ] Stretch: furniture symbols on the plan (not required by the brief)
 - [x] Concealed-damage rule table (e.g. ceiling stain → leak above; stain at skirting →

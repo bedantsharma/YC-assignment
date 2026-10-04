@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    959.6354166666666,
+    359.375,
+    997.3958333333334,
+    460.06944444444446
+   ],
+   "caption": "a close up of a metal object on a table"
+  },
+  {
+   "box_2d": [
+    817.7083333333334,
+    907.9861111111111,
+    942.7083333333334,
+    998.2638888888889
+   ],
+   "caption": "a desk with a computer and a bowl on it"
+  }
+ ]
+}

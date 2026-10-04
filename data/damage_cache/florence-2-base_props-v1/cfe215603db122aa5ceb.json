@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    932.2916666666666,
+    878.7878787878788,
+    997.3958333333334,
+    997.6689976689977
+   ],
+   "caption": "a close up of a piece of paper on a table"
+  },
+  {
+   "box_2d": [
+    652.34375,
+    321.67832167832165,
+    684.8958333333334,
+    433.56643356643355
+   ],
+   "caption": "a person with a bandage on their arm"
+  },
+  {
+   "box_2d": [
+    598.9583333333334,
+    806.5268065268066,
+    675.78125,
+    855.4778554778554
+   ],
+   "caption": "A woman sitting on the steps of a building."
+  }
+ ]
+}

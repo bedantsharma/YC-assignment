@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    953.125,
+    249.41724941724942,
+    983.0729166666666,
+    333.3333333333333
+   ],
+   "caption": "a black hole in the middle of a white surface"
+  }
+ ]
+}

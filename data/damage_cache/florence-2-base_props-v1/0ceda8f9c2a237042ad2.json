@@ -1,0 +1,41 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    377.6041666666667,
+    284.3822843822844,
+    411.4583333333333,
+    344.988344988345
+   ],
+   "caption": "a black and white photo of a hole in a wall"
+  },
+  {
+   "box_2d": [
+    700.5208333333334,
+    20.97902097902098,
+    947.9166666666666,
+    382.2843822843823
+   ],
+   "caption": "A picture of a baby sitting on top of a table."
+  },
+  {
+   "box_2d": [
+    346.3541666666667,
+    582.7505827505828,
+    588.5416666666666,
+    897.4358974358975
+   ],
+   "caption": "A picture frame hanging on the wall in a room."
+  },
+  {
+   "box_2d": [
+    92.44791666666667,
+    0.0,
+    191.40625,
+    997.6689976689977
+   ],
+   "caption": "a close up of a wall with a white trim"
+  }
+ ]
+}

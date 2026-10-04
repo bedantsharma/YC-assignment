@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "49f5a9b38636da8dc6a5fe302eed3e03ca0549e3",
+ "raw": "[\n  {\"box_2d\": [768, 0, 948, 28], \"label\": \"outlet_or_switch\", \"confidence\": 0.9, \"note\": \"light switch plate\"},\n  {\"box_2d\": [655, 315, 702, 341], \"label\": \"outlet_or_switch\", \"confidence\": 0.8, \"note\": \"light switch plate\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    768,
+    0,
+    948,
+    28
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.9,
+   "note": "light switch plate"
+  },
+  {
+   "box_2d": [
+    655,
+    315,
+    702,
+    341
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.8,
+   "note": "light switch plate"
+  }
+ ]
+}

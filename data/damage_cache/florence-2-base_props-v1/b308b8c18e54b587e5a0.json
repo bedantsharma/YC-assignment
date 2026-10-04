@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    274.7395833333333,
+    615.3846153846154,
+    307.2916666666667,
+    671.3286713286714
+   ],
+   "caption": "a black hole in the wall of a bathroom"
+  },
+  {
+   "box_2d": [
+    618.4895833333334,
+    636.3636363636364,
+    712.2395833333334,
+    855.4778554778554
+   ],
+   "caption": "A black vase sitting on top of a tiled floor."
+  },
+  {
+   "box_2d": [
+    380.2083333333333,
+    466.2004662004662,
+    427.0833333333333,
+    652.6806526806527
+   ],
+   "caption": "a man hanging from the ceiling in a room"
+  }
+ ]
+}

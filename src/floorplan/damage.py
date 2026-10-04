@@ -36,7 +36,9 @@ import hashlib
 import io
 import json
 import os
+import random
 import threading
+import time
 import warnings
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -57,6 +59,8 @@ PROMPT_VERSION = "v1"
 SEND_LONG_SIDE = 1536  # px; boxes are normalised, so the size only limits detail and cost
 JPEG_QUALITY = 92
 MIN_SCORE = 0.3
+RETRIES = 3  # rate limit / overload: wait RETRY_S, 2x, 4x (+ jitter) before giving up
+RETRY_S = 4.0
 _lock = threading.Lock()
 
 PROMPT = f"""You are a building surveyor inspecting the interior surfaces (walls, ceiling,
@@ -327,6 +331,9 @@ def _cached_call(data: bytes, prompt: str, version: str) -> list:
     if _local() or os.environ.get(DETECTOR_ENV, "auto") == "florence":
         return _local_call(data, version)
     if os.environ.get(CACHE_ONLY_ENV) == "1":
+        local = _cache_path(data, damage_local.NAME, damage_local.CACHE_VERSION)
+        if os.environ.get(DETECTOR_ENV, "auto") == "auto" and local.exists():
+            return _local_call(data, version)  # replaying a run that fell back
         raise RuntimeError(f"damage cache miss ({gemini}) and {CACHE_ONLY_ENV}=1")
     try:
         text = _call_gemini(data, gemini_model(), prompt)
@@ -399,6 +406,20 @@ def _call_gemini(data: bytes, model: str, prompt: str) -> str:
     except ImportError as err:  # pragma: no cover
         raise RuntimeError("google-genai is not installed: uv sync") from err
     client = genai.Client()
+    for attempt in range(RETRIES + 1):
+        try:
+            return _generate(client, types, data, model, prompt)
+        except Exception as err:  # rate limits and overload pass; anything else is real
+            transient = any(
+                k in str(err) for k in ("429", "503", "RESOURCE_EXHAUSTED", "UNAVAILABLE")
+            )
+            if not transient or attempt == RETRIES:
+                raise
+            time.sleep(RETRY_S * 2**attempt + random.uniform(0, 1))
+    raise AssertionError("unreachable")
+
+
+def _generate(client, types, data: bytes, model: str, prompt: str) -> str:
     response = client.models.generate_content(
         model=model,
         contents=[types.Part.from_bytes(data=data, mime_type="image/jpeg"), prompt],

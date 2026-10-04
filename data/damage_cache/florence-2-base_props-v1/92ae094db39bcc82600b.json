@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    587.2395833333334,
+    378.47222222222223,
+    635.4166666666666,
+    479.1666666666667
+   ],
+   "caption": "a close up of a ceiling with a hole in it"
+  }
+ ]
+}

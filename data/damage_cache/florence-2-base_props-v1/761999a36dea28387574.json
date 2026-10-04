@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    101.5625,
+    854.1666666666666,
+    295.5729166666667,
+    998.2638888888889
+   ],
+   "caption": "A black and white photo of a fish in the water."
+  },
+  {
+   "box_2d": [
+    824.21875,
+    564.2361111111111,
+    970.0520833333334,
+    630.2083333333334
+   ],
+   "caption": "A table with a bunch of wires on it."
+  }
+ ]
+}

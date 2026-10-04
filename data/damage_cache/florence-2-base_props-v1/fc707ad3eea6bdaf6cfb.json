@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    808.59375,
+    179.48717948717947,
+    833.3333333333334,
+    221.44522144522145
+   ],
+   "caption": "a black and white photo of a woman in a white dress"
+  }
+ ]
+}

@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    572.9166666666666,
+    51.282051282051285,
+    628.90625,
+    296.037296037296
+   ],
+   "caption": "a white electrical outlet on a wall"
+  }
+ ]
+}

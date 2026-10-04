@@ -1,0 +1,19 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "60824eba548dec59e7edd9b37fc2f4d5a46cce9b",
+ "raw": "[\n  {\"box_2d\": [109, 133, 158, 213], \"label\": \"outlet_or_switch\", \"confidence\": 0.8, \"note\": \"A small circular fixture on the wall, possibly a junction box or a mount for a light fixture or camera.\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    109,
+    133,
+    158,
+    213
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.8,
+   "note": "A small circular fixture on the wall, possibly a junction box or a mount for a light fixture or camera."
+  }
+ ]
+}

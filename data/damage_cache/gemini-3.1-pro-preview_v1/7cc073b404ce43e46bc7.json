@@ -1,0 +1,19 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "9c3db42899325082326499f5e248d0a74f0131fb",
+ "raw": "[\n  {\"box_2d\": [577, 597, 590, 628], \"label\": \"crack\", \"confidence\": 0.6, \"note\": \"crack\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    577,
+    597,
+    590,
+    628
+   ],
+   "label": "crack",
+   "confidence": 0.6,
+   "note": "crack"
+  }
+ ]
+}

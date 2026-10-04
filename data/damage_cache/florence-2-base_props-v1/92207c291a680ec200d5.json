@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    299.4791666666667,
+    230.76923076923077,
+    457.03125,
+    508.15850815850814
+   ],
+   "caption": "a close up of a ceiling fan on a wall"
+  },
+  {
+   "box_2d": [
+    388.0208333333333,
+    449.8834498834499,
+    657.5520833333334,
+    997.6689976689977
+   ],
+   "caption": "A white ceiling fan mounted on a white wall."
+  },
+  {
+   "box_2d": [
+    0.0,
+    279.72027972027973,
+    299.4791666666667,
+    517.4825174825174
+   ],
+   "caption": "a close up of a white ceiling fan on a wall"
+  }
+ ]
+}

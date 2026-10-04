@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    493.4895833333333,
+    195.8041958041958,
+    523.4375,
+    305.36130536130537
+   ],
+   "caption": "a close up of a person wearing a hat and glasses"
+  },
+  {
+   "box_2d": [
+    718.75,
+    0.0,
+    997.3958333333334,
+    263.4032634032634
+   ],
+   "caption": "A pair of shoes that are sitting on the floor."
+  },
+  {
+   "box_2d": [
+    44.270833333333336,
+    407.9254079254079,
+    79.42708333333333,
+    615.3846153846154
+   ],
+   "caption": "a close up of a metal object on a table"
+  }
+ ]
+}

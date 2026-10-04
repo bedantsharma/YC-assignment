@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    589.84375,
+    493.05555555555554,
+    667.96875,
+    555.5555555555555
+   ],
+   "caption": "A broom sitting on top of a table next to a piece of paper."
+  },
+  {
+   "box_2d": [
+    195.3125,
+    223.95833333333334,
+    225.26041666666666,
+    635.4166666666666
+   ],
+   "caption": "a room with a window and a door in it"
+  }
+ ]
+}

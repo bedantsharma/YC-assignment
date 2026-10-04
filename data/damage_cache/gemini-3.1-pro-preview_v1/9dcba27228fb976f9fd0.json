@@ -1,0 +1,19 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "fa6d015f0d326577e9f2993beaac0ee433b8c960",
+ "raw": "[\n  {\"box_2d\": [505, 786, 574, 976], \"label\": \"outlet_or_switch\", \"confidence\": 0.8, \"note\": \"A circular fixture on the ceiling, possibly a light fitting base or a vent, which falls under the broad category of outlet_or_switch for this task.\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    505,
+    786,
+    574,
+    976
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.8,
+   "note": "A circular fixture on the ceiling, possibly a light fitting base or a vent, which falls under the broad category of outlet_or_switch for this task."
+  }
+ ]
+}

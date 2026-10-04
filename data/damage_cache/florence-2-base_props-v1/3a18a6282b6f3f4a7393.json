@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    611.9791666666666,
+    421.875,
+    678.3854166666666,
+    477.43055555555554
+   ],
+   "caption": "a broom sitting on top of a table next to a piece of paper"
+  },
+  {
+   "box_2d": [
+    664.0625,
+    446.18055555555554,
+    781.25,
+    500.0
+   ],
+   "caption": "A broom is sitting on the floor next to a piece of paper."
+  },
+  {
+   "box_2d": [
+    251.30208333333334,
+    168.40277777777777,
+    269.53125,
+    552.0833333333334
+   ],
+   "caption": "a close up of a door handle on a wall"
+  }
+ ]
+}

@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    829.4270833333334,
+    550.1165501165501,
+    877.6041666666666,
+    641.025641025641
+   ],
+   "caption": "a black and white photo of a cat in a bathtub"
+  }
+ ]
+}

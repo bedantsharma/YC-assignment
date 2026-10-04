@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "4b8ef06bac48feb022e7ec43af0a220579250eaf",
+ "raw": "[\n  {\"box_2d\": [47, 649, 144, 905], \"label\": \"exposed_wiring\", \"confidence\": 0.9, \"note\": \"exposed wiring\"},\n  {\"box_2d\": [25, 789, 50, 886], \"label\": \"hole\", \"confidence\": 0.8, \"note\": \"hole\"},\n  {\"box_2d\": [46, 649, 80, 748], \"label\": \"hole\", \"confidence\": 0.8, \"note\": \"hole\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    47,
+    649,
+    144,
+    905
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.9,
+   "note": "exposed wiring"
+  },
+  {
+   "box_2d": [
+    25,
+    789,
+    50,
+    886
+   ],
+   "label": "hole",
+   "confidence": 0.8,
+   "note": "hole"
+  },
+  {
+   "box_2d": [
+    46,
+    649,
+    80,
+    748
+   ],
+   "label": "hole",
+   "confidence": 0.8,
+   "note": "hole"
+  }
+ ]
+}

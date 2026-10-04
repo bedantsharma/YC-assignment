@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    121.09375,
+    268.06526806526807,
+    157.55208333333334,
+    496.5034965034965
+   ],
+   "caption": "a painting hanging on the wall in a room"
+  },
+  {
+   "box_2d": [
+    872.3958333333334,
+    692.3076923076923,
+    941.40625,
+    997.6689976689977
+   ],
+   "caption": "A black cord is laying on the floor next to a window."
+  }
+ ]
+}

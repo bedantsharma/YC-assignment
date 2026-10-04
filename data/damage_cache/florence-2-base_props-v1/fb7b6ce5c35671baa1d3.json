@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    23.4375,
+    46.875,
+    289.0625,
+    420.1388888888889
+   ],
+   "caption": "A picture hanging on the wall above a fireplace."
+  },
+  {
+   "box_2d": [
+    955.7291666666666,
+    0.0,
+    997.3958333333334,
+    237.84722222222223
+   ],
+   "caption": "a close up of a metal object on a table"
+  }
+ ]
+}

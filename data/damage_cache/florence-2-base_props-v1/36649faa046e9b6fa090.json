@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    912.7604166666666,
+    445.2214452214452,
+    960.9375,
+    524.4755244755245
+   ],
+   "caption": "a close up of a cell in a microscope"
+  },
+  {
+   "box_2d": [
+    196.61458333333334,
+    116.55011655011656,
+    320.3125,
+    389.27738927738926
+   ],
+   "caption": "a hammer is laying on the floor next to a bunch of wires"
+  },
+  {
+   "box_2d": [
+    58.59375,
+    466.2004662004662,
+    382.8125,
+    636.3636363636364
+   ],
+   "caption": "a close up of a wire on a wall"
+  }
+ ]
+}

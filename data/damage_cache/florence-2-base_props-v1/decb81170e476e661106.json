@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    557.2916666666666,
+    146.85314685314685,
+    997.3958333333334,
+    496.5034965034965
+   ],
+   "caption": "A brown door in a room with a white wall."
+  },
+  {
+   "box_2d": [
+    589.84375,
+    354.31235431235433,
+    617.1875,
+    997.6689976689977
+   ],
+   "caption": "a close up of a metal pole on a wall"
+  }
+ ]
+}

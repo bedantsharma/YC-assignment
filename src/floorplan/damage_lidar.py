@@ -45,7 +45,7 @@ from floorplan.output import Room
 
 DAMAGE_FRAMES = 60
 CANDIDATE_STEP = 4  # frames either side of a chosen frame tried for sharpness
-DETECT_WORKERS = 8
+DETECT_WORKERS = 4  # 8 hit Vertex's per-minute quota (429) on 60 video frames
 UNSEEN_WARN = 0.3  # warn about surfaces with more than this share never seen up close
 OCCLUDED_M = 0.25
 SEED = 0

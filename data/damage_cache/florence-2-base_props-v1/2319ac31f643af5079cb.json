@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    562.5,
+    251.74825174825176,
+    622.3958333333334,
+    538.4615384615385
+   ],
+   "caption": "a person cleaning a floor with a broom"
+  },
+  {
+   "box_2d": [
+    0.0,
+    0.0,
+    42.96875,
+    997.6689976689977
+   ],
+   "caption": "a black and white photo of a window with a curtain"
+  },
+  {
+   "box_2d": [
+    158.85416666666666,
+    48.95104895104895,
+    182.29166666666666,
+    557.1095571095572
+   ],
+   "caption": "a close up of a door with a window in it"
+  }
+ ]
+}

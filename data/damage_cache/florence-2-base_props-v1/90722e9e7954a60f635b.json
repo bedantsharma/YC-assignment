@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    152.34375,
+    230.76923076923077,
+    194.01041666666666,
+    291.3752913752914
+   ],
+   "caption": "a close up of a cell on a white surface"
+  },
+  {
+   "box_2d": [
+    238.28125,
+    382.2843822843823,
+    328.125,
+    447.5524475524476
+   ],
+   "caption": "a painting hanging on the wall in a room"
+  },
+  {
+   "box_2d": [
+    0.0,
+    23.31002331002331,
+    59.895833333333336,
+    997.6689976689977
+   ],
+   "caption": "a close up of a kitchen counter top with a sink"
+  }
+ ]
+}

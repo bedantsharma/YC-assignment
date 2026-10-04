@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    839.84375,
+    424.24242424242425,
+    875.0,
+    603.7296037296037
+   ],
+   "caption": "a cat that is standing in the dirt"
+  },
+  {
+   "box_2d": [
+    69.01041666666667,
+    0.0,
+    128.90625,
+    997.6689976689977
+   ],
+   "caption": "a bird flying over the ocean on a cloudy day"
+  }
+ ]
+}

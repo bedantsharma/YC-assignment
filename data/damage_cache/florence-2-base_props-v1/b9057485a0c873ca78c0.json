@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    839.84375,
+    336.80555555555554,
+    980.46875,
+    519.0972222222222
+   ],
+   "caption": "A wooden table with a box on top of it."
+  }
+ ]
+}

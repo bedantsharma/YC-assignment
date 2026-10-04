@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    772.1354166666666,
+    426.57342657342656,
+    812.5,
+    484.8484848484849
+   ],
+   "caption": "a close up of a metal object on a wall"
+  },
+  {
+   "box_2d": [
+    886.71875,
+    149.1841491841492,
+    923.1770833333334,
+    240.0932400932401
+   ],
+   "caption": "a red vase sitting on top of a table"
+  },
+  {
+   "box_2d": [
+    45.572916666666664,
+    468.53146853146853,
+    166.66666666666666,
+    997.6689976689977
+   ],
+   "caption": "a close up of a window in a room"
+  }
+ ]
+}

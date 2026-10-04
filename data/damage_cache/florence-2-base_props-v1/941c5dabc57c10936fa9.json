@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    174.47916666666666,
+    723.9583333333334,
+    204.42708333333334,
+    762.1527777777778
+   ],
+   "caption": "a pair of sunglasses sitting on top of a table"
+  }
+ ]
+}

@@ -1,0 +1,19 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "7f6788436e7ef91d10ea7970f1401e27af920ae2",
+ "raw": "[\n  {\"box_2d\": [568, 558, 595, 600], \"label\": \"peeling_paint\", \"confidence\": 0.6, \"note\": \"peeling_paint\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    568,
+    558,
+    595,
+    600
+   ],
+   "label": "peeling_paint",
+   "confidence": 0.6,
+   "note": "peeling_paint"
+  }
+ ]
+}

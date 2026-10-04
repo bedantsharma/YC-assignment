@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    919.2708333333334,
+    701.6317016317016,
+    997.3958333333334,
+    839.1608391608391
+   ],
+   "caption": "a bird that is sitting on top of a roof"
+  },
+  {
+   "box_2d": [
+    127.60416666666667,
+    118.88111888111888,
+    187.5,
+    997.6689976689977
+   ],
+   "caption": "a room with a window and a door in it"
+  },
+  {
+   "box_2d": [
+    632.8125,
+    191.14219114219114,
+    695.3125,
+    340.3263403263403
+   ],
+   "caption": "a close up of a toilet with a hose attached to it"
+  }
+ ]
+}

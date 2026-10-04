@@ -314,3 +314,10 @@ def test_walls_of_a_room_without_ceiling_are_still_surfaces():
     walls = [s for s in surfaces([room]) if s.kind == "wall"]
     assert len(walls) == 4
     assert walls[0].area.lo < walls[0].area.value < walls[0].area.hi
+
+
+def test_merge_handles_cracks_without_length():
+    room, crack = _placed_on_w1("crack", _square_mask(640, 480, 30))
+    crack.length, crack.length_draws = None, None  # image tiers do not measure crack length
+    merged = merge([crack])
+    assert merged[0].length is None

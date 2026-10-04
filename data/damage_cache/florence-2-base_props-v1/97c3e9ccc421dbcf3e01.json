@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    890.625,
+    107.63888888888889,
+    988.28125,
+    359.375
+   ],
+   "caption": "A black cord is laying on the floor next to a door."
+  }
+ ]
+}

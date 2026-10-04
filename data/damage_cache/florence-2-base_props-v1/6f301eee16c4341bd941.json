@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    191.40625,
+    458.3333333333333,
+    263.0208333333333,
+    598.9583333333334
+   ],
+   "caption": "a close up of a white object on a wall"
+  },
+  {
+   "box_2d": [
+    0.0,
+    642.3611111111111,
+    180.98958333333334,
+    782.9861111111111
+   ],
+   "caption": "a close up of a white ceiling with a light fixture"
+  },
+  {
+   "box_2d": [
+    600.2604166666666,
+    678.8194444444445,
+    691.40625,
+    998.2638888888889
+   ],
+   "caption": "a close up of a shelf in a room"
+  }
+ ]
+}

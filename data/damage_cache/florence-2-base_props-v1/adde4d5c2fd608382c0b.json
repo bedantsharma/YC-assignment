@@ -1,0 +1,41 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    550.78125,
+    572.9166666666666,
+    725.2604166666666,
+    998.2638888888889
+   ],
+   "caption": "a close up of a tile floor with a broom on it"
+  },
+  {
+   "box_2d": [
+    600.2604166666666,
+    0.0,
+    751.3020833333334,
+    598.9583333333334
+   ],
+   "caption": "a broom sitting on top of a marble counter top"
+  },
+  {
+   "box_2d": [
+    0.0,
+    0.0,
+    518.2291666666666,
+    437.5
+   ],
+   "caption": "a broom sitting on top of a tiled floor next to a door"
+  },
+  {
+   "box_2d": [
+    424.4791666666667,
+    72.91666666666667,
+    622.3958333333334,
+    418.40277777777777
+   ],
+   "caption": "A broom is laying on the floor next to a door."
+  }
+ ]
+}

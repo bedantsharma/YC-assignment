@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    0.0,
+    229.16666666666666,
+    70.3125,
+    366.31944444444446
+   ],
+   "caption": "a close up of a sink with water coming out of it"
+  },
+  {
+   "box_2d": [
+    324.21875,
+    656.25,
+    486.9791666666667,
+    842.0138888888889
+   ],
+   "caption": "A black and white photo of a person flying through the air."
+  },
+  {
+   "box_2d": [
+    62.5,
+    420.1388888888889,
+    230.46875,
+    998.2638888888889
+   ],
+   "caption": "a close up of a white ceiling with a light fixture"
+  }
+ ]
+}

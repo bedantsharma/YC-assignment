@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    846.3541666666666,
+    319.44444444444446,
+    899.7395833333334,
+    734.375
+   ],
+   "caption": "A picture of a fireplace with a fire in it."
+  },
+  {
+   "box_2d": [
+    782.5520833333334,
+    659.7222222222222,
+    954.4270833333334,
+    767.3611111111111
+   ],
+   "caption": "a close up of a piece of wood with a hose attached to it"
+  },
+  {
+   "box_2d": [
+    881.5104166666666,
+    253.47222222222223,
+    997.3958333333334,
+    539.9305555555555
+   ],
+   "caption": "A black power cord plugged into a wooden box."
+  }
+ ]
+}

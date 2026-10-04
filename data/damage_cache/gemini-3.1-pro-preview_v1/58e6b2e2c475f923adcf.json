@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "56a17bcfe859a5c0aa79696b639b0cf3c1cabc89",
+ "raw": "[\n  {\"box_2d\": [820, 393, 861, 482], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"outlet_or_switch\"},\n  {\"box_2d\": [618, 898, 646, 1000], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"outlet_or_switch\"},\n  {\"box_2d\": [789, 11, 841, 220], \"label\": \"water_stain\", \"confidence\": 0.85, \"note\": \"water_stain\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    820,
+    393,
+    861,
+    482
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "outlet_or_switch"
+  },
+  {
+   "box_2d": [
+    618,
+    898,
+    646,
+    1000
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "outlet_or_switch"
+  },
+  {
+   "box_2d": [
+    789,
+    11,
+    841,
+    220
+   ],
+   "label": "water_stain",
+   "confidence": 0.85,
+   "note": "water_stain"
+  }
+ ]
+}

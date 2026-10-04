@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    919.2708333333334,
+    0.0,
+    997.3958333333334,
+    998.2638888888889
+   ],
+   "caption": "a close up of a white marble counter top"
+  }
+ ]
+}

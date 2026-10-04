@@ -1,0 +1,41 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    682.2916666666666,
+    83.33333333333333,
+    717.4479166666666,
+    133.68055555555554
+   ],
+   "caption": "a black and white photo of a hole in the ground"
+  },
+  {
+   "box_2d": [
+    684.8958333333334,
+    803.8194444444445,
+    738.28125,
+    878.4722222222222
+   ],
+   "caption": "a black and white photo of a window with a curtain"
+  },
+  {
+   "box_2d": [
+    665.3645833333334,
+    284.72222222222223,
+    959.6354166666666,
+    734.375
+   ],
+   "caption": "A picture of a bathroom with a mirror on the wall."
+  },
+  {
+   "box_2d": [
+    326.8229166666667,
+    807.2916666666666,
+    502.6041666666667,
+    998.2638888888889
+   ],
+   "caption": "a close up of a white ceiling with a light fixture"
+  }
+ ]
+}

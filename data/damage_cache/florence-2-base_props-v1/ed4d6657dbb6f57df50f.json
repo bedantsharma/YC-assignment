@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    919.2708333333334,
+    62.5,
+    979.1666666666666,
+    166.66666666666666
+   ],
+   "caption": "A spool of blue and white tape sitting on top of a table."
+  }
+ ]
+}

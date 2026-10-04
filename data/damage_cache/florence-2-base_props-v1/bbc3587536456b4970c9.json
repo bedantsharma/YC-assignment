@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    505.2083333333333,
+    102.56410256410257,
+    544.2708333333334,
+    172.4941724941725
+   ],
+   "caption": "a close up of a cell with a small hole in it"
+  }
+ ]
+}

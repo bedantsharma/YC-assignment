@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    584.6354166666666,
+    125.87412587412588,
+    717.4479166666666,
+    314.68531468531467
+   ],
+   "caption": "A small table with a bottle of water and a box on it."
+  }
+ ]
+}

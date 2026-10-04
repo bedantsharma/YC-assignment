@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    165.36458333333334,
+    234.375,
+    997.3958333333334,
+    805.5555555555555
+   ],
+   "caption": "A wooden door with a metal latch on it."
+  }
+ ]
+}

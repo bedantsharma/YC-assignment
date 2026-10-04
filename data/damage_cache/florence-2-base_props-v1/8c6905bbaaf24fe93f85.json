@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    930.9895833333334,
+    381.94444444444446,
+    997.3958333333334,
+    593.75
+   ],
+   "caption": "a black cord sitting on top of a counter next to a window"
+  },
+  {
+   "box_2d": [
+    932.2916666666666,
+    862.8472222222222,
+    997.3958333333334,
+    998.2638888888889
+   ],
+   "caption": "A white cord is plugged into a wooden table."
+  }
+ ]
+}

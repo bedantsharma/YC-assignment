@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    0.0,
+    0.0,
+    764.3229166666666,
+    532.9861111111111
+   ],
+   "caption": "A broom sitting on the floor next to a glass door."
+  }
+ ]
+}

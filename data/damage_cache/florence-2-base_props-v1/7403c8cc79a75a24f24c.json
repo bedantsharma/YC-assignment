@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    976.5625,
+    428.9044289044289,
+    997.3958333333334,
+    494.17249417249417
+   ],
+   "caption": "a woman in a white dress standing in front of a wall"
+  },
+  {
+   "box_2d": [
+    954.4270833333334,
+    755.2447552447552,
+    997.3958333333334,
+    997.6689976689977
+   ],
+   "caption": "a close up of a curtain in a room"
+  },
+  {
+   "box_2d": [
+    0.0,
+    543.1235431235431,
+    203.125,
+    997.6689976689977
+   ],
+   "caption": "a close up of a ceiling fan in a room"
+  }
+ ]
+}

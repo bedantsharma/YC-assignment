@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    149.73958333333334,
+    0.0,
+    795.5729166666666,
+    180.55555555555554
+   ],
+   "caption": "A picture of a baby sitting on a bench."
+  },
+  {
+   "box_2d": [
+    80.72916666666667,
+    373.2638888888889,
+    161.45833333333334,
+    428.81944444444446
+   ],
+   "caption": "a close up of a metal hook on a wall"
+  }
+ ]
+}

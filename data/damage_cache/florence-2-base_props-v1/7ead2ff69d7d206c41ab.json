@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    725.2604166666666,
+    317.01631701631703,
+    761.71875,
+    463.86946386946386
+   ],
+   "caption": "a machine that is sitting on top of a table"
+  },
+  {
+   "box_2d": [
+    89.84375,
+    30.303030303030305,
+    162.76041666666666,
+    997.6689976689977
+   ],
+   "caption": "a room with a window and a curtain rod"
+  },
+  {
+   "box_2d": [
+    807.2916666666666,
+    100.23310023310023,
+    881.5104166666666,
+    298.3682983682984
+   ],
+   "caption": "A machine that is sitting on top of a counter."
+  }
+ ]
+}

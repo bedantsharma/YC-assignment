@@ -1,0 +1,19 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "510994917edd6d1f39bfb8d9cff4b094d8b05d4a",
+ "raw": "[\n  {\"box_2d\": [819, 422, 889, 600], \"label\": \"water_stain\", \"confidence\": 0.9, \"note\": \"A circular water stain is visible on the ceiling around the light fixture.\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    819,
+    422,
+    889,
+    600
+   ],
+   "label": "water_stain",
+   "confidence": 0.9,
+   "note": "A circular water stain is visible on the ceiling around the light fixture."
+  }
+ ]
+}

@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    0.0,
+    0.0,
+    44.270833333333336,
+    998.2638888888889
+   ],
+   "caption": "a white wall with a light shining through it"
+  },
+  {
+   "box_2d": [
+    121.09375,
+    41.666666666666664,
+    144.53125,
+    86.80555555555556
+   ],
+   "caption": "a black and white photo of a bird flying through the air"
+  }
+ ]
+}

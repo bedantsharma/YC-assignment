@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    173.17708333333334,
+    250.0,
+    247.39583333333334,
+    381.94444444444446
+   ],
+   "caption": "a close up of a white ceiling with a hole in it"
+  },
+  {
+   "box_2d": [
+    595.0520833333334,
+    418.40277777777777,
+    687.5,
+    821.1805555555555
+   ],
+   "caption": "A picture hanging on the wall above a fireplace."
+  },
+  {
+   "box_2d": [
+    147.13541666666666,
+    0.0,
+    223.95833333333334,
+    215.27777777777777
+   ],
+   "caption": "a close up of a white ceiling with a light fixture"
+  }
+ ]
+}

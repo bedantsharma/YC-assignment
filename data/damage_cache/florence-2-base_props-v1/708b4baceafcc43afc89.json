@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    833.3333333333334,
+    0.0,
+    997.3958333333334,
+    717.0138888888889
+   ],
+   "caption": "a close up of a mattress on a bed in a room"
+  },
+  {
+   "box_2d": [
+    652.34375,
+    0.0,
+    753.90625,
+    446.18055555555554
+   ],
+   "caption": "a close up of a wall with a lot of smoke on it"
+  }
+ ]
+}

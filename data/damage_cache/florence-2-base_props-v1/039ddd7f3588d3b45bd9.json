@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    750.0,
+    354.31235431235433,
+    817.7083333333334,
+    529.1375291375291
+   ],
+   "caption": "a close up of a sink with a drain in it"
+  },
+  {
+   "box_2d": [
+    0.0,
+    473.1934731934732,
+    184.89583333333334,
+    997.6689976689977
+   ],
+   "caption": "a close up of a ceiling fan on a wall"
+  },
+  {
+   "box_2d": [
+    859.375,
+    0.0,
+    997.3958333333334,
+    261.0722610722611
+   ],
+   "caption": "a close up of a crown molding on a wall"
+  }
+ ]
+}

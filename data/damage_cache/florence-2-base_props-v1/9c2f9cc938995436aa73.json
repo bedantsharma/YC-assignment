@@ -1,0 +1,41 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    973.9583333333334,
+    853.1468531468531,
+    997.3958333333334,
+    988.3449883449883
+   ],
+   "caption": "a close up of a blue object on a table"
+  },
+  {
+   "box_2d": [
+    799.4791666666666,
+    174.82517482517483,
+    834.6354166666666,
+    389.27738927738926
+   ],
+   "caption": "a close up of a metal object on a table"
+  },
+  {
+   "box_2d": [
+    0.0,
+    0.0,
+    205.72916666666666,
+    997.6689976689977
+   ],
+   "caption": "a large glass window in the middle of a building"
+  },
+  {
+   "box_2d": [
+    282.5520833333333,
+    375.2913752913753,
+    743.4895833333334,
+    566.4335664335664
+   ],
+   "caption": "a black door with a window in the middle of it"
+  }
+ ]
+}

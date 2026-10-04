@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    225.26041666666666,
+    0.0,
+    290.3645833333333,
+    314.2361111111111
+   ],
+   "caption": "a room with a window and a wall with a painting on it"
+  }
+ ]
+}

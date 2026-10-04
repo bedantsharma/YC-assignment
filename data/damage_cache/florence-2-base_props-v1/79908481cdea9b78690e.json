@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    320.3125,
+    960.3729603729604,
+    360.6770833333333,
+    997.6689976689977
+   ],
+   "caption": "saturn's moon rhea is seen in this image from nasa's cassini spacecraft"
+  },
+  {
+   "box_2d": [
+    227.86458333333334,
+    503.4965034965035,
+    997.3958333333334,
+    904.4289044289044
+   ],
+   "caption": "a wooden door in a room with a white wall"
+  },
+  {
+   "box_2d": [
+    212.23958333333334,
+    757.5757575757576,
+    259.1145833333333,
+    997.6689976689977
+   ],
+   "caption": "a close up of a door handle on a wall"
+  }
+ ]
+}

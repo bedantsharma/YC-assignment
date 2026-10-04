@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    0.0,
+    546.875,
+    997.3958333333334,
+    998.2638888888889
+   ],
+   "caption": "A kitchen with a stove top oven next to a window."
+  }
+ ]
+}

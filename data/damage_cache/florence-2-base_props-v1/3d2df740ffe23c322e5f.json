@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    0.0,
+    566.4335664335664,
+    355.46875,
+    997.6689976689977
+   ],
+   "caption": "a room with a window and a wall that has been painted white"
+  },
+  {
+   "box_2d": [
+    148.4375,
+    433.56643356643355,
+    191.40625,
+    561.7715617715618
+   ],
+   "caption": "a bat hanging upside down from a tree branch"
+  }
+ ]
+}

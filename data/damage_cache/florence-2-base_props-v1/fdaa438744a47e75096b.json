@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    593.75,
+    310.7638888888889,
+    907.5520833333334,
+    869.7916666666666
+   ],
+   "caption": "A small refrigerator sitting on top of a tiled floor."
+  },
+  {
+   "box_2d": [
+    497.3958333333333,
+    203.125,
+    531.25,
+    309.02777777777777
+   ],
+   "caption": "a bunch of stickers sitting on top of a table"
+  },
+  {
+   "box_2d": [
+    858.0729166666666,
+    20.833333333333332,
+    927.0833333333334,
+    362.84722222222223
+   ],
+   "caption": "a white refrigerator sitting on top of a tiled floor"
+  }
+ ]
+}

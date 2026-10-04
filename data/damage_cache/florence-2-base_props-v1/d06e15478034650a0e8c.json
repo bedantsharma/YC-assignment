@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    851.5625,
+    423.6111111111111,
+    904.9479166666666,
+    696.1805555555555
+   ],
+   "caption": "a close up of a fire place with a hose attached to it"
+  },
+  {
+   "box_2d": [
+    891.9270833333334,
+    253.47222222222223,
+    997.3958333333334,
+    538.1944444444445
+   ],
+   "caption": "A black cord is plugged into a wall."
+  },
+  {
+   "box_2d": [
+    789.0625,
+    663.1944444444445,
+    960.9375,
+    843.75
+   ],
+   "caption": "A close up of a door handle on a wooden door."
+  }
+ ]
+}

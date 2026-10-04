@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    554.6875,
+    472.22222222222223,
+    634.1145833333334,
+    572.9166666666666
+   ],
+   "caption": "A hole in a wall with a bunch of wires in it."
+  }
+ ]
+}

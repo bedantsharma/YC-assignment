@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    950.5208333333334,
+    611.1111111111111,
+    997.3958333333334,
+    704.8611111111111
+   ],
+   "caption": "a close up of a blue eye in a dark room"
+  }
+ ]
+}

@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "8735ac341c420fb2164d8bd6804874faec5ba237",
+ "raw": "[\n  {\"box_2d\": [544, 750, 573, 819], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"electrical switch plate\"},\n  {\"box_2d\": [396, 317, 415, 346], \"label\": \"hole\", \"confidence\": 0.9, \"note\": \"small hole in wall\"},\n  {\"box_2d\": [0, 141, 122, 418], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"exposed wires coming from ceiling/wall junction\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    544,
+    750,
+    573,
+    819
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "electrical switch plate"
+  },
+  {
+   "box_2d": [
+    396,
+    317,
+    415,
+    346
+   ],
+   "label": "hole",
+   "confidence": 0.9,
+   "note": "small hole in wall"
+  },
+  {
+   "box_2d": [
+    0,
+    141,
+    122,
+    418
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "exposed wires coming from ceiling/wall junction"
+  }
+ ]
+}

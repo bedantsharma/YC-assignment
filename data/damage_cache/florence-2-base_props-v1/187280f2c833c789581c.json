@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    106.77083333333333,
+    536.4583333333334,
+    139.32291666666666,
+    578.125
+   ],
+   "caption": "a black and white photo of a hole in a wall"
+  },
+  {
+   "box_2d": [
+    966.1458333333334,
+    682.2916666666666,
+    997.3958333333334,
+    854.1666666666666
+   ],
+   "caption": "a pair of glasses sitting on top of a table"
+  }
+ ]
+}

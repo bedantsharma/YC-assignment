@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    0.0,
+    482.5174825174825,
+    36.458333333333336,
+    543.1235431235431
+   ],
+   "caption": "a black hole in the middle of a white wall"
+  },
+  {
+   "box_2d": [
+    368.4895833333333,
+    354.31235431235433,
+    402.34375,
+    580.4195804195804
+   ],
+   "caption": "a painting hanging on the wall in a room"
+  },
+  {
+   "box_2d": [
+    313.8020833333333,
+    0.0,
+    346.3541666666667,
+    286.7132867132867
+   ],
+   "caption": "a close up of a metal object on a table"
+  }
+ ]
+}

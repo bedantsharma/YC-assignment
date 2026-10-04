@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    488.28125,
+    221.44522144522145,
+    541.6666666666666,
+    482.5174825174825
+   ],
+   "caption": "a black and white photo of a cable on the floor"
+  }
+ ]
+}

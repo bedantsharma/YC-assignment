@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    44.270833333333336,
+    163.19444444444446,
+    100.26041666666667,
+    324.65277777777777
+   ],
+   "caption": "A desk with a box and a bottle of water on it."
+  },
+  {
+   "box_2d": [
+    585.9375,
+    460.06944444444446,
+    878.90625,
+    819.4444444444445
+   ],
+   "caption": "A laptop computer sitting on top of a bed next to a blanket."
+  }
+ ]
+}

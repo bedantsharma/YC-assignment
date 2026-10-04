@@ -1,0 +1,19 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "51597c3239b54974d1c1e8919f22e8461ac38e21",
+ "raw": "[\n  {\"box_2d\": [42, 471, 62, 498], \"label\": \"hole\", \"confidence\": 0.6, \"note\": \"Small hole or mark on the wall above the window.\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    42,
+    471,
+    62,
+    498
+   ],
+   "label": "hole",
+   "confidence": 0.6,
+   "note": "Small hole or mark on the wall above the window."
+  }
+ ]
+}

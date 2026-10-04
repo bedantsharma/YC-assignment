@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    239.58333333333334,
+    255.20833333333334,
+    257.8125,
+    289.93055555555554
+   ],
+   "caption": "a black and white photo of a palm leaf on a white background"
+  },
+  {
+   "box_2d": [
+    57.291666666666664,
+    43.40277777777778,
+    187.5,
+    998.2638888888889
+   ],
+   "caption": "a white ceiling with a light on top of it"
+  },
+  {
+   "box_2d": [
+    0.0,
+    86.80555555555556,
+    54.6875,
+    508.68055555555554
+   ],
+   "caption": "a white wall with a light on top of it"
+  }
+ ]
+}

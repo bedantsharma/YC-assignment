@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    462.2395833333333,
+    0.0,
+    997.3958333333334,
+    927.0833333333334
+   ],
+   "caption": "A bed with a blanket on top of it in a room."
+  },
+  {
+   "box_2d": [
+    654.9479166666666,
+    763.8888888888889,
+    691.40625,
+    998.2638888888889
+   ],
+   "caption": "a close up of a piece of fabric on a table"
+  }
+ ]
+}

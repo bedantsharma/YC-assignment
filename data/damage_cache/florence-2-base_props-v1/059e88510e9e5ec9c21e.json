@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    750.0,
+    0.0,
+    997.3958333333334,
+    998.2638888888889
+   ],
+   "caption": "a bathroom with a marble floor and a wooden door"
+  },
+  {
+   "box_2d": [
+    300.78125,
+    571.1805555555555,
+    342.4479166666667,
+    937.5
+   ],
+   "caption": "a kitchen with a refrigerator and a painting on the wall"
+  }
+ ]
+}

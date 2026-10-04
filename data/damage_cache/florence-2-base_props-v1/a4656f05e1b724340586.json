@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    83.33333333333333,
+    291.3752913752914,
+    113.28125,
+    389.27738927738926
+   ],
+   "caption": "a black and white photo of a bird on a pole"
+  }
+ ]
+}

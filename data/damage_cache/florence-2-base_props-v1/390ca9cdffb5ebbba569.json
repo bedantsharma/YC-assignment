@@ -1,0 +1,41 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    57.291666666666664,
+    335.06944444444446,
+    134.11458333333334,
+    479.1666666666667
+   ],
+   "caption": "a close up of a ceiling with a hole in it"
+  },
+  {
+   "box_2d": [
+    583.3333333333334,
+    79.86111111111111,
+    997.3958333333334,
+    885.4166666666666
+   ],
+   "caption": "a close up of a wall with a painting on it"
+  },
+  {
+   "box_2d": [
+    128.90625,
+    151.04166666666666,
+    540.3645833333334,
+    824.6527777777778
+   ],
+   "caption": "A sliding glass door in a room with a window."
+  },
+  {
+   "box_2d": [
+    251.30208333333334,
+    0.0,
+    386.71875,
+    161.45833333333334
+   ],
+   "caption": "A close up of a door handle on a wall."
+  }
+ ]
+}

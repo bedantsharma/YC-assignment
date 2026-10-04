@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    600.2604166666666,
+    249.41724941724942,
+    666.6666666666666,
+    554.7785547785547
+   ],
+   "caption": "a metal object sitting on top of a cement floor"
+  },
+  {
+   "box_2d": [
+    178.38541666666666,
+    0.0,
+    199.21875,
+    580.4195804195804
+   ],
+   "caption": "a close up of a door handle on a wall"
+  }
+ ]
+}

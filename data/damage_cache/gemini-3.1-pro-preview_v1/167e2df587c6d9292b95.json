@@ -1,0 +1,19 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "69f9f550bfe2d299b4e8c41b68a722de3f753f2a",
+ "raw": "[\n  {\n    \"label\": \"exposed_wiring\",\n    \"box_2d\": [\n      276,\n      0,\n      300,\n      88\n    ],\n    \"confidence\": 0.8,\n    \"note\": \"exposed_wiring\"\n  }\n]",
+ "items": [
+  {
+   "label": "exposed_wiring",
+   "box_2d": [
+    276,
+    0,
+    300,
+    88
+   ],
+   "confidence": 0.8,
+   "note": "exposed_wiring"
+  }
+ ]
+}

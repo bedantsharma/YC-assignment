@@ -312,7 +312,7 @@ def merge(placed: list[Placed]) -> list[Merged]:
         value = float(np.median([p.area for p in g]))
         lo, hi = np.percentile(draws, [5, 95]) if len(draws) else (value, value)
         length = width = None
-        if g[0].label == "crack":
+        if g[0].label == "crack" and all(p.length_draws is not None for p in g):
             ldraws = np.concatenate([p.length_draws for p in g])
             lv = float(np.median([p.length for p in g]))
             llo, lhi = np.percentile(ldraws, [5, 95])

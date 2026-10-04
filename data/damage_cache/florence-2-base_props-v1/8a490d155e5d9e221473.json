@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    882.8125,
+    472.22222222222223,
+    967.4479166666666,
+    682.2916666666666
+   ],
+   "caption": "A pair of scissors sitting on top of a counter."
+  },
+  {
+   "box_2d": [
+    893.2291666666666,
+    953.125,
+    997.3958333333334,
+    998.2638888888889
+   ],
+   "caption": "a close up of a piece of paper on a table"
+  }
+ ]
+}

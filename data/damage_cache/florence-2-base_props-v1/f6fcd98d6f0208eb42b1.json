@@ -1,0 +1,59 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    192.70833333333334,
+    380.2083333333333,
+    270.8333333333333,
+    506.94444444444446
+   ],
+   "caption": "a close up of a ceiling fan in a room"
+  },
+  {
+   "box_2d": [
+    503.90625,
+    307.2916666666667,
+    790.3645833333334,
+    557.2916666666666
+   ],
+   "caption": "A room with a door and a window in it."
+  },
+  {
+   "box_2d": [
+    295.5729166666667,
+    713.5416666666666,
+    425.78125,
+    998.2638888888889
+   ],
+   "caption": "a close up of a ceiling with a light on it"
+  },
+  {
+   "box_2d": [
+    356.7708333333333,
+    375.0,
+    483.0729166666667,
+    618.0555555555555
+   ],
+   "caption": "A picture of a room with a ceiling that has been painted white."
+  },
+  {
+   "box_2d": [
+    532.5520833333334,
+    730.9027777777778,
+    622.3958333333334,
+    998.2638888888889
+   ],
+   "caption": "A white light that is on the ceiling in a room."
+  },
+  {
+   "box_2d": [
+    445.3125,
+    203.125,
+    485.6770833333333,
+    394.09722222222223
+   ],
+   "caption": "a room with a white ceiling and a window"
+  }
+ ]
+}

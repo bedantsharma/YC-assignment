@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    988.28125,
+    0.0,
+    997.3958333333334,
+    137.15277777777777
+   ],
+   "caption": "a blurry image of a tree in the middle of a field"
+  },
+  {
+   "box_2d": [
+    903.6458333333334,
+    651.0416666666666,
+    972.65625,
+    777.7777777777778
+   ],
+   "caption": "a box with a pair of scissors and a box on top of it"
+  },
+  {
+   "box_2d": [
+    932.2916666666666,
+    651.0416666666666,
+    997.3958333333334,
+    750.0
+   ],
+   "caption": "A person using a vacuum cleaner to clean a box."
+  }
+ ]
+}

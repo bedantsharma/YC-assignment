@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    259.1145833333333,
+    628.4722222222222,
+    294.2708333333333,
+    670.1388888888889
+   ],
+   "caption": "a close up of a metal object on a table"
+  },
+  {
+   "box_2d": [
+    303.3854166666667,
+    559.0277777777778,
+    352.8645833333333,
+    678.8194444444445
+   ],
+   "caption": "A person standing on top of a snow covered ground."
+  }
+ ]
+}

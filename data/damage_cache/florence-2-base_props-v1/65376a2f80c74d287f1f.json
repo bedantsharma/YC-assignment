@@ -1,0 +1,41 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    863.28125,
+    0.0,
+    997.3958333333334,
+    419.5804195804196
+   ],
+   "caption": "a close up of a bed with a blanket on it"
+  },
+  {
+   "box_2d": [
+    87.23958333333333,
+    566.4335664335664,
+    148.4375,
+    997.6689976689977
+   ],
+   "caption": "a window with a curtain rod in the middle of it"
+  },
+  {
+   "box_2d": [
+    628.90625,
+    608.3916083916084,
+    697.9166666666666,
+    769.2307692307693
+   ],
+   "caption": "A machine that is sitting on top of a table."
+  },
+  {
+   "box_2d": [
+    800.78125,
+    836.8298368298368,
+    837.2395833333334,
+    997.6689976689977
+   ],
+   "caption": "a man in camouflage holding a rifle in his hand"
+  }
+ ]
+}

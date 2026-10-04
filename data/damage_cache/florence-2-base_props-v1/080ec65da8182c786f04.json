@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    307.2916666666667,
+    191.14219114219114,
+    333.3333333333333,
+    235.43123543123542
+   ],
+   "caption": "a black and white photo of a dog on a white background"
+  },
+  {
+   "box_2d": [
+    738.28125,
+    205.12820512820514,
+    902.34375,
+    559.4405594405595
+   ],
+   "caption": "A bed with a blanket on top of it."
+  }
+ ]
+}

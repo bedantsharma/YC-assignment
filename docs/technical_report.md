@@ -16,9 +16,9 @@ adjacency, and a 90% interval on every number. The tier is inferred from the inp
 | Video | one Camera-app walkthrough (RGB only) | any iPhone 15 or newer |
 | Photos | a folder per room of stills (RGB only) | any iPhone 15 or newer |
 
-Damage (§8) is built for the LiDAR tier: detection benchmarked on photos, sizing checked
-against the staged hole on both scans. Not built: damage on the video and
-photo tiers, window detection, the photo tier's stitch into one plan.
+Damage (§8) runs on all three tiers, online (Gemini) or offline (Florence-2); the staged
+hole's size is inside the interval on all 7 runs. Not built: window detection, the photo
+tier's stitch into one plan.
 
 ## 2. Architecture: one geometry backend for every tier
 
@@ -194,19 +194,27 @@ one becomes a flag and a scope line a homeowner pays to check. Speed matters at 
 walk-in. Gemini 2.5 Flash, the first model tried, also called grime marks water stains.
 `FLOORPLAN_GEMINI_MODEL` switches models; each model's answers are cached separately.
 
-**Sizing check** (`uv run scripts/damage_hole_check.py`, the friend's tape: 6.35 cm hole,
-centre 1.420 m up, 2.286 m from the right-hand wall). Both scans find it in 4–6 views:
-area 30.4 cm² [18.4, 47.6] and 37.0 [26.0, 52.5] against 31.7, so both intervals hold the
-truth; height −1.5 / +2.8 cm; along the wall +12 / +11 cm, the same on both scans
-(repeatable but biased: tape start or our corner, not resolved).
+**Sizing check** ([damage_hole.md](damage_hole.md), `scripts/damage_hole_check.py --md`;
+the friend's tape: 6.35 cm hole = 31.7 cm², centre 1.420 m up, 2.286 m from the right-hand
+wall). All 7 runs find it and all 7 intervals hold the truth: LiDAR 30.4 / 37.0 cm²
+(Gemini) and 30.4 / 32.9 (Florence-2 offline), video 32.9 / 28.5 (60 frames), photo 28.0
+(8 photos). Height within 3 cm except photo (−11 cm); along the wall LiDAR is +11 to +13 cm
+on both scans while video is +3 / +7 cm, so the bias is in our LiDAR corner, not the tape.
+
+**Video and photo tiers** detect on the images the reconstruction used (video: its even
+frames; photos: every photo) and size from the model's per-pixel points, projected onto
+the wall; intervals include the tier's scale error. **Offline fallback:** Florence-2-base
+on the laptop (`FLOORPLAN_DAMAGE_DETECTOR=florence`, automatic when Gemini fails after
+retries). It grounds any phrase to the most salient thing, so it only proposes boxes; a
+caption of each crop gives the class. On the 26 photos it finds 4 of 10 hole photos
+(misses far ones) at 3 s per photo.
 
 **Limits.** Every model calls grime from hands on a white wall "water stain"; a prompt
 change would likely fix it but would be tuned on this same test set, so it is not made. A
 second crack-only prompt (`--crack-pass`, traced polylines) is experimental: Pro once
 looped 54 segments on a clean wall (now discarded), and it traces the outline of a plaster
 patch as a crack. The labels are image-level and only 26 photos of one room, so these are
-indications, not accuracy figures. The hosted model needs a network; the local fallback
-(Florence-2-base + depth check) is not built yet.
+indications, not accuracy figures. Pause-based frame choice is built for LiDAR only (ROADMAP).
 
 ## 9. Known failure modes
 

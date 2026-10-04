@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    511.71875,
+    0.0,
+    808.59375,
+    998.2638888888889
+   ],
+   "caption": "A white marble floor with a black border."
+  }
+ ]
+}

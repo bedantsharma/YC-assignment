@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    0.0,
+    0.0,
+    207.03125,
+    997.6689976689977
+   ],
+   "caption": "a room with a white wall and a window"
+  },
+  {
+   "box_2d": [
+    552.0833333333334,
+    920.7459207459208,
+    578.125,
+    997.6689976689977
+   ],
+   "caption": "a close up of a metal object on a wall"
+  }
+ ]
+}

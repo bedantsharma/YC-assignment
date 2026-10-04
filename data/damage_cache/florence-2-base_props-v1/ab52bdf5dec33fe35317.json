@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    54.6875,
+    227.43055555555554,
+    208.33333333333334,
+    414.93055555555554
+   ],
+   "caption": "A close up of a ceiling fan on a wall."
+  },
+  {
+   "box_2d": [
+    730.46875,
+    585.0694444444445,
+    850.2604166666666,
+    998.2638888888889
+   ],
+   "caption": "a close up of a ceiling with a hole in it"
+  }
+ ]
+}

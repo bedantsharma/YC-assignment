@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    346.3541666666667,
+    0.0,
+    507.8125,
+    163.19444444444446
+   ],
+   "caption": "A black and white photo of footprints in the sand."
+  },
+  {
+   "box_2d": [
+    174.47916666666666,
+    0.0,
+    256.5104166666667,
+    998.2638888888889
+   ],
+   "caption": "a close up of a white wall with a white stripe"
+  },
+  {
+   "box_2d": [
+    0.0,
+    774.3055555555555,
+    40.364583333333336,
+    947.9166666666666
+   ],
+   "caption": "a close up of a white object on a gray surface"
+  }
+ ]
+}

@@ -1,0 +1,23 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    294.2708333333333,
+    460.06944444444446,
+    332.03125,
+    524.3055555555555
+   ],
+   "caption": "an x - ray image of a person holding a piece of paper"
+  },
+  {
+   "box_2d": [
+    339.84375,
+    407.9861111111111,
+    378.90625,
+    579.8611111111111
+   ],
+   "caption": "a close up of a wall with a light on it"
+  }
+ ]
+}

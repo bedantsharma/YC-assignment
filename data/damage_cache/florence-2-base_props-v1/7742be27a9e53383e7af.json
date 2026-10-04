@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    781.25,
+    0.0,
+    997.3958333333334,
+    612.8472222222222
+   ],
+   "caption": "A bed with a checkered sheet on top of it."
+  }
+ ]
+}

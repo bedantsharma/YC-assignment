@@ -1,0 +1,32 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    493.4895833333333,
+    484.375,
+    527.34375,
+    527.7777777777778
+   ],
+   "caption": "a close up of a piece of paper with a hole in it"
+  },
+  {
+   "box_2d": [
+    893.2291666666666,
+    0.0,
+    997.3958333333334,
+    998.2638888888889
+   ],
+   "caption": "A pile of clothes sitting on top of a bed."
+  },
+  {
+   "box_2d": [
+    0.0,
+    512.1527777777778,
+    44.270833333333336,
+    595.4861111111111
+   ],
+   "caption": "a pair of scissors sitting on top of a table"
+  }
+ ]
+}

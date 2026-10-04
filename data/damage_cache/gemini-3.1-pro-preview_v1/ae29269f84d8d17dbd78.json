@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "68143b821ecb5ee64ad5401a745060a3752a0928",
+ "raw": "[\n  {\n    \"label\": \"hole\",\n    \"box_2d\": [\n      308,\n      196,\n      330,\n      233\n    ],\n    \"confidence\": 0.9,\n    \"note\": \"dark hole in the wall\"\n  },\n  {\n    \"label\": \"water_stain\",\n    \"box_2d\": [\n      450,\n      430,\n      510,\n      650\n    ],\n    \"confidence\": 0.85,\n    \"note\": \"yellowish discoloration on the wall\"\n  },\n  {\n    \"label\": \"outlet_or_switch\",\n    \"box_2d\": [\n      505,\n      829,\n      537,\n      940\n    ],\n    \"confidence\": 0.95,\n    \"note\": \"white switch plate on the wall\"\n  }\n]",
+ "items": [
+  {
+   "label": "hole",
+   "box_2d": [
+    308,
+    196,
+    330,
+    233
+   ],
+   "confidence": 0.9,
+   "note": "dark hole in the wall"
+  },
+  {
+   "label": "water_stain",
+   "box_2d": [
+    450,
+    430,
+    510,
+    650
+   ],
+   "confidence": 0.85,
+   "note": "yellowish discoloration on the wall"
+  },
+  {
+   "label": "outlet_or_switch",
+   "box_2d": [
+    505,
+    829,
+    537,
+    940
+   ],
+   "confidence": 0.95,
+   "note": "white switch plate on the wall"
+  }
+ ]
+}

@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    182.29166666666666,
+    0.0,
+    444.0104166666667,
+    135.41666666666666
+   ],
+   "caption": "A black and white photo of a person walking in the snow."
+  }
+ ]
+}

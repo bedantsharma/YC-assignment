@@ -1,0 +1,14 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    751.3020833333334,
+    0.0,
+    794.2708333333334,
+    53.81944444444444
+   ],
+   "caption": "a close up of a printer with a cable attached to it"
+  }
+ ]
+}

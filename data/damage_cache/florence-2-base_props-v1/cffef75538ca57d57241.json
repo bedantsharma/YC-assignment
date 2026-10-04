@@ -1,0 +1,41 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    125.0,
+    352.43055555555554,
+    195.3125,
+    491.31944444444446
+   ],
+   "caption": "a close up of a toilet paper roll on a wall"
+  },
+  {
+   "box_2d": [
+    631.5104166666666,
+    107.63888888888889,
+    997.3958333333334,
+    920.1388888888889
+   ],
+   "caption": "a close up of a wall with a painting on it"
+  },
+  {
+   "box_2d": [
+    184.89583333333334,
+    173.61111111111111,
+    593.75,
+    845.4861111111111
+   ],
+   "caption": "A sliding glass door in a room with a window."
+  },
+  {
+   "box_2d": [
+    298.1770833333333,
+    0.0,
+    441.40625,
+    184.02777777777777
+   ],
+   "caption": "a close up of a door handle on a wall"
+  }
+ ]
+}

@@ -1,0 +1,41 @@
+{
+ "model": "florence-2-base",
+ "proposals": [
+  {
+   "box_2d": [
+    665.3645833333334,
+    312.35431235431236,
+    695.3125,
+    368.2983682983683
+   ],
+   "caption": "a black hole in the wall of a bathroom"
+  },
+  {
+   "box_2d": [
+    743.4895833333334,
+    30.303030303030305,
+    802.0833333333334,
+    501.16550116550115
+   ],
+   "caption": "a close up of a door handle on a wall"
+  },
+  {
+   "box_2d": [
+    790.3645833333334,
+    223.7762237762238,
+    959.6354166666666,
+    286.7132867132867
+   ],
+   "caption": "a boat that is sitting on top of a table"
+  },
+  {
+   "box_2d": [
+    628.90625,
+    862.4708624708625,
+    667.96875,
+    997.6689976689977
+   ],
+   "caption": "a close up of a table with a vase on it"
+  }
+ ]
+}
