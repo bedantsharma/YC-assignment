@@ -253,3 +253,34 @@ def select(
         if share > 0:
             sel.unseen[sid] = round(share, 3)
     return sel
+
+
+MIN_VIEWS = 2
+
+
+def confirm(merged: list, cams: dict, size: tuple[int, int]) -> tuple[list, list, list]:
+    """Two-view rule, judged against what the keyframes could see (agreed Oct 4).
+
+    cams: image id -> (camera-to-plan pose, K at `size`, depth image or None). For each
+    merged damage, count the keyframes that see its centre up close (`sees`). Reported in
+    fewer than MIN_VIEWS images although MIN_VIEWS or more keyframes looked at that spot:
+    the others contradict it, so it is dropped. Reported once and no other keyframe could
+    see the spot: kept, but unconfirmed. Returns (kept, dropped, unconfirmed).
+    """
+    kept, dropped, unconfirmed = [], [], []
+    for m in merged:
+        pl = m.surface
+        point = pl.origin + m.centre[0] * pl.u_axis + m.centre[1] * pl.v_axis
+        looked = sum(
+            bool(sees(pose, K, size, point[None], pl.normal[None], depth)[0])
+            for pose, K, depth in cams.values()
+        )
+        seen = len(set(m.views))
+        looked = max(looked, seen)  # a far-away view that reported it also looked
+        if seen < MIN_VIEWS <= looked:
+            dropped.append((m, looked))
+        else:
+            kept.append(m)
+            if seen < MIN_VIEWS:
+                unconfirmed.append(m)
+    return kept, dropped, unconfirmed

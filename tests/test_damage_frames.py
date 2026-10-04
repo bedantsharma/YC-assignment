@@ -117,3 +117,29 @@ def test_dwell_catches_a_slow_look_that_is_not_a_still_hold():
     assert still_segments(poses, FPS) == []  # too fast to count as still
     segs = dwell_segments(poses, np.broadcast_to(K, (len(poses), 3, 3)), SIZE, planes, FPS)
     assert segs and segs[0][1] - segs[0][0] >= 3 * FPS
+
+
+def _merged_on_w1(views, u=2.0, v=1.5):
+    from floorplan.damage_geom import Merged
+
+    plane = next(p for p in surface_planes([_room()], 0.0) if p.surface_id == "r1.w1.face")
+    return Merged("hole", plane, 0.9, (0.003, 0.002, 0.004), (u, v, u, v), (u, v), list(views))
+
+
+def test_two_view_rule_drops_contradicted_keeps_unconfirmed():
+    from floorplan.damage_frames import confirm
+
+    facing = _looking(-90.0, (2.0, 1.5, 1.5))  # sees r1.w1 around (2.0, 1.5)
+    away = _looking(90.0, (2.0, 1.5, 1.5))  # faces the opposite wall
+    three_look = {f"f{k}": (facing, K, None) for k in range(3)}
+    one_looks = {"f0": (facing, K, None), "f1": (away, K, None), "f2": (away, K, None)}
+
+    confirmed = _merged_on_w1(["f0", "f1"])
+    contradicted = _merged_on_w1(["f0"])
+    kept, dropped, unconfirmed = confirm([confirmed, contradicted], three_look, SIZE)
+    assert kept == [confirmed] and unconfirmed == []
+    assert dropped[0][0] is contradicted and dropped[0][1] == 3
+
+    lonely = _merged_on_w1(["f0"])
+    kept, dropped, unconfirmed = confirm([lonely], one_looks, SIZE)
+    assert kept == [lonely] and unconfirmed == [lonely] and dropped == []

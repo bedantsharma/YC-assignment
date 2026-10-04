@@ -29,7 +29,7 @@ from scipy import ndimage
 
 from floorplan.capture import STRAY_RGB_SIZE, LidarCapture, detect_format, load_lidar
 from floorplan.damage import Detection, detect, model_name
-from floorplan.damage_frames import NEED, select
+from floorplan.damage_frames import MIN_VIEWS, NEED, confirm, select
 from floorplan.damage_geom import (
     Placed,
     View,
@@ -106,7 +106,10 @@ def run_damage(
         if overlay_dir is not None and dets:
             _overlay(image, dets, kept, overlay_dir / f"{view.image_id}.jpg")
 
-    merged = merge(placed)
+    cams = {view.image_id: (plan_poses[i], k_rgb[i], _depth(full, i)) for i, _, _, _, view in views}
+    merged, dropped, unconfirmed = confirm(merge(placed), cams, STRAY_RGB_SIZE)
+    for m in unconfirmed:
+        m.notes.append("seen once; no other keyframe could see this spot (unconfirmed)")
     surfs, damage, flags, scope = build(merged, rooms)
     n_pause = sum(1 for f in sel.frames if any(a <= f <= b for a, b in sel.pauses))
     warnings = [
@@ -120,6 +123,16 @@ def run_damage(
         f"{len(damage)} damage items after merging views; masks are model-free (contrast, "
         "ellipse fallback)",
     ]
+    if dropped:
+        warnings.append(
+            f"damage: {len(dropped)} item(s) dropped by the {MIN_VIEWS}-view rule (reported "
+            "in one keyframe while other keyframes looked at the same spot): "
+            + "; ".join(
+                f"{m.label} on {m.surface.surface_id} at ({m.centre[0]:.2f}, "
+                f"{m.centre[1]:.2f}), seen by {n} keyframes"
+                for m, n in dropped
+            )
+        )
     unseen = [f"{sid} {100 * v:.0f}%" for sid, v in sel.unseen.items() if v > UNSEEN_WARN]
     if unseen:
         warnings.append(
@@ -128,7 +141,10 @@ def run_damage(
         )
     single = [d.id for d in damage if len(d.views) == 1]
     if single:
-        warnings.append(f"damage: seen in one view only (less certain): {', '.join(single)}")
+        warnings.append(
+            "damage: seen once, and no other keyframe could see the spot (unconfirmed): "
+            + ", ".join(single)
+        )
     return surfs, damage, flags, scope, warnings
 
 

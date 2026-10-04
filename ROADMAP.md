@@ -242,6 +242,24 @@ the doorway photos; if that fails too, document the photo stitch as failing.
           close spot) → 2 frames per pause (`damage_frames.py`); video: from pixels, to do
     - [x] Coverage keyframes (LiDAR): greedy cover of 0.25 m wall patches, 2 views each
           within 3 m and 60 deg; unseen surfaces warned
+    - [x] Two-view rule (`damage_frames.confirm`): an item reported in one keyframe while
+          2+ keyframes looked at that spot is dropped (listed in warnings); one reported
+          where no other keyframe could see is kept as unconfirmed. c_damage_02: 14 → 6
+          items, c_damage_01: 19 → 13; the staged hole kept on both
+    - [ ] **Pauses for the video tier** (no poses, only pixels):
+      - [ ] decode the whole clip at 160x120 (one ffmpeg pass, cheap); phase correlation
+            between neighbouring frames → image shift in px/s; a pause = shift below a
+            threshold for >= 1.2 s (the pixel version of the LiDAR gaze dwell)
+      - [ ] guard against blank walls (little texture → low shift while walking): require
+            enough image gradient in the frame, or treat those stretches as unknown
+      - [ ] reconstruction sample = pause frames first, then evenly spaced frames, so every
+            frame the detector sees has a Pi3X pose (new Kaggle run for the video numbers)
+      - [ ] coverage selection on the Pi3X poses and walls (same `select`), two-view rule
+            on the same cameras; sizes carry the video tier's scale interval
+      - [ ] test on the Camera-app damage-room clips (they have the staged hole) and score
+            with `scripts/damage_hole_check.py`
+    - [ ] Photo tier damage: every photo goes to the detector; sizes from the photo
+          reconstruction's poses
     - [ ] Optional: cheap low-res screening pass, full-res only on frames with a hit
   - [ ] Damage on the video and photo tiers (poses from the reconstruction)
   - [ ] Fix map 04: wardrobe / fridge / bookshelf boxes removed from the wall mask
