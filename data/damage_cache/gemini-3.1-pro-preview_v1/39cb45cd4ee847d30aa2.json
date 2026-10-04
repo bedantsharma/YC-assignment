@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "309ec3c8c1cb223840666f9c7a5c6102cd676293",
+ "raw": "[\n  {\"box_2d\": [374, 433, 629, 571], \"label\": \"hole\", \"confidence\": 0.95, \"note\": \"A hole in the wall exposing wiring.\"},\n  {\"box_2d\": [459, 444, 604, 555], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"Exposed electrical wires visible inside the hole.\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    374,
+    433,
+    629,
+    571
+   ],
+   "label": "hole",
+   "confidence": 0.95,
+   "note": "A hole in the wall exposing wiring."
+  },
+  {
+   "box_2d": [
+    459,
+    444,
+    604,
+    555
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "Exposed electrical wires visible inside the hole."
+  }
+ ]
+}

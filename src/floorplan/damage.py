@@ -35,7 +35,7 @@ from scipy import ndimage
 
 DAMAGE_CLASSES = ("crack", "water_stain", "mould", "hole", "peeling_paint")
 CONTEXT_CLASSES = ("outlet_or_switch", "exposed_wiring")
-DEFAULT_MODEL = "gemini-2.5-flash"
+DEFAULT_MODEL = "gemini-3.1-pro-preview"  # cleanest of 2.5 Flash, 3.8 Flash, 3.1 Pro on IMG_1371
 MODEL_ENV = "FLOORPLAN_GEMINI_MODEL"
 CACHE_ENV = "FLOORPLAN_DAMAGE_CACHE"
 CACHE_ONLY_ENV = "FLOORPLAN_DAMAGE_CACHE_ONLY"

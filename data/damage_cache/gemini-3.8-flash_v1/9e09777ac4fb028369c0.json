@@ -1,0 +1,52 @@
+{
+ "model": "gemini-3.8-flash",
+ "prompt_version": "v1",
+ "image_sha1": "309ec3c8c1cb223840666f9c7a5c6102cd676293",
+ "raw": "[\n  {\"box_2d\": [373, 432, 631, 572], \"label\": \"hole\", \"confidence\": 0.96, \"note\": \"hole in wall exposing electrical cavity\"},\n  {\"box_2d\": [454, 442, 602, 557], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"exposed electrical wires inside hole\"},\n  {\"box_2d\": [554, 0, 654, 49], \"label\": \"peeling_paint\", \"confidence\": 0.8, \"note\": \"paint chipped/peeled from wall surface\"},\n  {\"box_2d\": [705, 63, 753, 104], \"label\": \"peeling_paint\", \"confidence\": 0.72, \"note\": \"small patch of chipped paint\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    373,
+    432,
+    631,
+    572
+   ],
+   "label": "hole",
+   "confidence": 0.96,
+   "note": "hole in wall exposing electrical cavity"
+  },
+  {
+   "box_2d": [
+    454,
+    442,
+    602,
+    557
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "exposed electrical wires inside hole"
+  },
+  {
+   "box_2d": [
+    554,
+    0,
+    654,
+    49
+   ],
+   "label": "peeling_paint",
+   "confidence": 0.8,
+   "note": "paint chipped/peeled from wall surface"
+  },
+  {
+   "box_2d": [
+    705,
+    63,
+    753,
+    104
+   ],
+   "label": "peeling_paint",
+   "confidence": 0.72,
+   "note": "small patch of chipped paint"
+  }
+ ]
+}
