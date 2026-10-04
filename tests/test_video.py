@@ -116,6 +116,7 @@ def test_length_and_rotation_without_ffprobe(tmp_path, monkeypatch):
 
     if not shutil.which("ffprobe"):
         pytest.skip("needs ffprobe as the reference")
+    pytest.importorskip("imageio_ffmpeg", reason="the bundled ffmpeg (`uv sync --extra video`)")
     clip = tmp_path / "clip.mp4"
     subprocess.run(
         [ffmpeg.exe(), "-v", "error", "-f", "lavfi", "-i", "testsrc=size=64x48:rate=30",
