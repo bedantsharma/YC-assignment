@@ -60,7 +60,7 @@ horizontally, 0.91 vertically), which is divided out (`intervals.SCALE_BIAS`,
 | | What | Ground truth |
 |---|---|---|
 | A | Cozmo's apartment, 3 Stray Scanner captures | none ("consistent with LiDAR" only) |
-| B | ARKitScenes venue 421337: 3 scans of one room + Faro laser scan | blind laser measurements pending |
+| B | ARKitScenes venue 421337: 3 scans of one room + Faro laser scan | an architect's measurements from the laser scan (approximate; wall-face convention unresolved) |
 | C | A friend's home (iPhone 16 Pro): LiDAR whole home + 2 scans of the staged damage room, 3 Camera-app videos, Polycam scan | architect's drawing (4 rooms), tape: ceilings, doors, windows, closet, cabinets, the damage hole |
 
 Ground truth is transcribed by hand ([data/gt/home_c.json](../data/gt/home_c.json)), never
@@ -79,9 +79,9 @@ Home C, our output vs the ground truth (`uv run scripts/benchmark.py`):
 | 90% interval coverage, sides / ceilings | calibrated | 91% / 100% | 92% / 100% | 80% / 88% |
 | Run time | | 9–20 s per capture on this laptop (M4, 16 GB) | model 60–260 s on a T4, geometry 10–20 s | model 27–75 s per photo set on a T4 |
 
-Photo rows are stills cut from home C's videos (the friend's own photos are not run yet):
-in the damage room they are within 0–27 cm; on the whole-home walk some rooms were only
-partly covered and come out up to a third too small.
+Photo rows combine the friend's real photos (all, 8 and 5 per room) and stills cut from
+home C's videos. With 8 real photos per room the open space is within 2–4 cm and the
+kitchen is not found (warned); rooms covered only in part come out up to a third too small.
 
 **Head-to-head** with Polycam (Apple RoomPlan) on the same home, 8 room dimensions: beat or
 tie on **6 of 8 (75%)**, target 70% (`uv run scripts/gt_table.py`). Medians: ours 5 cm,

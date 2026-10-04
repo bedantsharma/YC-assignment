@@ -90,7 +90,7 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | ID | Requirement | File path | Artifact | Status | Notes |
 |---|---|---|---|---|---|
 | P1 | Incremental commit history | git history | `git log` | Done | 130+ small commits, each a working step |
-| P2 | Every design decision defensible live, tools closed | `docs/decisions.md` | Decision log | Not started | Next after this pass |
+| P2 | Every design decision defensible live, tools closed | `docs/decisions.md` | Decision log | Done | 41 decisions, each with why, evidence (number + source) and what was rejected; rejections listed only where recorded |
 
 ## 8. Deliverables
 
@@ -127,9 +127,9 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 
 | Status | Count |
 |---|---|
-| Done / met | 43 |
+| Done / met | 44 |
 | Partial / partly met | 12 |
 | Not met | 3 |
 | In progress | 3 |
-| Not started | 3 |
+| Not started | 2 |
 | **Total** | **64** |
