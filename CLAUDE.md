@@ -90,9 +90,10 @@ holds the script + `kernel-metadata.json`; `uvx kaggle kernels push -p kaggle/<j
 a **private** dataset, and only with the user's OK (C's videos are approved). The legacy
 token in `~/.kaggle/kaggle.json` works.
 
-**Laptop (16 GB M4): one model job at a time.** Two model runs at once pushed memory
-pressure into the red. Check `ps` for another `floorplan run` / model script first; use
-the wait for code or docs, never a second run.
+**No model runs on the laptop (16 GB M4), ever** (user, Oct 4): even one Pi3X run pushed
+memory pressure into the red. Every model run goes to Kaggle. The laptop only runs geometry,
+tests and **replays** cached reconstructions: `FLOORPLAN_RECON_CACHE=<dir>
+FLOORPLAN_RECON_CACHE_ONLY=1 uv run floorplan run ...` (cache filled by the Kaggle run).
 
 Each failed push costs ~5–10 min. The bake-off took 6 pushes because of setup mistakes
 that a local dry run would have caught. **Before every push:**

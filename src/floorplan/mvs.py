@@ -9,11 +9,13 @@ Optional dependency: `uv sync --extra video` (torch, MapAnything, Pi3; ~4-5 GB o
 model fetched from Hugging Face on first use).
 """
 
+import hashlib
 import os
 import time
 import warnings
 from dataclasses import dataclass
 from functools import cache
+from pathlib import Path
 
 import numpy as np
 from PIL import Image
@@ -24,6 +26,10 @@ MODELS = {
 }
 DEFAULT_MODEL = "pi3x"
 CONF_PERCENTILE = 10  # drop the least confident 10% of pixels (same as the bake-off)
+# Directory of cached reconstructions, keyed by model + exact frame pixels: a GPU run
+# (Kaggle) fills it, a laptop run replays it without loading the model. With
+# FLOORPLAN_RECON_CACHE_ONLY=1 a cache miss is an error instead of a model run.
+CACHE_ENV, CACHE_ONLY_ENV = "FLOORPLAN_RECON_CACHE", "FLOORPLAN_RECON_CACHE_ONLY"
 
 
 @dataclass
@@ -42,6 +48,34 @@ class Reconstruction:
 def reconstruct(frames: list[Image.Image], model: str = DEFAULT_MODEL) -> Reconstruction:
     if model not in MODELS:
         raise ValueError(f"unknown model {model!r}; choose from {sorted(MODELS)}")
+    cached = _cache_path(frames, model)
+    if cached and cached.exists():
+        z = np.load(cached)
+        return Reconstruction(z["view_points"], z["view_keep"], z["cam_poses"],
+                              float(z["seconds"]), model)  # fmt: skip
+    if cached and os.environ.get(CACHE_ONLY_ENV) == "1":
+        raise RuntimeError(f"no cached reconstruction {cached.name} ({CACHE_ONLY_ENV}=1)")
+    rec = _infer(frames, model)
+    if cached:
+        cached.parent.mkdir(parents=True, exist_ok=True)
+        np.savez_compressed(cached, view_points=rec.view_points, view_keep=rec.view_keep,
+                            cam_poses=rec.cam_poses, seconds=rec.seconds)  # fmt: skip
+    return rec
+
+
+def _cache_path(frames: list[Image.Image], model: str) -> Path | None:
+    root = os.environ.get(CACHE_ENV)
+    if not root:
+        return None
+    h = hashlib.sha1(model.encode())
+    for f in frames:
+        a = np.asarray(f)
+        h.update(str(a.shape).encode())
+        h.update(a.tobytes())
+    return Path(root) / f"{model}_{len(frames)}_{h.hexdigest()[:16]}.npz"
+
+
+def _infer(frames: list[Image.Image], model: str) -> Reconstruction:
     os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
     try:
         import torch
@@ -113,8 +147,11 @@ def _pi3x(views, device: str) -> Reconstruction:
 
     net = _load("pi3x", device)
     imgs = torch.stack([v["img"][0] for v in views])[None].to(device)  # (1, V, 3, H, W)
+    # pre-Ampere GPUs (Kaggle T4) have no efficient bf16 attention: use fp16 there
+    old_gpu = device == "cuda" and torch.cuda.get_device_capability()[0] < 8
+    dtype = torch.float16 if old_gpu else torch.bfloat16
     start = time.perf_counter()
-    with torch.no_grad(), torch.autocast(device, dtype=torch.bfloat16):
+    with torch.no_grad(), torch.autocast(device, dtype=dtype):
         res = net(imgs=imgs)
     seconds = time.perf_counter() - start
 
