@@ -48,6 +48,12 @@ def test_degenerate_cloud_gives_no_rooms_and_a_warning():
     assert any("no rooms" in w for w in plan.warnings)
 
 
+def test_empty_cloud_gives_no_rooms_and_a_warning():
+    plan = build_plan(np.empty((0, 3)))
+    assert plan.rooms == [] and plan.footprint_area is None
+    assert any("empty" in w for w in plan.warnings)
+
+
 def test_render_writes_a_png(plan, tmp_path):
     result = Result(Capture("synthetic", "lidar", "test"), plan.rooms)
     path = render_plan(result, tmp_path / "plan.png")

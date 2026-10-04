@@ -47,6 +47,8 @@ def build_plan(
     sight: Sightlines | None = None,
 ) -> Plan:
     """sight (image tiers with few views): space the cameras looked across counts as seen."""
+    if len(points) == 0:  # e.g. no confident depth in any frame: floor_level needs points
+        return Plan([], None, None, None, ["no rooms found: the point cloud is empty"])
     floor = floor_level(points[:, 2])
     h = points[:, 2] - floor.z
     band = points[(h > ANGLE_BAND_M[0]) & (h < ANGLE_BAND_M[1])]
