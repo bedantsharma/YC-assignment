@@ -62,9 +62,13 @@ Write-ups: [docs/video_scale.md](docs/video_scale.md), [docs/home_c_new_captures
   0.914, MapAnything 0.877 / 1.035). Horizontal varies by room (0.80-0.99): ±10% per room.
 - Camera-app damage-room clips (464×832, chat-compressed), 60 frames: +6/+6 and +5/+4 cm
   vs the truth. 30 frames too few for a 2-min clip (+20/+16 cm).
-- **Stale until rerun on Kaggle** (no replay cache): `outputs/c_home_01_video` and the
-  photo runs; `gt_table.py` marks them "pre-fix geometry". The Kaggle dataset
-  `floorplan-video-c2` holds a copy of `src/floorplan` from before the fix: re-upload it.
+- Every plan has a replay cache now (`outputs/kaggle_video_runs/recon_cache`,
+  `outputs/kaggle_cache_runs/recon_cache`; job `kaggle/cache_runs`, dataset
+  `floorplan-video-c2` holds the fixed code and the stills). `scripts/reproduce.sh`
+  regenerates every number; `scripts/benchmark.py` writes `docs/benchmark_report.md`.
+- Photo intervals widened to the tier's measured error on C (`RESIDUAL_REL` photo 14% /
+  5.5%); coverage of sides: LiDAR 91%, video 92%, photo 80% (`scripts/calibration.py`).
+- Openings: `openings.py` (doors, passages; windows not detected; door 34 cm narrow).
 - Whole-house clip (5 min, ceiling sweeps): windows fold rooms onto each other; no usable
   plan. The LiDAR recording's own 22 s video gives 4 of 4 rooms.
 

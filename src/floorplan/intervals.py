@@ -37,9 +37,13 @@ SCALE_BIAS = {
 RESIDUAL_REL = {
     ("video", "pi3x"): (0.05, 0.02),
     ("video", "mapanything"): (0.06, 0.04),
-    ("photo", "pi3x"): (0.10, 0.03),
-    ("photo", "mapanything"): (0.10, 0.04),
+    ("photo", "pi3x"): (0.14, 0.055),
+    ("photo", "mapanything"): (0.14, 0.055),
 }
+# Photo values (Oct 4): the 90th percentile of the photo tier's relative error on home C's
+# ground truth (22 room sides: 23%; 8 ceilings: 9%) divided by 1.645, so the 90% intervals
+# cover what partial room coverage does; fitted on C itself (no held-out photo set yet).
+# MapAnything photo: no data, given the same width.
 VIDEO_SURFACE_M = 0.05
 
 

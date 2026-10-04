@@ -4,9 +4,7 @@ Which capture tier runs on which hardware, and the accuracy each tier honestly d
 Required by the brief (Part 1 and deliverables 2 and 7). How to capture each tier:
 [capture_protocol.md](capture_protocol.md).
 
-**Status: skeleton.** The hardware columns are fixed now. Every accuracy cell is `TBD` until
-the benchmark (ROADMAP Phase 6) measures it against tape and laser ground truth; each number
-will then be copied from the benchmark report, never estimated by hand.
+Accuracy numbers are copied from the benchmark report, never estimated by hand.
 
 ## Tiers by hardware
 
@@ -23,19 +21,21 @@ non-Pro phone would get.
 
 ## Accuracy by tier
 
-Error against ground truth, with the 90% interval coverage the pipeline achieved. Gates are
-from the brief.
+Home C against its ground truth (architect's drawing, tape), copied from
+[benchmark_report.md](benchmark_report.md) (`uv run scripts/benchmark.py`). Gates are from
+the brief.
 
 | Measurement | Gate | LiDAR | Video | Photos |
 |---|---|---|---|---|
-| Wall length | LiDAR: strict; video ±3%; photos ±8% | TBD | TBD | TBD |
-| Ceiling height | ≤ 1.5 cm per room | TBD | TBD | TBD |
-| Floor area | (none stated) | TBD | TBD | TBD |
-| Opening width | ≤ 2 cm on ≥ 85% of openings | TBD | TBD | TBD |
-| Footprint (stitched) | photos ±8% | TBD | TBD | TBD |
-| Repeatability, per wall | 1 cm or 0.5% | TBD | TBD | TBD |
-| Interval coverage (target 90%) | calibrated | TBD | TBD | TBD |
-| Run time per capture (this laptop) | (none stated) | TBD | TBD | TBD |
+| Room side, median abs. error | LiDAR: repeatability; video ±3%; photos ±8% | 5 cm | 8 cm (11 of 16 within ±3%) | 25 cm (13 of 22 within ±8%) |
+| Ceiling height | ≤ 1.5 cm per room | −2.1 to +1.0 cm (3 of 4 met) | 0.3–14 cm | 1–48 cm |
+| Opening width | ≤ 2 cm on ≥ 85% of openings | door 34 cm narrow; windows missed | not scored | not scored |
+| Footprint (stitched) | photos ±8% | one cloud, stitched by construction | stitched on room clips; the 5-min house clip folds | not stitched |
+| Repeatability, per wall | 1 cm or 0.5% | 0.4 / 4.6 cm (bedroom, 2 scans) | 1.2 cm (2 clips) | – |
+| 90% interval coverage, sides / ceilings | ~90% | 91% / 100% | 92% / 100% | 80% / 88% |
+| Run time per capture | (none stated) | 9–20 s on the M4 laptop | model 60–260 s on a T4 + 10–20 s geometry | model 27–75 s on a T4 + ~1 s geometry |
+
+Photo numbers come from stills cut from home C's videos, not from the friend's own photos.
 
 ## Where the numbers come from
 

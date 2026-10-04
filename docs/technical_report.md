@@ -71,12 +71,16 @@ Home C, our output vs the ground truth (`uv run scripts/benchmark.py`):
 
 | Measurement | Gate (brief) | LiDAR | Video | Photos |
 |---|---|---|---|---|
-| Room side, median abs. error | video ±3%, photos ±8% | **5 cm** (12 sides) | 6 cm on the room clips (60 frames: +5 / +6 cm) | see benchmark report |
-| Ceiling | ≤ 1.5 cm | 3 of 4 rooms (−2.1 to +1.0 cm) | 3–14 cm | 1–10 cm |
+| Room side, median abs. error | video ±3%, photos ±8% | **5 cm** (12 sides) | **8 cm** (16 sides; 11 of 16 within ±3%) | 25 cm (22 sides; 13 of 22 within ±8%) |
+| Ceiling | ≤ 1.5 cm | 3 of 4 rooms (−2.1 to +1.0 cm) | 0.3–14 cm | 1–48 cm |
 | Repeatability | 1 cm or 0.5% per wall | **not met**: bedroom 0.4 cm short side, 4.6 cm long side | 1.2 cm both sides (v1 vs v2) | – |
 | Openings | ≤ 2 cm on ≥ 85% | **not met**: door found, 34 cm narrow; windows not detected | – | – |
-| 90% interval coverage, sides / ceilings | calibrated | 91% / 100% | see benchmark report | see benchmark report |
-| Run time on this laptop (M4, 16 GB) | | 9–20 s per capture | model 60–200 s on a T4, geometry 10–20 s | model ~30 s per room on a T4 |
+| 90% interval coverage, sides / ceilings | calibrated | 91% / 100% | 92% / 100% | 80% / 88% |
+| Run time | | 9–20 s per capture on this laptop (M4, 16 GB) | model 60–260 s on a T4, geometry 10–20 s | model 27–75 s per photo set on a T4 |
+
+Photo rows are stills cut from home C's videos (the friend's own photos are not run yet):
+in the damage room they are within 0–27 cm; on the whole-home walk some rooms were only
+partly covered and come out up to a third too small.
 
 **Head-to-head** with Polycam (Apple RoomPlan) on the same home, 8 room dimensions: beat or
 tie on **6 of 8 (75%)**, target 70% (`uv run scripts/gt_table.py`). Medians: ours 5 cm,
@@ -135,7 +139,8 @@ Intervals are 90% (±1.645 σ). Per wall, σ is the spread of the points the wal
 from (the drift smear's 1.4826 × MAD where it was measured high up, the face spread
 elsewhere); a wall length combines the two walls at its ends; an area combines all walls.
 Video and photo add, in quadrature, the scale residual (Pi3X: 5% horizontal, 2% vertical
-for video; 10% / 3% for photos) and 5 cm of surface error.
+for video; 14% / 5.5% for photos, the 90th percentile of the photo tier's error on home C
+divided by 1.645, fitted on C itself) and 5 cm of surface error.
 
 | Source (LiDAR, home C) | Size |
 |---|---|
@@ -145,11 +150,13 @@ for video; 10% / 3% for photos) and 5 cm of surface error.
 | Design vs built (drawing as truth) | a few cm, unknown |
 | Unscanned wall | unbounded on that side (−23 cm seen) |
 
-Empirical coverage (`uv run scripts/calibration.py`) is in the benchmark report: LiDAR room
-sides 10 of 11 and ceilings 4 of 4 inside their 90% intervals. Areas are compared with the
+Empirical coverage of the 90% intervals (`uv run scripts/calibration.py`): room sides
+inside for LiDAR 10 of 11, video 12 of 13, photos 12 of 15; ceilings 4 of 4, 6 of 6, 7 of 8. Areas are compared with the
 drawing's nominal rectangles (closet and niche not subtracted), so their 3 of 6 is
-pessimistic. Photo intervals miss where a room's photos covered only part of it: the
-interval describes the part that was seen. That is the thin-input risk the brief caps.
+pessimistic. The photo misses are rooms whose photos covered only part of the room (a
+third too small): the interval was widened to the tier's measured error, but a room seen
+in part can still fall outside it. That is the thin-input risk the brief caps; the
+pipeline warns when a folder has fewer than 4 photos.
 
 ## 8. Known failure modes
 

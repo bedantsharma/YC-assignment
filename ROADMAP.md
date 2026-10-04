@@ -44,6 +44,11 @@ head-to-head (10%) met: 6 of 8 beat or tie (5 vs 6 cm median);
 compliance (10%), capture route (5%) and commit history (5%) on track.
 
 - **Done today (Sun)**
+  - **After the fix**: Kaggle refilled the replay cache for every plan (`kaggle/cache_runs`);
+    calibration per tier (`scripts/calibration.py`: 90% coverage of sides LiDAR 91%, video
+    92%, photo 80% after widening photo to its measured error); doors and passages
+    (`openings.py`, G1 not met); benchmark report (`scripts/benchmark.py`), technical report
+    (5 pages), `scripts/reproduce.sh`, device matrix filled
   - **Graded fix** ([docs/fix_declaration.md](docs/fix_declaration.md)): walls measured
     above 2.3 m at the centre of the drift smear, own side of interior walls; LiDAR 29 →
     5 cm; video scale bias re-measured (Pi3X 0.964 → 0.890); head-to-head added to
@@ -61,10 +66,9 @@ compliance (10%), capture route (5%) and commit history (5%) on track.
     optionally a 1-2 min eye-level house video
   - Architect: blind laser measurements for B → `data/gt/arkitscenes_421337.yaml`
 - **Next, in order** (details: [NEXT-SESSION.md](NEXT-SESSION.md))
-  1. Kaggle rerun of the plans with no replay cache (`c_home_01` video, photo stills;
-     re-upload `src/floorplan` to the dataset first) + the real photo folders
-  2. Openings (doors, windows) and Phase 5 damage (the bedroom hole)
-  3. Phase 7 reports and packaging (benchmark report, interval calibration, compliance)
+  1. The friend's real photo folders on Kaggle (`kaggle/cache_runs`), rows in `gt_table.py`
+  2. Phase 5 damage (the bedroom hole), windows
+  3. Walk-in plan for the image tiers (model on Kaggle or a one-off local run), fresh-clone test
 
 ## Principles
 

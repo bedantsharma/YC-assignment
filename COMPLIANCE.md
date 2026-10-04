@@ -21,7 +21,7 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | C6 | LiDAR tier: depth, poses, intrinsics on Pro devices | `src/floorplan/capture.py`, `src/floorplan/tiers/lidar.py` *(planned)* | Plans from datasets A, B, C | In progress | Loader done for Stray Scanner and ARKitScenes (common z-up frame) |
 | C7 | Same output contract from every tier | `src/floorplan/output.py` | One result type for all tiers | In progress | |
 | C8 | Intervals widen honestly as sensor data thins | `src/floorplan/lidar.py` (provisional) | Calibration table per tier | In progress | LiDAR: ±1.645σ from measured surface spreads, unobserved walls 5 cm σ. Uncalibrated until Phase 6 |
-| C9 | Device matrix: which tier runs on which hardware, and the accuracy each honestly delivers | `docs/device_matrix.md` | Table in technical report | In progress | Skeleton: hardware per tier done; accuracy cells TBD until the benchmark |
+| C9 | Device matrix: which tier runs on which hardware, and the accuracy each honestly delivers | `docs/device_matrix.md` | Table in technical report | Done | Accuracy per tier copied from the benchmark report |
 
 ## 2. Output contract, per capture (brief Part 2)
 
@@ -63,9 +63,9 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | G5 | Drift: report states the method used on the multi-room capture | `src/floorplan/drift.py` (`floorplan run --drift`) | [docs/drift_ablation.md](docs/drift_ablation.md) (method section) | In progress | "Poses used as-is" is an automatic fail. Built (chunked 2D ICP on walls), **off by default (user decision)**: made the `c_home_01` kitchen and A `c00a170fe1` worse; report must state method + ablation |
 | G6 | Drift: ablation of stitched footprint with correction on and off | `scripts/drift_ablation.py` | [docs/drift_ablation.md](docs/drift_ablation.md) (table; no figure yet) | Partial | Mixed: damage-room repeat scans 21 → 1 cm on the short side; A `c00a170fe1` walls lose support |
 | G7 | Photo tier: one stitched plan, correct adjacency, no overlaps, footprint ±8%, calibrated intervals | `scripts/score_photos.py` (vs LiDAR) | `docs/photo_tier.md` §8 | **Not met** | No stitch (rooms side by side, no adjacency); footprint 45.0 vs 59.8 m² on `c_home_01` protocol stills (hall and room2 had 2–3 photos) |
-| G8 | Photo tier: wall lengths ±8% with calibrated intervals | `scripts/score_photos.py` (vs LiDAR); `scripts/benchmark.py` *(planned)* | `docs/photo_tier.md` §8 | Partly met | Area within ±8% for rooms with ≥ 4 good photos (5 of 6), not for 2–3 photos; wall lengths not compared yet; intervals contain LiDAR in 8 of 11 rooms, uncalibrated; vs LiDAR, not tape |
-| G9 | Video tier: wall lengths ±3% | `scripts/video_scale.py` (vs LiDAR); `scripts/benchmark.py` *(planned)* | Held-out table in `docs/video_scale.md` | Not met | After scale correction, held-out rooms: ceilings within 3.3% (meets), √area +0.2 / +2.6 / −8.5%, longest wall up to −15.5% (outline differences); vs LiDAR, not tape |
-| G10 | Calibration scored at every tier; no confident garbage on thin input | `scripts/calibration.py` | `docs/benchmark_report.md` (calibration table) | In progress | 90% coverage vs home C: LiDAR sides 10/11, ceilings 4/4; video and photo in the report; photo rooms with partial coverage are the risk |
+| G8 | Photo tier: wall lengths ±8% with calibrated intervals | `scripts/benchmark.py`, `scripts/calibration.py` | `docs/benchmark_report.md` | Partly met | vs home C's ground truth: 13 of 22 room sides within ±8% (damage room 0–27 cm; whole-home stills cover rooms only partly); 90% coverage 80% sides / 88% ceilings after widening to the measured error; stills from videos, not real photos |
+| G9 | Video tier: wall lengths ±3% | `scripts/benchmark.py` | `docs/benchmark_report.md` | Partly met | vs ground truth: 11 of 16 room sides within ±3%, median 8 cm; damage-room clips in-sample for the scale bias |
+| G10 | Calibration scored at every tier; no confident garbage on thin input | `scripts/calibration.py` | `docs/benchmark_report.md` (calibration table) | Partly met | 90% coverage vs home C, sides / ceilings: LiDAR 91% / 100%, video 92% / 100%, photo 80% / 88% (photo widened to its measured error; rooms seen in part still miss) |
 
 ## 5. Head-to-head (brief Part 3)
 

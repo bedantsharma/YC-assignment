@@ -9,35 +9,25 @@ with Polycam beat or tie on 6 of 8 (75%). Do not change wall geometry again with
 rerunning `uv run scripts/lidar_summary.py` and `uv run scripts/gt_table.py` and recording
 the change.
 
-## 1. Kaggle rerun of the plans that have no replay cache
+## 1. Done after the fix (this session)
 
-`gt_table.py` marks them "pre-fix geometry (no cache)": the `c_home_01` LiDAR recording's
-video (90 frames) and the photo-tier runs on video stills. Also the real photo folders, once
-the user has sorted them.
+Kaggle refilled every replay cache (`kaggle/cache_runs`, dataset `floorplan-video-c2` now
+holds the fixed code); calibration (`scripts/calibration.py`), openings (`openings.py`),
+benchmark report (`scripts/benchmark.py`), technical report, `scripts/reproduce.sh`.
 
-1. Re-upload `src/floorplan` to the Kaggle dataset `floorplan-video-c2` (its copy is from
-   before the fix), plus the photo folders (private dataset, user's OK first).
-2. In `kaggle/video_runs` (or a new `kaggle/photo_runs`): run with
-   `FLOORPLAN_RECON_CACHE` set, so the laptop can replay; dry-run the setup locally first
-   (CLAUDE.md checklist).
-3. Replay locally, rerun `uv run scripts/gt_table.py`; add rows for the real photos.
-4. Check the video scale bias on the held-out rooms (`uv run scripts/video_scale.py
-   outputs/bakeoff/c_damage_0*__*.npz outputs/video_eval/*.npz`): one bias leaves ±10%
-   per room (drawing room ≈ +10%); report it, widen `RESIDUAL_REL` if the held-out rooms
-   say so.
+Next: the friend's real photo folders (once sorted) through `kaggle/cache_runs` (add the
+folders to the dataset, user's OK first), replay, add rows to `gt_table.py`; check the photo
+residual (fitted on C's stills) against them.
 
 ## 2. Then, in order
 
-1. **Openings** (doors, windows): GT has the bedroom door 3.4 ft and window 7 ft, living
-   room openings; `lintel_mask` in `plan2d.py` finds door heads. SpatialLM (seed-voted) is
-   a candidate for windows.
+1. **Windows and door widths** (`docs/openings.md`): the door is found 34 cm narrow,
+   windows not at all; SpatialLM (seed-voted) is a candidate for windows.
 2. **Phase 5 damage**: the bedroom hole (2.5 in, centre 4.66 ft up, 7.5 ft from the right
    wall) is the test case.
-3. **Interval calibration** (fix map 03, gate G10): area intervals hold the truth in 3 of
-   6 rooms; walls now carry the smear's spread as sigma. Calibrate per tier against C's
-   ground truth and the repeat scans.
-4. Phase 7: benchmark report (`scripts/benchmark.py`: all gates, repeatability table),
-   technical report, compliance, fresh-clone test.
+3. **Walk-in**: the brief runs the pipeline on our laptop; image tiers need the model
+   (Kaggle with internet, or a one-off local run): decide with the user.
+4. Fresh-clone test (README, < 15 min).
 
 ## Waiting on
 
