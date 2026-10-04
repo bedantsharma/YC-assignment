@@ -40,7 +40,11 @@ def run() -> int:
         add(False, "Kaggle (video / photo model)", str(err))
 
     # local model fallback (informational)
-    pi3x = Path.home() / ".cache/huggingface/hub/models--yyfz233--Pi3X"
+    hub = (
+        os.environ.get("HF_HUB_CACHE")
+        or Path(os.environ.get("HF_HOME") or Path.home() / ".cache/huggingface") / "hub"
+    )
+    pi3x = Path(hub) / "models--yyfz233--Pi3X"
     absent = "absent: without Kaggle, video / photo runs download 5.4 GB and need ~24 GB RAM"
     add(None, "Pi3X weights on this machine", "present" if pi3x.exists() else absent)
 
@@ -52,9 +56,10 @@ def run() -> int:
         add(False, "Gemini (damage)", "no GOOGLE_API_KEY / GOOGLE_APPLICATION_CREDENTIALS in "
             "this shell (damage falls back to Florence-2)")  # fmt: skip
     else:
-        add(_reachable(host), "Gemini (damage)",
+        up = _reachable(host)  # once: the mark and the text must agree
+        add(up, "Gemini (damage)",
             f"{'Vertex AI' if vertex else 'Gemini API'} credentials set, {host} "
-            f"{'reachable' if _reachable(host) else 'NOT reachable'}")  # fmt: skip
+            f"{'reachable' if up else 'NOT reachable'}")  # fmt: skip
 
     # Florence-2 (offline damage)
     try:
