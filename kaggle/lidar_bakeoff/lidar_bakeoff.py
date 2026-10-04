@@ -9,6 +9,9 @@ point encoder) in "arch" mode: walls, doors, windows. Generation samples (temper
 SpatialLM pins Python <= 3.12 and torch 2.4; Kaggle runs 3.13, so it gets its own uv venv
 (Python 3.11). Flash attention needs Ampere; the T4 is Turing, so Sonata runs with
 enable_flash=False (plain attention, same weights).
+Two GPUs (Kaggle "T4 x2"): the language model stays on cuda:0 and the Sonata point
+encoder (what ran out of memory in run 1) moves to cuda:1, so each gets a full 15 GB.
+Run 2 repeats only what failed in run 1 (whole home, and every Llama-1B run).
 Output: <cloud>__<model>__s<seed>.txt (SpatialLM layout language), log.txt, summary.json.
 """
 
@@ -65,14 +68,31 @@ def setup() -> Path:
     for f in ("spatiallm_qwen.py", "spatiallm_llama.py"):  # T4: no flash attention
         p = repo / "spatiallm" / "model" / f
         s = p.read_text()
+        # the encoder may sit on another GPU: move its input there and its output back
+        call = "encoded_features = self.point_backbone(input_dict)"
+        s = s.replace(
+            call,
+            "pb = next(self.point_backbone.parameters()).device; "
+            "input_dict = {k: v.to(pb) if torch.is_tensor(v) else v "
+            "for k, v in input_dict.items()}; " + call + ".to(device)",
+        )
         p.write_text(
             s.replace(
                 "enable_fourier_encode=True,", "enable_fourier_encode=True, enable_flash=False,"
             )
         )
+    inf = repo / "inference.py"
+    s = inf.read_text()
+    two_gpus = (
+        '    model.to("cuda")\n'
+        "    if torch.cuda.device_count() > 1:\n"
+        '        model.point_backbone.to("cuda:1")\n'
+    )
+    inf.write_text(s.replace('    model.to("cuda")\n', two_gpus))
     check = (
         "import torch, spconv.pytorch, torch_scatter, open3d; "
-        "print(torch.__version__, torch.cuda.is_available(), torch.cuda.get_device_name(0))"
+        "print(torch.__version__, torch.cuda.is_available(), torch.cuda.device_count(), "
+        "torch.cuda.get_device_name(0))"
     )
     gpu = sh([str(py), "-c", check])
     log(f"venv: {gpu.stdout.strip()} {gpu.stderr[-500:]}")
@@ -91,6 +111,8 @@ def main() -> None:
     rows = []
     for model in MODELS:
         for cloud in clouds:
+            if "Qwen" in model and cloud.stem != "c_home_01":
+                continue  # run 1 already has these
             for seed in SEEDS:
                 tag = f"{cloud.stem}__{model.split('/')[-1]}__s{seed}"
                 start = time.perf_counter()
@@ -99,7 +121,11 @@ def main() -> None:
                      str(OUT / f"{tag}.txt"), "--model_path", model, "--detect_type", "arch",
                      "--inference_dtype", "float32", "--seed", str(seed)],
                     cwd=repo, capture_output=True, text=True,
-                    env={**os.environ, "PYTHONPATH": str(repo)},
+                    env={
+                        **os.environ,
+                        "PYTHONPATH": str(repo),
+                        "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+                    },
                 )  # fmt: skip
                 secs = round(time.perf_counter() - start, 1)
                 ok = res.returncode == 0 and (OUT / f"{tag}.txt").exists()
