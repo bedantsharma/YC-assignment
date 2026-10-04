@@ -54,8 +54,10 @@ def main() -> None:
           "| area m2 (err %)  | ceiling")  # fmt: skip
     for key, g in GT["rooms"].items():
         gl, gs = sides(g["width_m"], g["depth_m"])
+        gc = g.get("measured", {}).get("ceiling_height_m")
         print(f"{key:14} | ground truth        | {gl:.2f} x {gs:.2f}      |               "
-              f"        | {g['area_m2']:5.1f}            |")  # fmt: skip
+              f"        | {g['area_m2']:5.1f}            | "
+              f"{f'{gc:.2f} (tape)' if gc else '-'}")  # fmt: skip
         pc = POLYCAM[g["polycam"]]
         pl, ps = sides(pc["width"], pc["depth"])
         print(f"{'':14} | Polycam             | {pl:.2f} x {ps:.2f}      | "
@@ -77,7 +79,8 @@ def main() -> None:
                   f"{100 * (rl - gl):+5.0f} / {100 * (rs - gs):+5.0f}         | "
                   f"{a['value']:5.1f} ({100 * (a['value'] / g['area_m2'] - 1):+4.0f}%) "
                   f"{inside:3} | "
-                  f"{c['value'] if c else float('nan'):.2f}")  # fmt: skip
+                  f"{c['value'] if c else float('nan'):.2f}"
+                  f"{f' ({100 * (c["value"] - gc):+.0f} cm)' if c and gc else ''}")  # fmt: skip
 
 
 if __name__ == "__main__":

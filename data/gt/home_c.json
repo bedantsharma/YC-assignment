@@ -4,7 +4,8 @@
   "caveats": [
     "Design dimensions from the drawing, not tape-measured as built: expect a few cm of construction difference",
     "Lengths are interior clear dimensions between wall faces as labelled on the plan",
-    "1 ft = 0.3048 m; metres computed from the feet-inch labels by script"
+    "1 ft = 0.3048 m; metres computed from the feet-inch labels by script",
+    "Ceiling 12 ft (3.66 m) from the friend disagrees with every scan: LiDAR 3.33-3.36 m in all three scans, and the damage room's two LiDAR clouds have no points above 3.60 m (ceiling plane at 3.30-3.40 m, phone ~2 m below it, well in range); videos 3.32-3.48 m. Likely rounded or not floor-to-ceiling: ask the friend to re-measure before scoring ceilings"
   ],
   "units": "metres and m2 (feet-inch originals kept as strings)",
   "rooms": {
@@ -28,7 +29,41 @@
       "our_label": "hall",
       "polycam": "dining_plus_bedroom_3",
       "note": "one open space; Polycam splits it into Dining Room and Bedroom 3",
-      "area_m2": 31.355
+      "area_m2": 31.355,
+      "measured": {
+        "ceiling_height_m": 3.6576,
+        "ceiling_height_ft": 12,
+        "openings": [
+          {
+            "kind": "window",
+            "where": "beside the entry gate",
+            "width_m": 0.6096,
+            "width_ft": 2
+          },
+          {
+            "kind": "window",
+            "where": "big window on the right wall",
+            "width_m": 1.3716,
+            "width_ft": 4.5
+          },
+          {
+            "kind": "door",
+            "where": "entry gate",
+            "width_m": 1.3716,
+            "height_m": 1.9812,
+            "width_ft": 4.5,
+            "height_ft": 6.5
+          },
+          {
+            "kind": "passage",
+            "where": "main hallway entry (open, no door)",
+            "width_m": 1.524,
+            "height_m": 1.9812,
+            "width_ft": 5,
+            "height_ft": 6.5
+          }
+        ]
+      }
     },
     "drawing": {
       "plan_label": "DRAWING 12'0\"X15'0\"",
@@ -83,11 +118,52 @@
           "note": "the drawing does not say which segment is the door opening"
         }
       ],
-      "area_m2": 15.329
+      "area_m2": 15.329,
+      "measured": {
+        "ceiling_height_m": 3.6576,
+        "ceiling_height_ft": 12,
+        "window": {
+          "height_m": 1.7252,
+          "width_m": 2.1336,
+          "height_ft": 5.66,
+          "width_ft": 7
+        },
+        "door": {
+          "height_m": 1.9812,
+          "width_m": 1.0363,
+          "height_ft": 6.5,
+          "width_ft": 3.4
+        },
+        "closet": {
+          "width_m": 0.5334,
+          "length_m": 1.4478,
+          "width_ft": 1.75,
+          "length_ft": 4.75,
+          "note": "message says '4.75 in length'; read as feet (4.75 inches cannot be a closet)"
+        },
+        "damage": {
+          "kind": "hole",
+          "diameter_m": 0.0635,
+          "diameter_in": 2.5,
+          "centre_height_m": 1.4204,
+          "centre_height_ft": 4.66,
+          "from_right_wall_m": 2.286,
+          "from_right_wall_ft": 7.5,
+          "note": "7.5 ft from the right-side wall, seen facing the damaged wall"
+        }
+      }
     }
   },
   "label_maps": {
     "our_label": "room names in data/gt/home_c_rooms.json (plan frame of c_home_01)",
     "polycam": "room keys in data/gt/home_c_polycam.json"
+  },
+  "source_measured": "Friend's own measurements (tape), sent as text by the user on Oct 4, 2026, in feet and inches; transcribed by hand. Kept under each room's `measured`, separate from the drawing's design dimensions.",
+  "measured_general": {
+    "window_height_m": 1.7069,
+    "window_height_ft": 5.6,
+    "door_height_m": 1.9812,
+    "door_height_ft": 6.5,
+    "note": "user (translated from Hindi): all doors ('gates') and windows have the same dimensions, except the main hall entry, which is an open entry, not a door"
   }
 }
