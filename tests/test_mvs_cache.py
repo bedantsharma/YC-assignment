@@ -19,6 +19,7 @@ def test_cache_replays_without_the_model(tmp_path, monkeypatch):
     calls = []
     monkeypatch.setattr(mvs, "_infer", _fake(calls))
     monkeypatch.setenv(mvs.CACHE_ENV, str(tmp_path))
+    monkeypatch.setenv(mvs.BACKEND_ENV, "here")
     frames = [Image.new("RGB", (8, 6), (i, 0, 0)) for i in range(3)]
     first = mvs.reconstruct(frames, "pi3x")
     second = mvs.reconstruct(frames, "pi3x")

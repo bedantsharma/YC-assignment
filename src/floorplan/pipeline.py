@@ -87,17 +87,23 @@ def _run_photos(
 ) -> Result:
     """Each folder reconstructed on its own; its main room kept and named after it. Rooms
     are laid out side by side: their relative positions are not measured."""
+    from floorplan.mvs import ensure
     from floorplan.photos import few_photo_warnings, load_folder, shift_room
 
     folders = load_photos(path).rooms
     timing: dict[str, float] = {}
     rooms, warnings, x = [], [], 0.0
     found: dict[str, list] = {"surfaces": [], "damage": [], "flags": [], "scope": []}
+    start = time.perf_counter()
+    loaded = {name: load_folder(photos) for name, photos in folders.items()}
+    timing["load"] = round(time.perf_counter() - start, 3)
+    start = time.perf_counter()  # every folder's model passes in one go (one Kaggle job)
+    ensure([s for images, _ in loaded.values() for s in image_sets(images, PHOTO_WINDOW)], model)
+    timing["reconstruction"] = round(time.perf_counter() - start, 3)
+    model_notes = _model_notes()
     for name, photos in folders.items():
-        start = time.perf_counter()
-        images, split = load_folder(photos)
+        images, split = loaded[name]
         warnings += [f"{name}: {note}" for note in split]
-        timing["load"] = round(timing.get("load", 0.0) + time.perf_counter() - start, 3)
         sub_timing: dict[str, float] = {}
         rid = f"r{len(rooms) + 1}"
         res = _from_images(
@@ -107,7 +113,9 @@ def _run_photos(
         for k, v in sub_timing.items():
             timing[k] = round(timing.get(k, 0.0) + v, 3)
         warnings += [
-            f"{name}: {w}" for w in res.warnings if not w.startswith(("scale", "reconstruction"))
+            f"{name}: {w}"
+            for w in res.warnings
+            if not w.startswith(("scale", "reconstruction", "model ran"))
         ]
         if not res.rooms:
             warnings.append(f"{name}: no room found from its {len(photos)} photos")
@@ -126,6 +134,7 @@ def _run_photos(
         f"({', '.join(f'{r}: {len(p)}' for r, p in folders.items())}); each folder "
         f"reconstructed on its own with {MODEL_NAMES[model]}",
         *few_photo_warnings(folders),
+        *model_notes,
         f"scale corrected by the model's measured bias (horizontal x{1 / bias_h:.3f},"
         f" vertical x{1 / bias_v:.3f}); intervals widened by {100 * rel_h:.0f}% horizontal,"
         f" {100 * rel_v:.0f}% vertical and {100 * VIDEO_SURFACE_M:.0f} cm surface error"
@@ -148,6 +157,21 @@ def _run_photos(
         timing_s=timing,
         warnings=header + warnings,
     )
+
+
+def image_sets(images: list, window: int) -> list[list]:
+    """The image lists the model will be run on: one pass, or chunks.chain's windows."""
+    from floorplan.chunks import windows
+
+    if len(images) <= window:
+        return [images]
+    return [[images[i] for i in span] for span in windows(len(images), window, VIDEO_OVERLAP)]
+
+
+def _model_notes() -> list[str]:
+    from floorplan.mvs import pop_notes
+
+    return [f"model ran: {n}" for n in pop_notes()]
 
 
 def _collect_damage(res: Result, rid: str, dx: float, dy: float, found: dict) -> None:
@@ -195,12 +219,13 @@ def _from_images(
 ) -> Result:
     """Shared geometry of the video and photo tiers: images -> metric cloud -> plan."""
     from floorplan.chunks import chain
-    from floorplan.mvs import reconstruct
+    from floorplan.mvs import ensure, reconstruct
     from floorplan.video import estimate_up, z_up
 
     start = time.perf_counter()
     links = []
     window = PHOTO_WINDOW if tier == "photo" else VIDEO_WINDOW
+    ensure(image_sets(images, window), model)  # all windows at once: one Kaggle job
     if len(images) <= window:
         rec = reconstruct(images, model)
         joint = f"none needed: all {tier} images reconstructed jointly in one pass"
@@ -270,6 +295,7 @@ def _from_images(
     warnings = [
         *notes,
         f"reconstruction: {MODEL_NAMES[rec.model]}, {rec.seconds:.0f} s",
+        *_model_notes(),
         f"scale corrected by the model's measured bias (horizontal x{1 / bias_h:.3f},"
         f" vertical x{1 / bias_v:.3f}; damage room vs LiDAR); intervals widened by"
         f" {100 * rel_h:.0f}% horizontal, {100 * rel_v:.0f}% vertical and"

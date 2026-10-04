@@ -45,6 +45,12 @@ def main(argv: list[str] | None = None) -> int:
     p_run.add_argument(
         "--crack-pass", action="store_true", help="damage: second Gemini call tracing cracks"
     )
+    p_run.add_argument(
+        "--recon",
+        choices=["auto", "kaggle", "local"],
+        help="video / photo tiers: where the model runs (default auto: Kaggle's GPUs, else "
+        "this machine in low-memory mode; also FLOORPLAN_RECON_BACKEND)",
+    )
     p_dmg = sub.add_parser(
         "damage", help="detect damage on photos (no sizes): detections.json + overlays"
     )
@@ -57,6 +63,12 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "damage":
         return _damage_photos(args.images, args.out, args.crack_pass)
 
+    if args.recon:
+        import os
+
+        from floorplan.mvs import BACKEND_ENV
+
+        os.environ[BACKEND_ENV] = args.recon
     try:
         tier = resolve_tier(detect_format(args.capture), args.tier)
         out_dir = args.out / f"{_capture_id(args.capture)}_{tier}"

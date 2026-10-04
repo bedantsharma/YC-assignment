@@ -109,6 +109,7 @@ def test_photo_tier_end_to_end_names_rooms_from_folders(photo_capture, monkeypat
         return mvs.Reconstruction(pts[None, :, None, :], keep, poses, 0.1, model)
 
     monkeypatch.setattr(mvs, "reconstruct", fake)
+    monkeypatch.setattr(mvs, "ensure", lambda sets, model: None)
     result = run(photo_capture)
     assert result.capture.tier == "photo"
     area = {r.label: r.floor_area.value for r in result.rooms}
@@ -140,6 +141,7 @@ def test_folder_that_yields_no_room_is_skipped_not_fatal(photo_capture, monkeypa
         return mvs.Reconstruction(pts[None, :, None, :], keep, poses, 0.1, model)
 
     monkeypatch.setattr(mvs, "reconstruct", fake)
+    monkeypatch.setattr(mvs, "ensure", lambda sets, model: None)
     result = run(photo_capture)
     assert result.rooms == []
     assert any("no room found" in w for w in result.warnings)

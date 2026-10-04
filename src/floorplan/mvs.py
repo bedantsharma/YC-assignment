@@ -7,10 +7,21 @@ Two models, chosen by the bake-off in docs/model_research.md:
 
 Optional dependency: `uv sync --extra video` (torch, MapAnything, Pi3; ~4-5 GB of weights per
 model fetched from Hugging Face on first use).
+
+Where the model runs (FLOORPLAN_RECON_BACKEND, or `floorplan run --recon`):
+- `auto` (default): every reconstruction a run needs is sent to Kaggle in one GPU job
+  (`remote.py`); if Kaggle is unreachable or the job fails, they run on this machine.
+- `kaggle`: Kaggle only (an error if it fails). `local`: this machine only.
+- `here`: in this process, no memory guard (a GPU machine; auto picks it when
+  `nvidia-smi` exists, so the Kaggle jobs themselves never call Kaggle).
+Local runs are slow but cannot run the laptop out of memory (`mvs_local.py`): one small
+window of frames per child process, retried with smaller windows on failure. Either way
+the result lands in the reconstruction cache, which is what the pipeline reads.
 """
 
 import hashlib
 import os
+import shutil
 import time
 import warnings
 from dataclasses import dataclass
@@ -30,6 +41,10 @@ CONF_PERCENTILE = 10  # drop the least confident 10% of pixels (same as the bake
 # (Kaggle) fills it, a laptop run replays it without loading the model. With
 # FLOORPLAN_RECON_CACHE_ONLY=1 a cache miss is an error instead of a model run.
 CACHE_ENV, CACHE_ONLY_ENV = "FLOORPLAN_RECON_CACHE", "FLOORPLAN_RECON_CACHE_ONLY"
+DEFAULT_CACHE = Path("outputs/recon_cache")
+BACKEND_ENV = "FLOORPLAN_RECON_BACKEND"
+BACKENDS = ("auto", "kaggle", "local", "here")
+_notes: list[str] = []  # how the model ran in this process, drained into the plan's warnings
 
 
 @dataclass
@@ -49,30 +64,83 @@ def reconstruct(frames: list[Image.Image], model: str = DEFAULT_MODEL) -> Recons
     if model not in MODELS:
         raise ValueError(f"unknown model {model!r}; choose from {sorted(MODELS)}")
     cached = _cache_path(frames, model)
-    if cached and cached.exists():
-        z = np.load(cached)
-        return Reconstruction(z["view_points"], z["view_keep"], z["cam_poses"],
-                              float(z["seconds"]), model)  # fmt: skip
-    if cached and os.environ.get(CACHE_ONLY_ENV) == "1":
-        raise RuntimeError(f"no cached reconstruction {cached.name} ({CACHE_ONLY_ENV}=1)")
-    rec = _infer(frames, model)
-    if cached:
-        cached.parent.mkdir(parents=True, exist_ok=True)
-        np.savez_compressed(cached, view_points=rec.view_points, view_keep=rec.view_keep,
-                            cam_poses=rec.cam_poses, seconds=rec.seconds)  # fmt: skip
-    return rec
+    if not cached.exists():
+        ensure([frames], model)
+    return load(cached, model)
 
 
-def _cache_path(frames: list[Image.Image], model: str) -> Path | None:
-    root = os.environ.get(CACHE_ENV)
-    if not root:
-        return None
+def ensure(sets: list[list[Image.Image]], model: str = DEFAULT_MODEL) -> None:
+    """Make sure every frame set has a cached reconstruction: the missing ones go to Kaggle
+    in one job (backend auto / kaggle), whatever is still missing runs locally."""
+    todo = {}
+    for frames in sets:
+        path = _cache_path(frames, model)
+        if not path.exists():
+            todo[path] = frames
+    if not todo:
+        return
+    if os.environ.get(CACHE_ONLY_ENV) == "1":
+        names = ", ".join(p.name for p in todo)
+        raise RuntimeError(f"no cached reconstruction {names} ({CACHE_ONLY_ENV}=1)")
+    backend = os.environ.get(BACKEND_ENV, "auto")
+    if backend not in BACKENDS:
+        raise ValueError(f"{BACKEND_ENV}={backend!r}; choose from {', '.join(BACKENDS)}")
+    if backend == "here" or (backend == "auto" and shutil.which("nvidia-smi")):
+        for path, frames in todo.items():
+            save(path, _infer(frames, model))
+        return
+    if backend in ("auto", "kaggle"):
+        from floorplan import remote
+
+        try:
+            secs = remote.run(list(todo.items()), model)
+            _notes.append(f"reconstruction ran on Kaggle (GPU job, {secs / 60:.0f} min)")
+        except Exception as err:  # unreachable, no credentials, job failed: run here
+            if backend == "kaggle":
+                raise RuntimeError(f"Kaggle reconstruction failed: {err}") from err
+            _notes.append(f"Kaggle not used ({err}); reconstruction ran on this machine")
+            print(f"floorplan: Kaggle not used ({err}); running the model here", flush=True)
+        todo = {p: f for p, f in todo.items() if not p.exists()}
+    if todo:
+        from floorplan import mvs_local
+
+        for path, frames in todo.items():
+            save(path, mvs_local.reconstruct_safe(frames, model))
+        if backend == "local":
+            _notes.append("reconstruction ran on this machine (low-memory mode)")
+
+
+def pop_notes() -> list[str]:
+    out = list(dict.fromkeys(_notes))
+    _notes.clear()
+    return out
+
+
+def load(path: Path, model: str) -> Reconstruction:
+    z = np.load(path)
+    return Reconstruction(z["view_points"], z["view_keep"], z["cam_poses"],
+                          float(z["seconds"]), model)  # fmt: skip
+
+
+def save(path: Path, rec: Reconstruction) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.stem + ".tmp.npz")  # never leave a half-written cache entry
+    np.savez_compressed(tmp, view_points=rec.view_points, view_keep=rec.view_keep,
+                        cam_poses=rec.cam_poses, seconds=rec.seconds)  # fmt: skip
+    tmp.rename(path)
+
+
+def cache_root() -> Path:
+    return Path(os.environ.get(CACHE_ENV) or DEFAULT_CACHE)
+
+
+def _cache_path(frames: list[Image.Image], model: str) -> Path:
     h = hashlib.sha1(model.encode())
     for f in frames:
         a = np.asarray(f)
         h.update(str(a.shape).encode())
         h.update(a.tobytes())
-    return Path(root) / f"{model}_{len(frames)}_{h.hexdigest()[:16]}.npz"
+    return cache_root() / f"{model}_{len(frames)}_{h.hexdigest()[:16]}.npz"
 
 
 def _infer(frames: list[Image.Image], model: str) -> Reconstruction:

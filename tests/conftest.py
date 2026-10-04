@@ -5,6 +5,20 @@ import pytest
 from PIL import Image
 
 
+@pytest.fixture(autouse=True)
+def no_model_runs(tmp_path, monkeypatch):
+    """No test may upload to Kaggle or start the model: a test that needs a reconstruction
+    fakes it (an empty cache in a temp dir; Kaggle and the local runner raise)."""
+    from floorplan import mvs, mvs_local, remote
+
+    def refuse(*args, **kwargs):
+        raise AssertionError("a test tried to run the reconstruction model")
+
+    monkeypatch.setenv(mvs.CACHE_ENV, str(tmp_path / "recon_cache"))
+    monkeypatch.setattr(remote, "run", refuse)
+    monkeypatch.setattr(mvs_local, "reconstruct_safe", refuse)
+
+
 def _depth_png(path, metres=2.0):
     Image.fromarray(np.full((192, 256), int(metres * 1000), np.uint16)).save(path)
 

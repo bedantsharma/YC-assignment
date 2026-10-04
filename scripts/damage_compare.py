@@ -75,7 +75,8 @@ def main(models: list[str]) -> None:
         lines.append(f"| {model} | {c} | {tp} | {fp} | {fn} | {rec_} | {prec} |")
     lines += [
         "",
-        "| Model | Damage-free photos with no damage reported | Wall-clock (26 photos, 2 calls each, 3 models in parallel) |",
+        "| Model | Damage-free photos with no damage reported "
+        "| Wall-clock (26 photos, 2 calls each, 3 models in parallel) |",
         "|---|---|---|",
     ]
     for model in models:
