@@ -206,7 +206,8 @@ def _from_images(
         f" {100 * VIDEO_SURFACE_M:.0f} cm surface error (provisional until ground truth)",
         *[
             f"window {k.window} chained: scale {k.scale:.3f}, residual "
-            f"{100 * k.residual_m:.1f} cm over {k.pairs} points"
+            f"{100 * k.residual_m:.1f} cm over {k.pairs} points on {k.frames[0]} of "
+            f"{k.frames[1]} shared frames"
             for k in links
         ],
         *labels,

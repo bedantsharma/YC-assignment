@@ -59,3 +59,25 @@ def test_chain_puts_every_window_in_the_first_windows_frame():
 def _similarity(src, dst):
     s, r, t, _, _ = fit_similarity(src.reshape(-1, 3), dst.reshape(-1, 3))
     return s, r, t
+
+
+def test_chain_ignores_shared_frames_the_two_windows_place_differently():
+    # Each shared frame matches pixel for pixel, but the later window puts the first 4 of
+    # its 10 shared frames 3 m away (it misjudged where they sit, e.g. across a doorway).
+    rng = np.random.default_rng(3)
+    n, h, w = 50, 16, 16
+    truth = rng.uniform(-4, 4, (n, h, w, 3))
+    poses = np.tile(np.eye(4), (n, 1, 1))
+
+    def run(idx):
+        pts = truth[idx].copy()
+        if idx[0] == 20:  # second window: its first 4 frames shifted
+            pts[:4] += [3.0, 0.0, 0.0]
+        keep = np.ones((len(idx), h, w), bool)
+        return Reconstruction(0.8 * pts, keep, poses[idx].copy(), 1.0, "fake")
+
+    out, links = chain(n, run, size=30, overlap=10)
+    assert links[0].scale == pytest.approx(1.0, abs=1e-6)
+    assert links[0].residual_m < 1e-6
+    assert links[0].frames == (6, 10)
+    assert np.allclose(out.view_points[30:], 0.8 * truth[30:], atol=1e-6)

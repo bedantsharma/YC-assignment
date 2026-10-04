@@ -8,6 +8,14 @@ in both windows, pixel for pixel, which gives thousands of correspondences: a tr
 similarity fit (scale, rotation, translation) maps each window onto the previous one, so
 every window ends up in the first window's frame and scale.
 
+The two windows can disagree on where some shared frames sit relative to the others (shared
+frames spanning a doorway: each frame matches to 1-2 cm on its own, but one window places
+half of them metres away). One fit over all of them then averages two placements (home C,
+scale 0.54 and 153 cm residual). So each shared frame's own fit is a candidate, the frames
+that agree with the best candidate are kept, and the link is fitted on those only. This
+runs only when the fit over all shared frames is clearly broken (JOINT_OK_M): on healthy
+links, dropping frames loosens the rotation and moved the damage room's walls by 20 cm.
+
 RGB only: the fit uses the model's own outputs, never the recording's poses or depth.
 """
 
@@ -21,6 +29,9 @@ from floorplan.mvs import Reconstruction
 FIT_SAMPLES = 20000  # correspondences used per fit (random subset of the shared pixels)
 TRIM_ROUNDS = 3
 TRIM_KEEP = 0.8  # keep the best 80% of residuals each round
+JOINT_OK_M = 0.10  # fits over all shared frames: 1-7 cm when healthy, 25-153 cm when broken
+AGREE_M = 0.05  # a shared frame agrees with a candidate fit if its median residual is below
+MIN_FRAME_PIXELS = 200  # shared frames with fewer common pixels are not used
 
 
 @dataclass
@@ -29,6 +40,7 @@ class Link:
     scale: float
     residual_m: float  # median distance of the kept correspondences after the fit
     pairs: int
+    frames: tuple[int, int] = (0, 0)  # shared frames that agreed with the fit, of all shared
 
 
 def windows(n: int, size: int, overlap: int) -> list[range]:
@@ -70,6 +82,38 @@ def fit_similarity(
     return s, r, t, float(np.median(err[keep])), int(keep.sum())
 
 
+def fit_shared(
+    src: list[np.ndarray], dst: list[np.ndarray]
+) -> tuple[float, np.ndarray, np.ndarray, float, int, tuple[int, int]]:
+    """Fit over all shared frames, or, if that fit is broken, over the shared frames that
+    agree with each other (one array pair per frame)."""
+    s, r, t, res, m = fit_similarity(np.concatenate(src), np.concatenate(dst))
+    if res <= JOINT_OK_M:
+        return s, r, t, res, m, (len(src), len(src))
+    pairs = [(a, b) for a, b in zip(src, dst, strict=True) if len(a) >= MIN_FRAME_PIXELS]
+    if not pairs:  # too little overlap per frame: fall back to everything
+        pairs = [(np.concatenate(src), np.concatenate(dst))]
+    rng = np.random.default_rng(0)
+    probe = [  # a few pixels per frame to test candidates
+        (a[i], b[i])
+        for a, b in pairs
+        for i in [rng.choice(len(a), min(len(a), 2000), replace=False)]
+    ]
+    best: tuple[int, float, list[int]] = (-1, np.inf, [])
+    for a, b in pairs:
+        s, r, t, _, _ = fit_similarity(a, b)
+        err = [np.median(np.linalg.norm(s * pa @ r.T + t - pb, axis=1)) for pa, pb in probe]
+        agree = [k for k, e in enumerate(err) if e < AGREE_M]
+        score = (len(agree), -float(np.median(err)))
+        if score > (best[0], -best[1]):
+            best = (len(agree), float(np.median(err)), agree)
+    use = best[2] or list(range(len(pairs)))
+    s, r, t, res, m = fit_similarity(
+        np.concatenate([pairs[k][0] for k in use]), np.concatenate([pairs[k][1] for k in use])
+    )
+    return s, r, t, res, m, (len(use), len(src))
+
+
 def transform(rec: Reconstruction, s: float, r: np.ndarray, t: np.ndarray) -> Reconstruction:
     pts = s * rec.view_points @ r.T + t
     poses = rec.cam_poses.copy()
@@ -102,10 +146,9 @@ def chain(
                     both = rec.view_keep[j] & keep[i]
                     src.append(rec.view_points[j][both])
                     dst.append(pts[i][both])
-            src, dst = np.concatenate(src), np.concatenate(dst)
-            s, r, t, res, m = fit_similarity(src, dst)
+            s, r, t, res, m, used = fit_shared(src, dst)
             rec = transform(rec, s, r, t)
-            links.append(Link(k, s, res, m))
+            links.append(Link(k, s, res, m, used))
         for j, i in enumerate(span):
             if i not in pts:
                 pts[i], keep[i], poses[i] = rec.view_points[j], rec.view_keep[j], rec.cam_poses[j]
