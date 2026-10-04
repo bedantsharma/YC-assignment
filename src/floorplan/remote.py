@@ -2,14 +2,14 @@
 this machine when anything here fails).
 
 One job per run, however many frame sets it needs (a long video's windows, every photo
-folder): the sets are written as lossless PNGs into a **private** Kaggle dataset
+folder): the sets are written as JPEGs into a **private** Kaggle dataset
 (`<user>/floorplan-recon-input`, a new version per run, together with a copy of
 src/floorplan), the GPU job `<user>/floorplan-recon` (kaggle_kernel.py) reconstructs each
 with the pipeline's own model code, and its outputs are downloaded into the reconstruction
 cache under the names the laptop computed from the original pixels.
 
-Images are shrunk to UPLOAD_LONG_SIDE before upload (the model works at ~518 px anyway),
-which keeps a 15-photo folder to a few tens of MB.
+Images are shrunk to UPLOAD_LONG_SIDE and saved as quality-95 JPEG before upload (the model
+works at ~518 px anyway): 35 photos as PNG took 5 min to upload, as JPEG about 1 min.
 
 Needs: Kaggle credentials (~/.kaggle/kaggle.json, or KAGGLE_USERNAME / KAGGLE_KEY), the
 `kaggle` command or `uvx`, and network. Typical wall clock: 1-2 min upload, 3-5 min setup
@@ -31,6 +31,7 @@ from PIL import Image
 
 DATASET, KERNEL = "floorplan-recon-input", "floorplan-recon"
 UPLOAD_LONG_SIDE = 1536
+UPLOAD_QUALITY = 95  # JPEG: ~5x smaller than PNG; the model works at ~518 px
 TIMEOUT_ENV = "FLOORPLAN_KAGGLE_TIMEOUT_MIN"
 TIMEOUT_MIN = 40
 POLL_S = 20
@@ -139,7 +140,10 @@ def _write_dataset(data: Path, jobs, model: str, token: str, slug: str) -> None:
             if max(im.size) > UPLOAD_LONG_SIDE:
                 im = im.copy()
                 im.thumbnail((UPLOAD_LONG_SIDE, UPLOAD_LONG_SIDE), Image.LANCZOS)
-            im.save(d / f"{i:04d}.png", compress_level=1)
+            if UPLOAD_QUALITY:
+                im.save(d / f"{i:04d}.jpg", quality=UPLOAD_QUALITY)
+            else:  # lossless
+                im.save(d / f"{i:04d}.png", compress_level=1)
     code = Path(__file__).resolve().parent
     shutil.copytree(code, data / "floorplan", ignore=shutil.ignore_patterns("__pycache__"))
     jobs_json = {"token": token, "model": model, "sets": [p.stem for p, _ in jobs]}

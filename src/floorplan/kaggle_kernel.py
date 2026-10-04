@@ -1,7 +1,7 @@
 """Kaggle GPU job for `remote.py` (never imported by the pipeline; uploaded as the kernel).
 
 Reads the private dataset remote.py just uploaded: `jobs.json` (run token, model, the
-frame sets by cache name), one folder of lossless PNG frames per set, and a copy of
+frame sets by cache name), one folder of frames (JPEG) per set, and a copy of
 src/floorplan. Reconstructs each set with the pipeline's own model code (mvs._infer) and
 writes recon_cache/<cache name>.npz for the laptop to download. Sets are split over the
 GPUs, one process per GPU. Installs follow kaggle/photos_hall (CLAUDE.md, Remote GPU runs).
@@ -18,6 +18,7 @@ TOKEN = "__TOKEN__"  # replaced by remote.py: refuses a stale dataset version
 PI3 = "git+https://github.com/yyfz/Pi3@9fa3ddb3f8d53041f8b2738df404f62223bbaa7b"
 MAPANYTHING_REV = "3d10cf7a3016fc0f9bb13a071ee66c47b10be0d9"
 OUT = Path("/kaggle/working")
+FRAMES = "*.[jp][pn]g"  # .jpg or .png
 WORKER = """
 import sys, time
 from pathlib import Path
@@ -28,7 +29,7 @@ for d in sys.argv[3:]:
     d = Path(d)
     t = time.perf_counter()
     try:
-        frames = [Image.open(p).convert("RGB") for p in sorted(d.glob("*.png"))]
+        frames = [Image.open(p).convert("RGB") for p in sorted(d.glob("*.[jp][pn]g"))]
         save(out / f"{d.name}.npz", _infer(frames, model))
         print(f"ok {d.name} {len(frames)} frames {time.perf_counter() - t:.0f}s", flush=True)
     except Exception as e:
@@ -69,7 +70,7 @@ def main() -> None:
     code = next(p for d in roots for p in d.rglob("floorplan/mvs.py")).parent.parent
     sets = []
     for name in jobs["sets"]:
-        found = [p for d in roots for p in d.rglob(name) if p.is_dir() and any(p.glob("*.png"))]
+        found = [p for d in roots for p in d.rglob(name) if p.is_dir() and any(p.glob(FRAMES))]
         if not found:
             log(f"missing frames for {name}")
             continue

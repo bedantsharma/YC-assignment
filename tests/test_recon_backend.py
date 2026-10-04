@@ -22,7 +22,7 @@ def _rec(frames, model="pi3x"):
 
 
 def test_window_from_ram():
-    assert mvs_local.window_for(16) == 9  # the 16 GB M4: 30-frame passes peaked at 12.8 GB
+    assert mvs_local.window_for(16) == 10  # the 16 GB M4: 30-frame passes peaked at 12.8 GB
     assert mvs_local.window_for(64) == mvs_local.MAX_WINDOW
     assert mvs_local.window_for(4) == mvs_local.MIN_WINDOW
 
@@ -91,3 +91,15 @@ def test_image_sets_match_the_chained_windows():
     assert [s[0] for s in sets] == [0, 20, 40]
     assert all(len(s) == 30 for s in sets) and sets[1][:VIDEO_OVERLAP] == sets[0][-VIDEO_OVERLAP:]
     assert image_sets(imgs[:12], 30) == [imgs[:12]]
+
+
+def test_child_processes_killed_for_memory_retry_smaller(monkeypatch, capsys):
+    """Real child processes: a window that gets killed (as by the OS out of memory) is
+    retried with smaller windows, and the chained result covers every frame."""
+    monkeypatch.setattr(mvs_local, "WORKER_MODULE", "tests.fake_mvs_worker")
+    monkeypatch.setenv(mvs_local.WINDOW_ENV, "10")
+    frames = [Image.new("RGB", (16, 12), (i, 2 * i, 0)) for i in range(9)]
+    rec = REAL_SAFE(frames, "pi3x")
+    assert rec.view_points.shape == (9, 28, 37, 3)
+    err = capsys.readouterr().err
+    assert "killed by signal 9" in err and "retrying with 5 frames per window" in err

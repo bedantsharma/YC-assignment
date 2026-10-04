@@ -13,8 +13,8 @@ Three input tiers produce the same output, with wider intervals as the input get
 
 Results on a real home with ground truth ([docs/benchmark_report.md](docs/benchmark_report.md)):
 LiDAR room sides within 5 cm (median) of the architect's drawing, beat or tie Polycam on 6 of
-8 dimensions; ceilings within 1-2 cm; doors and passages detected (windows not yet); damage,
-flags and repair scope not built. How it works and where it fails:
+8 dimensions; ceilings within 1-2 cm; doors and passages detected (windows not yet); damage regions,
+concealed-damage flags and repair scope on every tier. How it works and where it fails:
 [docs/technical_report.md](docs/technical_report.md).
 
 Status: LiDAR tier works end to end; drift correction is opt-in (`--drift`); the video tier
@@ -32,6 +32,22 @@ the laptop when offline (`uv sync --extra offline`, then
 [ROADMAP.md](ROADMAP.md) for progress and [requirements.md](requirements.md) for the full
 scope.
 
+## Quick start (no Python knowledge needed)
+
+Step by step for a non-engineer, with pictures of the results:
+[docs/plain_guide.md](docs/plain_guide.md). In short, in the Terminal:
+
+```bash
+./setup.sh
+```
+
+```bash
+./run.sh <capture folder or video file> --damage
+```
+
+`setup.sh` installs uv and everything else once (`--lite`: LiDAR tier only); `run.sh` runs
+one capture and opens its plan.
+
 ## Setup
 
 Requires [uv](https://docs.astral.sh/uv/).
@@ -39,8 +55,24 @@ Requires [uv](https://docs.astral.sh/uv/).
 ```bash
 git clone git@github.com:bedantsharma/YC-assignment.git
 cd YC-assignment
-uv sync
+uv sync                                   # LiDAR tier
+uv sync --extra video --extra offline     # + video / photo model, offline damage model
 ```
+
+### Where the video / photo model runs
+
+The video and photo tiers need a large model (Pi3X, 5.4 GB of weights). `--recon` (or
+`FLOORPLAN_RECON_BACKEND`) chooses where it runs; results are cached in
+`outputs/recon_cache/` (`FLOORPLAN_RECON_CACHE`), so a rerun replays without the model.
+
+| `--recon` | What happens |
+|---|---|
+| `auto` (default) | every model pass of the run goes to Kaggle's GPUs in one job (private dataset + private notebook under your Kaggle account; needs `~/.kaggle/kaggle.json` and network); if that fails, runs on this machine |
+| `kaggle` | Kaggle only; an error if it fails |
+| `local` | this machine only, in low-memory mode: small windows of frames, one child process each, retried smaller if one runs out of memory (`src/floorplan/mvs_local.py`) |
+
+`FLOORPLAN_KAGGLE_TIMEOUT_MIN` caps the wait for Kaggle (default 40). `FLOORPLAN_LOCAL_WINDOW`
+fixes the local window size (default from the machine's RAM: 10 frames on 16 GB).
 
 ## Data
 

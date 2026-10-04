@@ -7,31 +7,31 @@ mapped to the code that implements it, the artifact that proves it, and an hones
 spec or its gate; Notes say which) · Not done (deliberately cut; Notes say why).
 
 Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
-[docs/data_plan.md](docs/data_plan.md). Last updated: Sat Oct 3, 2026.
+[docs/data_plan.md](docs/data_plan.md). Last updated: Sun Oct 4, 2026 (night).
 
 ## 1. Capture (brief Part 1)
 
 | ID | Requirement | File path | Artifact | Status | Notes |
 |---|---|---|---|---|---|
-| C1 | Choose a capture route: own iOS app (Route 1) or stock app + protocol (Route 2) | `docs/capture_protocol.md` | The protocol page | In progress | Route 2 chosen: Stray Scanner (LiDAR), native Camera (video, photos) |
-| C2 | One-page protocol a non-engineer follows: what to install, how to walk, how long, what to avoid, how to hand over files | `docs/capture_protocol.md` | The protocol | In progress | Draft covers all five points; runs ~2 pages by choice (clarity over cramming). Built from Polycam, magicplan and Apple RoomPlan guidance. To be tested on a non-engineer |
+| C1 | Choose a capture route: own iOS app (Route 1) or stock app + protocol (Route 2) | `docs/capture_protocol.md` | The protocol page | Done | Route 2: Stray Scanner (LiDAR), native Camera (video, photos) |
+| C2 | One-page protocol a non-engineer follows: what to install, how to walk, how long, what to avoid, how to hand over files | `docs/capture_protocol.md` | The protocol (+ PDF) | Partial | Covers all five points (incl. the 3 s hold at damage); ~2 pages by choice. The friend (non-engineer) captured home C from an earlier draft; the final version is not yet tested on a new person |
 | C3 | Photo tier: 2–8 stills per room, any iPhone 15+, no depth or poses | `src/floorplan/photos.py`, `pipeline._run_photos` (`floorplan run <room folders>`) | `docs/photo_tier.md` §8: rooms from C video stills | Done (C stills only) | Rooms with ≥ 4 photos looking across the room: −7% to +1% area vs LiDAR; 2–3 photos: 25–45% small (warned). Not yet run on real photo folders. **Deliberate deviation:** protocol asks ~15 photos per room (minimum 4); pipeline accepts 2–8 with wider intervals |
 | C4 | Photo tier: one folder per room → the same stitched whole-property plan | `src/floorplan/photos.py` | Per-room plan, rooms named after folders | **Partial** | Folder = room label works; **stitching fails**: joint reconstruction placed rooms 1–2 m wrong, so rooms are laid out side by side with a NOT-stitched warning (`docs/photo_tier.md` §5, §7) |
 | C5 | Video tier: handheld walkthrough clip, any iPhone 15+ | `src/floorplan/video.py`, `mvs.py`, `chunks.py`, `intervals.py` (`floorplan run --tier video`) | `c_home_01` from its `rgb.mp4`: 4 of 4 rooms, 57.3 [52.2, 62.5] vs 59.8 m² LiDAR (`docs/video_scale.md`) | Done (C only) | Pi3X default (CC BY-NC, disclosed), MapAnything fallback (Apache). Camera-app clips (`docs/home_c_new_captures.md`): damage room, 60 frames, within 5 cm of LiDAR on both sides; **5-min whole-house clip fails** (windows fold rooms onto each other; broken chain links fixed, plan still wrong). Not yet run on B |
-| C6 | LiDAR tier: depth, poses, intrinsics on Pro devices | `src/floorplan/capture.py`, `src/floorplan/tiers/lidar.py` *(planned)* | Plans from datasets A, B, C | In progress | Loader done for Stray Scanner and ARKitScenes (common z-up frame) |
-| C7 | Same output contract from every tier | `src/floorplan/output.py` | One result type for all tiers | In progress | |
-| C8 | Intervals widen honestly as sensor data thins | `src/floorplan/lidar.py` (provisional) | Calibration table per tier | In progress | LiDAR: ±1.645σ from measured surface spreads, unobserved walls 5 cm σ. Uncalibrated until Phase 6 |
+| C6 | LiDAR tier: depth, poses, intrinsics on Pro devices | `src/floorplan/capture.py`, `cloud.py`, `levels.py`, `plan2d.py`, `rooms.py`, `lidar.py` | Plans from datasets A (3), B (3), C (3) | Done | Stray Scanner and ARKitScenes loaders (common z-up frame); 7-23 s per capture on the laptop |
+| C7 | Same output contract from every tier | `src/floorplan/output.py` | One `Result` type, one `plan.json` format | Done | All three tiers write the same fields, damage included |
+| C8 | Intervals widen honestly as sensor data thins | `src/floorplan/lidar.py`, `intervals.py`, `scripts/calibration.py` | `docs/benchmark_report.md` (calibration table) | Done | LiDAR from measured surface spreads; video / photo widened by the residual measured against ground truth; 90% coverage of sides 91% / 92% / 80% (photo short of 90%, see G10) |
 | C9 | Device matrix: which tier runs on which hardware, and the accuracy each honestly delivers | `docs/device_matrix.md` | Table in technical report | Done | Accuracy per tier copied from the benchmark report |
 
 ## 2. Output contract, per capture (brief Part 2)
 
 | ID | Requirement | File path | Artifact | Status | Notes |
 |---|---|---|---|---|---|
-| O1 | Per-room plan with walls (dimensioned) | `src/floorplan/plan2d.py`, `rooms.py`, `lidar.py` | `rooms[].walls[]` in JSON + `plan.png` | In progress | LiDAR tier works on datasets A and B; not yet checked against ground truth |
-| O2 | Ceiling height per room | `src/floorplan/levels.py`, `rooms.py` | `rooms[].ceiling_height` | In progress | Per-room floor and ceiling planes (LiDAR); `null` + warning when the ceiling was never scanned |
-| O3 | Floor area per room | `src/floorplan/rooms.py`, `lidar.py` | `rooms[].floor_area` | In progress | LiDAR tier; polygon snapped to wall faces |
+| O1 | Per-room plan with walls (dimensioned) | `src/floorplan/plan2d.py`, `rooms.py`, `lidar.py` | `rooms[].walls[]` in JSON + `plan.png` | Done | Median 5 cm vs home C's ground truth (LiDAR) |
+| O2 | Ceiling height per room | `src/floorplan/levels.py`, `rooms.py` | `rooms[].ceiling_height` | Done | Per-room floor and ceiling planes; `null` + warning when the ceiling was never captured; accuracy in G2 |
+| O3 | Floor area per room | `src/floorplan/rooms.py`, `lidar.py` | `rooms[].floor_area` | Done | Polygon snapped to wall faces; unobserved parts flagged low confidence and widen the interval |
 | O4 | Openings (doors, windows) per room | `src/floorplan/openings.py` | `rooms[].openings[]`, [docs/openings.md](docs/openings.md) | Partial | Doors and passages from gaps in wall elevations, confirmed by seeing through; windows not detected (window walls return points across the glass) |
-| O5 | Stitched multi-room plan: every room placed, connected, dimensioned, correct adjacency | `src/floorplan/lidar.py` (one cloud per capture), `src/floorplan/openings.py` | `adjacency[]` + `plan.png` | In progress | LiDAR and video: rooms placed in one frame by construction; adjacency from detected doors (`c_home_01`: hall-drawing, hall-bedroom; kitchen link missed). Photo tier: not stitched (G7) |
+| O5 | Stitched multi-room plan: every room placed, connected, dimensioned, correct adjacency | `src/floorplan/lidar.py`, `src/floorplan/openings.py` | `adjacency[]` + `plan.png` | Partial | LiDAR and video: rooms placed in one frame by construction; adjacency from detected doors (`c_home_01`: hall-drawing, hall-bedroom; kitchen link missed). Photo tier: not stitched (G7) |
 | O6 | Stitched plan produced from **every** tier, including photos | `src/floorplan/pipeline.py` | LiDAR + video stitched (`c_home_01`); photo not | Partial | LiDAR and video: one stitched plan; photo: rooms measured but not placed |
 | O7 | Per-surface damage regions with class and metric extent | `src/floorplan/damage.py`, `damage_geom.py`, `damage_frames.py`, `damage_lidar.py`, `damage_images.py`, `damage_local.py` (`floorplan run --damage`) | `damage[]`; [docs/damage_hole.md](docs/damage_hole.md), [docs/damage_models.md](docs/damage_models.md), report §8 | Done | All three tiers; staged hole inside the 90% area interval on 7 of 7 runs (LiDAR ×2, LiDAR offline ×2, video ×2, photo). Gemini 3.1 Pro online, Florence-2-base offline fallback. Known: touch grime read as water stain; crack width only from traced cracks |
 | O8 | Concealed-damage flags naming the rule that fired | `src/floorplan/damage_rules.py` | `flags[].rule_id`, `flags[].rule` | Done | Rules R1–R5, R7–R10 (research doc §4) on real runs, e.g. R10 near-wiring on the staged hole; R6 (crack from a door corner) not built |
@@ -39,17 +39,17 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | O10 | Confidence interval on every measurement | `src/floorplan/output.py` | Every number is `{value, lo, hi, unit}` | Done | Enforced by the output types; lo ≤ value ≤ hi checked |
 | O11 | One command per capture | `src/floorplan/cli.py` | `uv run floorplan run <capture>` | Done | LiDAR (8–23 s), video (2 min per room, ~8 min for a 4-room home), photo (25–70 s) on the M4 |
 | O12 | JSON output | `src/floorplan/output.py` | `outputs/<capture>/plan.json` | Done | Own format (no published schema, per Cozmo); fields in README |
-| O13 | Rendered plan a homeowner would recognise (as from Polycam / magicplan) | `src/floorplan/render.py` | `outputs/<capture>/plan.png` | In progress | Dimensioned walls with intervals, room areas and ceilings; no doors or furniture symbols yet |
+| O13 | Rendered plan a homeowner would recognise (as from Polycam / magicplan) | `src/floorplan/render.py` | `outputs/<capture>/plan.png`; examples in `docs/img/deck/` | Partial | Dimensioned walls with intervals, room areas and ceilings, unobserved walls dotted; no door or furniture symbols, damage not drawn on the plan (listed in `plan.json`, outlined on the frames in `damage/`) |
 
 ## 3. Benchmark composition (brief Part 2)
 
 | ID | Requirement | File path | Artifact | Status | Notes |
 |---|---|---|---|---|---|
-| B1 | One multi-room capture: 3+ rooms plus a connector | `data/home_c/` | Dataset C whole-home capture | In progress | Friend capturing Sat; A also covers this at the LiDAR tier |
-| B2 | One furnished room with staged damage spanning two classes | `data/home_c/` | Dataset C damaged room | In progress | Tape "crack" + tea-stain "water damage" |
-| B3 | Same rooms at all three tiers, multi-room set included | `data/home_c/` | Dataset C | In progress | |
-| B4 | At least one room captured twice at the same tier | `data/home_c/`, `data/arkitscenes/` | C damaged room ×2; B room ×3 | In progress | B downloaded |
-| B5 | Laser or tape ground truth on everything | `data/gt/` | `home_c.yaml`, `arkitscenes_421337.yaml` *(planned)* | In progress | B: laser cloud prepared for an architect to measure blind in CAD (not yet sent) (`docs/laser_measurement_sheet.md`); C from friend's tape sketch |
+| B1 | One multi-room capture: 3+ rooms plus a connector | `data/home_c/` | `c_home_01` (LiDAR + video), `c_home_v2` (video) | Done | 4 rooms + hall in home C; A covers it too at the LiDAR tier |
+| B2 | One furnished room with staged damage spanning two damage classes | `data/home_c/` | `c_damage_01/02` (LiDAR), `c_damage_v1/v2` (video), `photos/room1` | Done | Staged hole with exposed wiring in the furnished bedroom: two classes (no water stain is visible in the photos); labels in `data/gt/home_c_damage_labels.json` |
+| B3 | Same rooms at all three tiers, multi-room set included | `data/home_c/` | LiDAR, video and real photos of the same rooms | Done | |
+| B4 | At least one room captured twice at the same tier | `data/home_c/`, `data/arkitscenes/` | C bedroom ×2 (LiDAR) and ×2 (video); B room ×3 | Done | Results in G4 |
+| B5 | Laser or tape ground truth on everything | `data/gt/` | `home_c.json` (architect's drawing + tape), `arkitscenes_421337.json` | Done | C: drawing for room sizes, tape for ceilings, doors, windows and the staged hole. B: architect's measurements from the laser scan (approximate; inner vs outer face unresolved) |
 | B6 | Raw sensor data and measurements submitted | `scripts/fetch_*`, upload bundle *(planned)* | Reproduction bundle | Not started | |
 
 ## 4. Gates (brief Part 2)
@@ -60,7 +60,7 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | G2 | Ceiling height ≤ 1.5 cm per room | `scripts/benchmark.py` | `docs/benchmark_report.md` (ceiling table) | Partly met | LiDAR: 3 of 4 room measurements (−2.1 to +1.0 cm; the dining room misses by 0.6 cm); video 3–14 cm |
 | G3 | Ceiling spread across repeat captures ≤ 1 cm; report says bias or noise | `scripts/benchmark.py` | `docs/benchmark_report.md` (repeatability table + bias/noise sentence) | Partly met | B: 0.3–0.6 cm across 3 scans (met); C bedroom 0.2 / 1.3 cm; report: LiDAR error is cm-level noise, image tiers a corrected model bias |
 | G4 | Repeatability: two captures of a room agree within 1 cm or 0.5% per wall | `scripts/benchmark.py` | `docs/benchmark_report.md` (repeatability table) | **Not met** | C bedroom scans: short side 0.4 cm, long side 4.6 cm; B scans differ 3–110 cm (coverage, fix map 02b); video v1 vs v2 1.2 cm |
-| G5 | Drift: report states the method used on the multi-room capture | `src/floorplan/drift.py` (`floorplan run --drift`) | [docs/drift_ablation.md](docs/drift_ablation.md) (method section) | In progress | "Poses used as-is" is an automatic fail. Built (chunked 2D ICP on walls), **off by default (user decision)**: made the `c_home_01` kitchen and A `c00a170fe1` worse; report must state method + ablation |
+| G5 | Drift: report states the method used on the multi-room capture | `src/floorplan/drift.py` (`floorplan run --drift`) | [docs/drift_ablation.md](docs/drift_ablation.md), technical report §5 | Done | Method stated: chunked 2D ICP on the walls, off by default because the ablation shows it made two plans worse; the default relies on ARKit's own loop closure plus wall measurement at the centre of the drift band (fix loop) |
 | G6 | Drift: ablation of stitched footprint with correction on and off | `scripts/drift_ablation.py` | [docs/drift_ablation.md](docs/drift_ablation.md) (table; no figure yet) | Partial | Mixed: damage-room repeat scans 21 → 1 cm on the short side; A `c00a170fe1` walls lose support |
 | G7 | Photo tier: one stitched plan, correct adjacency, no overlaps, footprint ±8%, calibrated intervals | `scripts/score_photos.py` (vs LiDAR) | `docs/photo_tier.md` §8 | **Not met** | No stitch (rooms side by side, no adjacency); footprint 45.0 vs 59.8 m² on `c_home_01` protocol stills (hall and room2 had 2–3 photos) |
 | G8 | Photo tier: wall lengths ±8% with calibrated intervals | `scripts/benchmark.py`, `scripts/calibration.py` | `docs/benchmark_report.md` | Partly met | vs home C's ground truth: 13 of 22 room sides within ±8% (damage room 0–27 cm; whole-home stills cover rooms only partly); 90% coverage 80% sides / 88% ceilings after widening to the measured error; stills from videos, not real photos |
@@ -89,7 +89,7 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 
 | ID | Requirement | File path | Artifact | Status | Notes |
 |---|---|---|---|---|---|
-| P1 | Incremental commit history | git history | `git log` | In progress | Committing at every working step |
+| P1 | Incremental commit history | git history | `git log` | Done | 130+ small commits, each a working step |
 | P2 | Every design decision defensible live, tools closed | `docs/decisions.md` *(planned)* | Decision log | Not started | |
 
 ## 8. Deliverables
@@ -97,7 +97,7 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | ID | Requirement | File path | Artifact | Status | Notes |
 |---|---|---|---|---|---|
 | D1 | Compliance matrix: requirement → file path → artifact → status | `COMPLIANCE.md` | This file | In progress | Updated as work lands |
-| D2 | Capture route plus device matrix | see C1, C2, C9 | | Not started | |
+| D2 | Capture route plus device matrix | see C1, C2, C9 | `docs/capture_protocol.md`, `docs/device_matrix.md` | Done | |
 | D3 | README: fresh clean machine → running on a new capture in < 15 min, one command per capture | `README.md` | Timed fresh-clone test | In progress | |
 | D4 | Reproduction bundle regenerates every reported number from raw inputs | `scripts/reproduce.sh` | Bundle + script | Done | LiDAR live; video/photo replay the Kaggle model cache; then `gt_table.py`, `benchmark.py` |
 | D5 | Cached model outputs replay deterministically **and** the live path also runs | `src/floorplan/mvs.py` (`FLOORPLAN_RECON_CACHE`, `_ONLY`) | `outputs/kaggle_*/recon_cache` + Kaggle logs | In progress | Replay verified (cache keyed by frame pixels); live path runs on Kaggle T4; on the 16 GB laptop live runs hit memory pressure |
@@ -117,10 +117,10 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 
 | ID | Requirement | File path | Artifact | Status | Notes |
 |---|---|---|---|---|---|
-| K1 | Handheld consumer capture only | `docs/capture_protocol.md` | Protocol | In progress | iPhone only, no tripods or rigs |
+| K1 | Handheld consumer capture only | `docs/capture_protocol.md` | Protocol | Done | iPhone only, no tripods or rigs |
 | K2 | Pretrained models, datasets, APIs allowed with disclosure | `docs/technical_report.md` §10 | Disclosure section | Done | Pi3X (CC BY-NC), MapAnything (Apache 2.0), tested DA3 / SpatialLM, ARKitScenes, Kaggle compute; **hosted: Gemini 3.1 Pro (Vertex AI) for damage detection**, answers cached in `data/damage_cache/` |
-| K3 | Runs without calling our own infrastructure | `src/floorplan/` | Code review | In progress | Hosted APIs allowed by Cozmo (Oct 3); disclose any use, keep a local fallback |
-| K4 | Weights and large binaries fetched by script, not committed | `scripts/fetch_*` | Fetch scripts | In progress | `scripts/fetch_arkitscenes.sh` |
+| K3 | Runs without calling our own infrastructure | `src/floorplan/` | Code review | Done | No own servers. Hosted calls are disclosed and optional: Gemini (damage; Florence-2 on the laptop without network) and Kaggle under the user's own account (video / photo model; low-memory local run without network) |
+| K4 | Weights and large binaries fetched by script, not committed | `setup.sh`, `scripts/fetch_arkitscenes.sh`, `floorplan.damage_local --fetch`, `floorplan.mvs_local --fetch` | Fetch scripts | Done | Weights from Hugging Face into its cache; datasets by script |
 | K5 | Mirrors, glass, wet-look surfaces, low light covered | `docs/technical_report.md` §9 | Known-failure-modes section | Done | Described from the method; low light not measured |
 
 ## Coverage

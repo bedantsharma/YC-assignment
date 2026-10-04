@@ -35,12 +35,13 @@ from PIL import Image
 from floorplan.mvs import MODELS, Reconstruction
 
 WINDOW_ENV = "FLOORPLAN_LOCAL_WINDOW"
-BUDGET = 0.45  # share of RAM the model may use; the rest stays with the system
-MODEL_GB = 4.5  # weights + fixed activations
-PER_VIEW_GB = 0.28  # (12.8 GB - MODEL_GB) / 30 frames
+BUDGET = 0.5  # share of RAM the model may use; the rest stays with the system
+MODEL_GB = 5.5  # Pi3X weights (5.4 GB, float32) + fixed activations
+PER_VIEW_GB = 0.25  # (12.8 GB - MODEL_GB) / 30 frames
 MIN_WINDOW, MAX_WINDOW = 4, 30
 MPS_HIGH, MPS_LOW = "0.8", "0.6"  # shares of the GPU's recommended working set
 NICE = 10
+WORKER_MODULE = "floorplan.mvs_local"  # the child's entry point (tests swap in a fake model)
 
 
 class WorkerFailed(RuntimeError):
@@ -113,7 +114,7 @@ def _worker(frames: list[Image.Image], model: str) -> Reconstruction:
             ),
         }
         res = subprocess.run(
-            [sys.executable, "-m", "floorplan.mvs_local", "--worker", str(src), str(dst), model],
+            [sys.executable, "-m", WORKER_MODULE, "--worker", str(src), str(dst), model],
             env=env, capture_output=True, text=True, preexec_fn=lambda: os.nice(NICE),
         )  # fmt: skip
         if res.returncode != 0 or not dst.exists():
