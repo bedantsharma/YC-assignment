@@ -22,13 +22,15 @@ from floorplan.output import Measurement, Room
 
 Z90 = 1.645
 # (horizontal, vertical), image / LiDAR, per (tier, model). Photo, Pi3X: vertical from six
-# damage-room photo runs (ceilings 0.903-0.948, docs/photo_tier.md); horizontal as video
-# (protocol-style photo runs 0.954 / 0.970 agree). MapAnything photo: video values.
+# damage-room photo runs (ceilings 0.903-0.948, docs/photo_tier.md); horizontal as video.
+# MapAnything photo: video values. Horizontal re-measured (Oct 4) against the LiDAR after
+# its wall fix (docs/fix_declaration.md §6): the first values (0.964 / 0.935) were fitted
+# to LiDAR walls that were 7-8% short. Horizontal varies by room (Pi3X 0.80-0.99).
 SCALE_BIAS = {
-    ("video", "pi3x"): (0.964, 0.914),
-    ("video", "mapanything"): (0.935, 1.035),
-    ("photo", "pi3x"): (0.964, 0.930),
-    ("photo", "mapanything"): (0.935, 1.035),
+    ("video", "pi3x"): (0.890, 0.914),
+    ("video", "mapanything"): (0.877, 1.035),
+    ("photo", "pi3x"): (0.890, 0.930),
+    ("photo", "mapanything"): (0.877, 1.035),
 }
 # 1 sigma, per (tier, model). Photo: rooms with few photos come out small (coverage), so
 # horizontal is wider; vertical from the corrected photo ceilings (0.95-1.02)

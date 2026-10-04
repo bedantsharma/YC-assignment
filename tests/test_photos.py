@@ -55,10 +55,12 @@ def test_photo_tier_end_to_end_names_rooms_from_folders(photo_capture, monkeypat
     # the model is replaced by a synthetic two-room cloud; everything after it is real.
     # Folders (sorted): "Room 1 Kitchen" (3 photos) shot in room A, "Room 2 Hallway" (2) in B
     from floorplan import mvs
+    from floorplan.intervals import SCALE_BIAS
     from floorplan.pipeline import run
     from tests.synthetic import two_rooms
 
-    pts = two_rooms(angle_deg=0.0)
+    h, v = SCALE_BIAS[("photo", "pi3x")]
+    pts = two_rooms(angle_deg=0.0) * [h, h, v]  # as a model would place it: the tier undoes it
     cams = {3: [(1, 1), (2, 2), (3, 1)], 2: [(5, 1), (6, 2)]}
 
     def fake(images, model):
