@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 import pytest
 from PIL import Image
@@ -39,7 +41,7 @@ def test_failed_cache_write_leaves_nothing_behind(tmp_path, monkeypatch):
     rec = mvs.Reconstruction(pts, np.ones((1, 2, 2), bool), np.eye(4)[None], 1.0, "pi3x")
 
     def broken(path, **arrays):
-        open(path, "wb").write(b"half")
+        Path(path).write_bytes(b"half")
         raise OSError("disk full")
 
     monkeypatch.setattr(mvs.np, "savez_compressed", broken)
