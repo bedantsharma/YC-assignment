@@ -235,13 +235,13 @@ the doorway photos; if that fails too, document the photo stitch as failing.
         views merged (`src/floorplan/damage*.py`, `floorplan run --damage`)
   - [ ] Damage keyframes, agreed Oct 4, deferred (today: 40 even time slots, sharpest of 3,
         all sent to Gemini; small damage between slots can be missed):
-    - [ ] Protocol: pause ~3 s about 1 m in front of each damage during the LiDAR / video
+    - [x] Protocol: pause ~3 s about 1 m in front of each damage during the LiDAR / video
           walk; photo tier: 1-2 close-ups per damage *inside the room's folder* (a loose
           close-up has no pose or scale, so it cannot be sized)
-    - [ ] Pause detection: still camera (LiDAR poses; video: frame difference) = the user is
-          showing damage → sample those segments densely
-    - [ ] Coverage keyframes: fewest frames that see every wall patch at least twice, close
-          and near face-on (we know every wall plane and every pose), instead of time slots
+    - [x] Pause detection (LiDAR): still camera or gaze dwell (image centre stays on one
+          close spot) → 2 frames per pause (`damage_frames.py`); video: from pixels, to do
+    - [x] Coverage keyframes (LiDAR): greedy cover of 0.25 m wall patches, 2 views each
+          within 3 m and 60 deg; unseen surfaces warned
     - [ ] Optional: cheap low-res screening pass, full-res only on frames with a hit
   - [ ] Damage on the video and photo tiers (poses from the reconstruction)
   - [ ] Fix map 04: wardrobe / fridge / bookshelf boxes removed from the wall mask

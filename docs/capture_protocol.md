@@ -40,7 +40,7 @@ direction, **turn your whole body**, not just the phone.
    - **Doors and windows:** stand about 2 m from each one, face it straight on so the whole
      frame is in view, and **hold for 2 seconds**.
    - **Damage** (cracks, stains, mould, holes): go to about 1 m away, face it, **hold for
-     2 seconds**.
+     3 seconds**.
 4. Walk through a doorway into the next room and repeat steps 2–3. Visit every room once.
 5. **Finish where you started.** Point at the same thing as in step 1, **hold still for
    3 seconds**, then stop recording.
@@ -70,7 +70,7 @@ In **each room**, take about **15 photos** (minimum 4) in this order:
 | 4 | With your back to the middle of each **wall** | At the opposite wall, whole wall in view |
 | 1 each | 2 m in front of each **door and window** | Straight at it, whole frame in view |
 | 1 each | In each **doorway** | **Into the next room** (this is how rooms get joined) |
-| 1 each | 1 m from any **damage** | Straight at it |
+| 1 each | 1 m from any **damage** (put it in that room's folder) | Straight at it |
 | 2 | The **middle** of the room | Into any areas the other photos missed |
 
 In every photo, make sure you can see **where the walls meet the floor** and, where

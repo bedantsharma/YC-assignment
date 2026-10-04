@@ -83,14 +83,16 @@ code only ever sees this frame. Raw-format notes below are for the loaders only.
   intrinsics or IMU (see `docs/data_plan.md`). Video-tier benchmark numbers use Camera-app video.
 - Keep one room of the friend's capture (C) untouched until the walk-in rehearsal.
 
-## Damage keyframes (agreed Oct 4, deferred; ROADMAP Phase 5)
+## Damage keyframes (ROADMAP Phase 5)
 
-Today the LiDAR damage stage sends 40 evenly spaced sharpest frames to Gemini, so damage
-between slots can be missed. Planned: (1) protocol asks for a ~3 s pause about 1 m from
-each damage (photo tier: close-ups inside the room folder, never loose, since a loose photo
-has no pose or scale); (2) detect still-camera segments and sample them densely;
-(3) coverage-based keyframes from the known wall planes and poses; (4) optional low-res
-screening pass.
+LiDAR tier (`damage_frames.py`, built Oct 4): pause frames first (still camera, or gaze
+dwell: the image centre stays within 15 cm on a close surface for 1.2 s), then greedy
+coverage of wall / ceiling patches (2 views each, within 3 m and 60 deg, not hidden by
+LiDAR depth), up to 60 keyframes. The protocol asks for a 3 s hold at 1 m from each damage;
+photo tier: damage close-ups go inside that room's folder (a loose photo has no pose or
+scale). Still to do: video tier (pauses from pixels by phase correlation; reconstruct pause
+frames first so each has a Pi3X pose), photo tier (every photo to the detector), optional
+low-res screening pass.
 
 ## Working rules
 
