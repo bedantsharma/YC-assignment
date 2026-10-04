@@ -23,7 +23,7 @@ from pathlib import Path
 
 PI3 = "git+https://github.com/yyfz/Pi3@9fa3ddb3f8d53041f8b2738df404f62223bbaa7b"
 MAPANYTHING_REV = "3d10cf7a3016fc0f9bb13a071ee66c47b10be0d9"
-QUEUES = {0: ["all"], 1: ["k8", "k5"]}  # GPU -> photo sets
+QUEUES = {0: ["all"]}  # GPU -> photo sets (k8, k5 ran in version 1)
 OUT = Path("/kaggle/working")
 LOG = OUT / "log.txt"
 _lock = threading.Lock()
