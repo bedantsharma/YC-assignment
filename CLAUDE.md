@@ -17,8 +17,9 @@ land); datasets: `docs/data_plan.md`. Deadline: Mon Oct 5, 10:00 IST.
 - `scripts/fetch_arkitscenes.sh [visit_id] [n_laser]`: download an ARKitScenes venue
 - `uv run scripts/md_to_pdf.py <doc.md> [--skip "Section"]`: render a doc to PDF (PDFs are gitignored)
 - `uv run scripts/prepare_laser_gt.py`: crop + thin B's laser scan for hand measurement in CAD
-- `uv run scripts/gt_table.py`: every method vs home C's ground truth → `docs/gt_comparison.md`
-  (rerun after any geometry or tier change)
+- `uv run scripts/gt_table.py`: every method vs home C's ground truth + head-to-head vs
+  Polycam → `docs/gt_comparison.md` (rerun after any geometry or tier change)
+- `uv run scripts/diag_walls.py [--upper] [capture ...]`: every surface behind each wall
 
 ## Layout
 

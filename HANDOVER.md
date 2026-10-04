@@ -1,42 +1,49 @@
-# Handover (Sun Oct 4, ~17:00 IST)
+# Handover (Sun Oct 4, after the graded fix)
 
 Cozmo AI take-home: iPhone captures → dimensioned floor plans with intervals. Deadline
 **Mon Oct 5, 10:00 IST**. Read in this order: this file, [NEXT-SESSION.md](NEXT-SESSION.md),
 `CLAUDE.md` (commands, layout, data conventions, **Kaggle rules**), the status section of
 `ROADMAP.md`.
 
-Git: pushed through `2fa5f9e` (Sun ~17:00); later commits are local (push only when the
-user asks). 80 tests pass. Every output number is `{value, lo, hi, unit}`.
+Git: pushed through `2fa5f9e`; later commits are local (push only when the user asks).
+82 tests pass. Every output number is `{value, lo, hi, unit}`.
 
-## Headline: ground truth is in, and our walls are short
+## Headline: the graded fix is shipped; we beat or tie Polycam on 75%
 
 `data/gt/home_c.json` (architect's drawing for 4 rooms, friend's tape for ceilings, doors,
 windows, closet, kitchen cabinets, the damage hole; ceiling 11 ft by user decision).
 `uv run scripts/gt_table.py` writes [docs/gt_comparison.md](docs/gt_comparison.md): every
-method vs the truth. Polycam is 6 cm off (median); our LiDAR tier 29 cm, every side short,
-areas −11 to −30%, truth outside our interval in all 6 room measurements; ceilings within
-1 cm. Everything that goes through our plan builder is short; SpatialLM (own wall finder)
-is not. **This is the graded fix for the next session** (plan in NEXT-SESSION.md).
+method vs the truth, plus the head-to-head.
+
+**Fix 09** ([docs/fix_declaration.md](docs/fix_declaration.md), tags `fixloop-before` /
+`fixloop-after`): drift smears each wall into a band 10-40 cm thick and the old snap took
+its inner edge; furniture counted as wall. Walls are now placed at the median of the points
+**2.3 m to ceiling − 0.3 m** behind each edge, own side of interior walls
+(`rooms._centre_of_wall`); the nearest-face snap is kept where no ceiling was seen. LiDAR vs
+truth: median **29 → 5 cm** (Polycam 6); area interval holds the truth in 3 of 6 rooms
+(was 0). Head-to-head: beat or tie **6 of 8 (75%)**. The video scale bias had been fitted to
+the short LiDAR; re-measured (Pi3X 0.964 → 0.890), Camera-app damage clips at 60 frames are
++5 cm. Predictions met within 3 cm on LiDAR; the first video prediction was wrong (recorded).
 
 ## State of each tier
 
 | Tier | Status vs ground truth | Command |
 |---|---|---|
-| LiDAR | Works end to end (9 captures); walls 11-53 cm short, ceilings ±1 cm | `uv run floorplan run <capture>` |
-| Video | Damage-room clips work (as short as LiDAR); 5-min whole-house Camera-app clip fails | `uv sync --extra video`; model runs on **Kaggle** (`kaggle/video_runs`), laptop replays the cache |
+| LiDAR | Works end to end (9 captures); walls median 5 cm vs truth (worst −23 cm, an unscanned wall), ceilings ±1 cm | `uv run floorplan run <capture>` |
+| Video | Damage-room clips work (60 frames: +5 cm, in-sample for the scale bias); 5-min whole-house Camera-app clip fails | `uv sync --extra video`; model runs on **Kaggle** (`kaggle/video_runs`), laptop replays the cache |
 | Photo | Works per room on video stills (median 41 cm off); stitch fails; real photos not run yet | `uv run floorplan run <folder of room folders>` (model on Kaggle) |
 
 ### LiDAR tier
 
 - Segmentation (`plan2d.py`): counter fronts are not walls; door lintels split rooms;
   unscanned-wall floor kept as a flagged low-confidence zone; rooms touching > 2 m merge.
-- **Why rooms come out short** (evidence in `docs/home_c_new_captures.md`,
-  `docs/lidar_model_research.md`): walls appear 2-3 times, 15-50 cm apart (drift), and we
-  snap to the inner copy; kitchen upper cabinets (1 ft deep) and wardrobes count as wall.
+- Walls (fix 09): median of the points above 2.3 m behind each edge; per-wall diagnostic
+  `uv run scripts/diag_walls.py [--upper] [capture ...]`. Side effect: B's room grows
+  1.2-2.2 m² (furniture no longer wall) and its 3 scans agree less (02b; unverified).
 - Drift correction (`--drift`) built and ablated, **off by default (user decision)**
   ([docs/drift_ablation.md](docs/drift_ablation.md)); brief G5 needs the report to say so.
-- Fix loop ([docs/fix_loop.md](docs/fix_loop.md)): Fix 01, 01c, 02 (ceiling) shipped with
-  tags; Fix 02's wall half not shipped (PR #1 closed). Practice runs; the graded fix is next.
+- Fix loop ([docs/fix_loop.md](docs/fix_loop.md)): Fix 01, 01c, 02 (ceiling), **09 (the
+  graded one)** shipped with tags.
 
 ### Video tier (`video.py`, `mvs.py`, `chunks.py`, `intervals.py`)
 
@@ -51,8 +58,13 @@ Write-ups: [docs/video_scale.md](docs/video_scale.md), [docs/home_c_new_captures
 - **Chain fix** (`chunks.fit_shared`): when a link's fit over all shared frames is broken
   (> 10 cm), fit only the shared frames that agree. Broken link 0.54/153 cm → 0.95/0.8 cm;
   healthy links untouched.
-- Camera-app damage-room clips (464×832, chat-compressed), 60 frames: within 5 cm of our
-  LiDAR, so also ~30 cm short of the truth. 30 frames too few for a 2-min clip.
+- Scale bias (`intervals.SCALE_BIAS`) re-measured against the fixed LiDAR (Pi3X 0.890 /
+  0.914, MapAnything 0.877 / 1.035). Horizontal varies by room (0.80-0.99): ±10% per room.
+- Camera-app damage-room clips (464×832, chat-compressed), 60 frames: +6/+6 and +5/+4 cm
+  vs the truth. 30 frames too few for a 2-min clip (+20/+16 cm).
+- **Stale until rerun on Kaggle** (no replay cache): `outputs/c_home_01_video` and the
+  photo runs; `gt_table.py` marks them "pre-fix geometry". The Kaggle dataset
+  `floorplan-video-c2` holds a copy of `src/floorplan` from before the fix: re-upload it.
 - Whole-house clip (5 min, ceiling sweeps): windows fold rooms onto each other; no usable
   plan. The LiDAR recording's own 22 s video gives 4 of 4 rooms.
 
@@ -103,7 +115,7 @@ only on stills cut from the videos (`data/home_c/photos_sim/`). Stitching rooms 
 - Ground truth is transcribed by hand, never produced by our own code.
 - Video/photo tiers on a LiDAR recording read only the RGB video.
 - Every geometry change: `uv run scripts/lidar_summary.py` (all 9 captures, compare with
-  `docs/fix_loop.md`) and `uv run scripts/gt_table.py`.
+  `docs/fix_declaration.md` §5) and `uv run scripts/gt_table.py`.
 - **No model runs on the laptop, ever** (user, Oct 4): Kaggle, dry-run the setup locally
   first (CLAUDE.md), replay the cache locally.
 - Data goes to Kaggle only as private datasets.

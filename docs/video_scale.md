@@ -68,6 +68,11 @@ Findings:
 
 ## Correction (shipped, provisional)
 
+> **Re-measured on Oct 4** ([fix_declaration.md](fix_declaration.md) §6): the values below
+> were fitted to LiDAR walls that were 7-8% short. Against the corrected LiDAR the
+> horizontal bias is Pi3X **0.890**, MapAnything **0.877** (vertical unchanged). The tables
+> below are the original fit, kept as the record.
+
 `src/floorplan/intervals.py`: the z-up cloud is divided by the model's bias (horizontal,
 vertical), fitted on the **damage room only** (c_damage_01 and c_damage_02): Pi3X 0.964 /
 0.914, MapAnything 0.935 / 1.035. Checked for Pi3X on the home's three other rooms, not

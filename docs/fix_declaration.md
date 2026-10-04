@@ -174,3 +174,38 @@ truth, so the damage-room clips agree by construction. The held-out evidence is 
 across the home's other rooms (Pi3X, chained 90-frame run) the horizontal ratio ranges
 0.80–0.99, so a single bias leaves up to ±10% per room (drawing room ≈ +10% after
 correction). Those rooms need the `c_home_01` video rerun on Kaggle (no replay cache).
+
+### Follow-up result (commit `d5b2de1`): as predicted
+
+| Clip | Predicted error (cm) | Measured error long / short (cm) | Area | Ceiling (unchanged) |
+|---|---|---|---|---|
+| v1, 60 frames | +5 / +5 | **+6 / +6** | 14.4 m² (−6%) | 3.48 m (+13 cm) |
+| v2, 60 frames | +4 / +3 | **+5 / +4** | 14.9 m² (−3%) | 3.32 m (−3 cm) |
+| v1, 30 frames | +21 / +16 | +20 / +16 | 16.0 m² (+4%) | 3.50 m (+14 cm) |
+| v2, 30 frames | −2 / −9 | −2 / −9 | 14.2 m² (−8%) | 3.30 m (−5 cm) |
+
+Camera-app damage-room clips: median absolute wall error 30 → 6 cm (in-sample, see above).
+The video tier's summary row in `docs/gt_comparison.md` (median 13 cm) still includes the
+`c_home_01` video plan from before the fix: it has no replay cache and needs a Kaggle rerun
+(as do the photo-tier rows, marked "pre-fix geometry"). A photo-tier test fixture fed the
+tier an unbiased cloud and broke once the correction grew (a 0.9 m door became 1.01 m and
+the rooms merged); it now feeds a biased cloud, as a model would.
+
+## 7. Where this leaves the gate
+
+- **LiDAR vs ground truth: median 5 cm, mean 6 cm, Polycam 6 / 6 cm.**
+- **Head-to-head (H1/H3), our `c_home_01` scan vs Polycam, 8 room dimensions, beat or tie
+  at Polycam's 1 cm precision: 6 of 8 (75%), target ≥ 70%: met** (`uv run
+  scripts/gt_table.py`, last section). Won: kitchen both (8 vs 9, 0 vs 1 cm), dining long
+  (8 vs 12), drawing short (1 vs 7), bedroom short (5 vs 8); tied: bedroom long (4 vs 4).
+  Lost: dining short (23 vs 3 cm, the unscanned west wall), drawing long (6 vs 4). Before
+  the fix: 0 of 8. Caveat: which of the dining room's 18'9" / 18' labels is which side is
+  read from the sort order (long / short), as for every room.
+- Still failing: the dining & living room's short side (−22 cm, a wall never scanned) and
+  area intervals that miss the truth in 3 of 6 rooms (the truth's areas are nominal
+  rectangles; the intervals are not calibrated yet, fix map 03).
+- Unverified side effects: B's room grows 1.2–2.2 m² and its scans agree less (fix map 02b).
+
+Regenerate: `git checkout fixloop-before` / `fixloop-after`, then `uv run
+scripts/lidar_summary.py && uv run scripts/compare_gt_c.py && uv run scripts/gt_table.py`
+(video rows: replay the Kaggle cache, NEXT-SESSION §1.6).

@@ -228,9 +228,37 @@ def table() -> str:
     return "\n".join(lines) + "\n"
 
 
+def head_to_head() -> str:
+    """H1/H3: our whole-home LiDAR scan vs Polycam, dimension by dimension. Closer to the
+    truth wins; a tie is equal error at Polycam's precision (1 cm)."""
+    ours = {r["room"]: r for r in rows if r["source"] == "whole-home scan"}
+    poly = {r["room"]: r for r in rows if r["group"] == "competitor"}
+    lines = ["## Head-to-head: our LiDAR tier (whole-home scan) vs Polycam", "",
+             "Each room dimension: whose error vs the ground truth is smaller. Tie = equal "
+             "at Polycam's precision (1 cm). Brief target: beat or tie on >= 70%.", "",
+             "| Room | Dimension | Truth (m) | Ours (m) | Polycam (m) | Our error (cm) | "
+             "Polycam error (cm) | Result |", "|---|---|---|---|---|---|---|---|"]  # fmt: skip
+    score = []
+    for key, g in GT["rooms"].items():
+        if key not in ours or np.isnan(ours[key]["long"]):
+            continue
+        truth = {"long": max(g["width_m"], g["depth_m"]), "short": min(g["width_m"], g["depth_m"])}
+        for dim, t in truth.items():
+            o, p = round(ours[key][dim], 2), poly[key][dim]
+            eo, ep = round(100 * abs(o - t)), round(100 * abs(p - t))
+            res = "win" if eo < ep else "tie" if eo == ep else "loss"
+            score.append(res)
+            lines.append(f"| {key.replace('_', ' ')} | {dim} | {t:.2f} | {o:.2f} | {p:.2f} | "
+                         f"{eo} | {ep} | {res} |")  # fmt: skip
+    ok = sum(r != "loss" for r in score)
+    lines += ["", f"**Beat or tie: {ok} of {len(score)} ({100 * ok / len(score):.0f}%)** "
+              f"({score.count('win')} wins, {score.count('tie')} ties).", ""]  # fmt: skip
+    return "\n".join(lines)
+
+
 def main() -> None:
     collect()
-    text = table()
+    text = table() + "\n" + head_to_head()
     OUT.write_text(text)
     print(text)
 

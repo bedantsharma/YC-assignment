@@ -3,38 +3,43 @@
 Deadline: **Mon Oct 5, 10:00 IST**. Start: Sat Oct 3, ~12:30 IST. About 45 working hours
 including sleep. Scope and scoring are in [requirements.md](requirements.md).
 
-## Status (Sun Oct 4, ~17:00 IST)
+## Status (Sun Oct 4, after the graded fix)
 
 Read this first when resuming (after [HANDOVER.md](HANDOVER.md) and
 [NEXT-SESSION.md](NEXT-SESSION.md)). Details are in the phase sections below.
 
-**Headline:** home C's ground truth is in (`data/gt/home_c.json`), and
-`uv run scripts/gt_table.py` ([docs/gt_comparison.md](docs/gt_comparison.md)) compares
-every method with it. Polycam is 6 cm off (median); our LiDAR tier 29 cm, every side
-short, areas −11 to −30%, truth outside our intervals in all 6 room measurements;
-ceilings within 1 cm. Everything through our plan builder is short (innermost of doubled
-walls; cabinets as wall). **Next session: the graded fix on this** (NEXT-SESSION.md §1).
-**No model runs on the laptop (user)**: Kaggle runs, the laptop replays cached outputs.
+**Headline:** the graded fix is shipped ([docs/fix_declaration.md](docs/fix_declaration.md),
+tags `fixloop-before` / `fixloop-after`). Against home C's ground truth our LiDAR tier went
+from 29 cm (median, every side short) to **5 cm**; Polycam is 6 cm. **Head-to-head: beat or
+tie on 6 of 8 dimensions (75%, target 70%)**. Camera-app damage-room videos (60 frames):
+−30 → +5 cm after the video scale bias was re-measured (it had been fitted to the short
+LiDAR). `uv run scripts/gt_table.py` ([docs/gt_comparison.md](docs/gt_comparison.md))
+regenerates everything. **No model runs on the laptop (user)**: Kaggle runs, the laptop
+replays cached outputs.
 
-### Progress at a glance (~17 h to the deadline)
+### Progress at a glance
 
 | Phase | Planned for | State |
 |---|---|---|
 | 0 Scaffolding | Sat 12:30 | **Done**, except device-matrix numbers (need the benchmark) |
 | 1 Data | Sat 12:30 | **Mostly done**: A, B, C in; C's ground truth, Polycam, Camera-app videos in; C's real photos arriving; B's laser measurements pending |
-| 2 LiDAR backend | Sat 17:00 | **Done**: 9 captures end to end; **walls short vs ground truth** (next fix) |
-| 3 Repeatability, drift | Sat 23:00 | **Half**: drift built + ablated (off); repeatability table and `fixloop-before` tag not done |
+| 2 LiDAR backend | Sat 17:00 | **Done**: 9 captures end to end; 5 cm median vs ground truth after fix 09 |
+| 3 Repeatability, drift | Sat 23:00 | **Half**: drift built + ablated (off); damage-room scans now agree to 1 / 5 cm; repeatability table not done |
 | 4 Video, photo | Sun 08:00 | **Done with gaps**: video works on room clips, fails on the 5-min house clip; photo per room on video stills, stitch fails |
 | 5 Openings, damage, scope | Sun 14:00 | Not started (ground truth for doors, windows and the hole now in) |
-| 6 Benchmark, fix loop | Sun 18:00 | **Started**: `scripts/gt_table.py` is the benchmark on C; graded fix declared next session |
+| 6 Benchmark, fix loop | Sun 18:00 | **Fix loop done**; head-to-head met (75%); `scripts/gt_table.py` is the benchmark on C; `benchmark.py` (all gates, repeatability) not done |
 | 7 Reports, packaging | Mon 01:00 | Not started |
 
 By score weight: walk-in (30%) runs all three tiers (photo per room); fix loop (25%) has
 its failing gate (short walls) and evidence; benchmark (15%) has ground truth on C;
-head-to-head (10%) is currently lost to Polycam (6 vs 29 cm) until the fix lands;
+head-to-head (10%) met: 6 of 8 beat or tie (5 vs 6 cm median);
 compliance (10%), capture route (5%) and commit history (5%) on track.
 
 - **Done today (Sun)**
+  - **Graded fix** ([docs/fix_declaration.md](docs/fix_declaration.md)): walls measured
+    above 2.3 m at the centre of the drift smear, own side of interior walls; LiDAR 29 →
+    5 cm; video scale bias re-measured (Pi3X 0.964 → 0.890); head-to-head added to
+    `gt_table.py`
   - Camera-app videos + Polycam ([docs/home_c_new_captures.md](docs/home_c_new_captures.md)):
     damage-room clips within 5 cm of our LiDAR; house clip fails (windows fold rooms);
     chained-window links repaired (`chunks.fit_shared`)
@@ -48,11 +53,10 @@ compliance (10%), capture route (5%) and commit history (5%) on track.
     optionally a 1-2 min eye-level house video
   - Architect: blind laser measurements for B → `data/gt/arkitscenes_421337.yaml`
 - **Next, in order** (details: [NEXT-SESSION.md](NEXT-SESSION.md))
-  1. Graded fix: walls snap to the innermost surface (tag `fixloop-before`, declare, fix,
-     `gt_table.py` before/after)
-  2. Real photo folders on Kaggle; head-to-head table (ours vs Polycam vs GT)
-  3. Openings (doors, windows) and Phase 5 damage (the bedroom hole)
-  4. Phase 7 reports and packaging
+  1. Kaggle rerun of the plans with no replay cache (`c_home_01` video, photo stills;
+     re-upload `src/floorplan` to the dataset first) + the real photo folders
+  2. Openings (doors, windows) and Phase 5 damage (the bedroom hole)
+  3. Phase 7 reports and packaging (benchmark report, interval calibration, compliance)
 
 ## Principles
 
@@ -228,12 +232,12 @@ Why: fix loop is 25% and benchmark accuracy is 15%; both need everything above t
 
 - [ ] `scripts/benchmark.py`: every gate at every tier vs ground truth; repeatability table;
       timing; one command regenerates all numbers
-- [ ] Pick the single worst failing gate; write `docs/fix_declaration.md` (failing number,
+- [x] Pick the single worst failing gate; write `docs/fix_declaration.md` (failing number,
       root-cause hypothesis + evidence, fix, predicted number) **before** fixing
-- [ ] Ship the fix; rerun; record before vs after (both regenerable from tags
+- [x] Ship the fix; rerun; record before vs after (both regenerable from tags
       `fixloop-before` / `fixloop-after`)
-- [ ] Head-to-head on our own data (Cozmo confirmed): our LiDAR vs Polycam on 2 rooms of
-      dataset C, both vs tape; beat or tie on ≥ 70% of dimensions
+- [x] Head-to-head on our own data (Cozmo confirmed): our LiDAR vs Polycam on 4 rooms of
+      dataset C vs the architect's drawing; beat or tie on 6 of 8 (75%)
 
 Exit: fix-loop bundle complete with honest numbers.
 

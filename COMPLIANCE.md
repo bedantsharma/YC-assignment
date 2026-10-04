@@ -71,19 +71,19 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 
 | ID | Requirement | File path | Artifact | Status | Notes |
 |---|---|---|---|---|---|
-| H1 | Our LiDAR-tier output vs a consumer app on 2 benchmark rooms | `scripts/head_to_head.py` *(planned)* | Comparison table | Not started | Polycam free tier, on dataset C (Cozmo confirmed: compare on our own data) |
+| H1 | Our LiDAR-tier output vs a consumer app on 2 benchmark rooms | `scripts/gt_table.py` (head-to-head section) | `docs/gt_comparison.md` | Done | Polycam (RoomPlan) on dataset C, 4 rooms vs the architect's drawing |
 | H2 | Name the app and version; submit its export | `data/home_c/polycam/` | Polycam 2D plan | In progress | Polycam (Apple RoomPlan) screenshots in `data/home_c/polycam/` (gitignored: address), numbers in `data/gt/home_c_polycam.json`; app version not recorded yet. Our LiDAR is 6-57 cm smaller on every dimension (`docs/home_c_new_captures.md`); tape decides |
-| H3 | One table, our error and theirs, dimension by dimension; beat or tie on ≥ 70% | `scripts/head_to_head.py` *(planned)* | Table in benchmark report | Not started | |
+| H3 | One table, our error and theirs, dimension by dimension; beat or tie on ≥ 70% | `scripts/gt_table.py` | `docs/gt_comparison.md` (last section) | **Met** | Beat or tie 6 of 8 (75%) after fix 09 (0 of 8 before); ties judged at Polycam's 1 cm precision |
 
 ## 6. Fix loop (brief Part 4)
 
 | ID | Requirement | File path | Artifact | Status | Notes |
 |---|---|---|---|---|---|
-| F1 | Fix declaration: single worst gate, with the failing number | `docs/fix_loop.md` | Declaration page | In progress | Fix 01 (room segmentation, 2/4 rooms found) declared before fixing; the submitted entry is picked in Phase 6 (worst brief gate) |
-| F2 | Root-cause hypothesis and the evidence for it | `docs/fix_loop.md` | Declaration page | In progress | Fix 01: three causes traced stage by stage; first hypothesis recorded as wrong |
-| F3 | The fix and the predicted number after it | `docs/fix_loop.md` | Declaration page | In progress | Fix 01: 4/4 and hall IoU predicted and met; kitchen area predicted wrong, explained |
-| F4 | Shipped fix with before and after runs, both regenerable, and a readable diff | git tags `fix01-before` / `fix01-after` | Before/after numbers + diff | In progress | Fix 01 shipped: `git diff fix01-before fix01-after`; `scripts/lidar_summary.py` + `scripts/score_rooms.py` regenerate both |
-| F5 | If it falls short of the gate, the report says why | `docs/fix_declaration.md` *(planned)* | Post-mortem section | Not started | |
+| F1 | Fix declaration: single worst gate, with the failing number | `docs/fix_declaration.md` | Declaration page | Done | Walls 11-53 cm short vs home C's ground truth (median 29 cm), truth outside the area interval in 6 of 6; declared before fixing (commit `520904a`) |
+| F2 | Root-cause hypothesis and the evidence for it | `docs/fix_declaration.md` §2, `scripts/diag_walls.py` | Declaration page | Done | Drift smears walls into 10-40 cm bands, snap takes the inner edge; furniture counts as wall; 4 candidate rules compared offline; `--drift` checked and ruled out |
+| F3 | The fix and the predicted number after it | `docs/fix_declaration.md` §3-4, §6 | Declaration page | Done | Per-room predictions met within 3 cm on LiDAR; video prediction wrong (scale bias fitted to the short LiDAR), follow-up declared and met |
+| F4 | Shipped fix with before and after runs, both regenerable, and a readable diff | git tags `fixloop-before` / `fixloop-after` | Before/after numbers + diff | Done | `git diff fixloop-before fixloop-after -- src`; `scripts/lidar_summary.py`, `scripts/compare_gt_c.py`, `scripts/gt_table.py` regenerate both |
+| F5 | If it falls short of the gate, the report says why | `docs/fix_declaration.md` §7 | Post-mortem section | Done | Remaining: dining short side −23 cm (unscanned wall), area intervals miss 3 of 6 (uncalibrated), B grows unverified |
 
 ## 7. Process (brief Part 5)
 
