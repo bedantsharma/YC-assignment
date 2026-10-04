@@ -1,0 +1,63 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "v1",
+ "image_sha1": "c70963762e48e08dcfd614eca4bdba449fe41a64",
+ "raw": "[\n  {\n    \"label\": \"outlet_or_switch\",\n    \"box_2d\": [766, 199, 822, 248],\n    \"confidence\": 0.95,\n    \"note\": \"Switchboard on wall\"\n  },\n  {\n    \"label\": \"outlet_or_switch\",\n    \"box_2d\": [788, 492, 816, 523],\n    \"confidence\": 0.92,\n    \"note\": \"Small switchboard on wall\"\n  },\n  {\n    \"label\": \"exposed_wiring\",\n    \"box_2d\": [153, 822, 429, 863],\n    \"confidence\": 0.98,\n    \"note\": \"Exposed electrical wires dangling from wall point\"\n  },\n  {\n    \"label\": \"hole\",\n    \"box_2d\": [270, 812, 312, 852],\n    \"confidence\": 0.88,\n    \"note\": \"Hole in wall surface for wiring\"\n  },\n  {\n    \"label\": \"hole\",\n    \"box_2d\": [831, 852, 862, 868],\n    \"confidence\": 0.82,\n    \"note\": \"Small hole in wall surface\"\n  }\n]",
+ "items": [
+  {
+   "label": "outlet_or_switch",
+   "box_2d": [
+    766,
+    199,
+    822,
+    248
+   ],
+   "confidence": 0.95,
+   "note": "Switchboard on wall"
+  },
+  {
+   "label": "outlet_or_switch",
+   "box_2d": [
+    788,
+    492,
+    816,
+    523
+   ],
+   "confidence": 0.92,
+   "note": "Small switchboard on wall"
+  },
+  {
+   "label": "exposed_wiring",
+   "box_2d": [
+    153,
+    822,
+    429,
+    863
+   ],
+   "confidence": 0.98,
+   "note": "Exposed electrical wires dangling from wall point"
+  },
+  {
+   "label": "hole",
+   "box_2d": [
+    270,
+    812,
+    312,
+    852
+   ],
+   "confidence": 0.88,
+   "note": "Hole in wall surface for wiring"
+  },
+  {
+   "label": "hole",
+   "box_2d": [
+    831,
+    852,
+    862,
+    868
+   ],
+   "confidence": 0.82,
+   "note": "Small hole in wall surface"
+  }
+ ]
+}

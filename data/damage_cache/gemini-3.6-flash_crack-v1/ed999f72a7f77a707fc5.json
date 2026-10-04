@@ -1,0 +1,22 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "crack-v1",
+ "image_sha1": "52e28179be8826cd01880f8dbf6d7c1d812a2623",
+ "raw": "[\n  {\n    \"points\": [\n      [280, 560],\n      [315, 558]\n    ],\n    \"confidence\": 0.5,\n    \"note\": \"faint vertical hairline crack on wall plaster\"\n  }\n]",
+ "items": [
+  {
+   "points": [
+    [
+     280,
+     560
+    ],
+    [
+     315,
+     558
+    ]
+   ],
+   "confidence": 0.5,
+   "note": "faint vertical hairline crack on wall plaster"
+  }
+ ]
+}

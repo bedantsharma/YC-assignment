@@ -1,0 +1,42 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "crack-v1",
+ "image_sha1": "309ec3c8c1cb223840666f9c7a5c6102cd676293",
+ "raw": "[\n  {\n    \"points\": [\n      [362, 482],\n      [382, 422],\n      [438, 380],\n      [545, 365],\n      [650, 390],\n      [720, 435],\n      [751, 495]\n    ],\n    \"confidence\": 0.85,\n    \"note\": \"curved hairline crack around hole\"\n  }\n]",
+ "items": [
+  {
+   "points": [
+    [
+     362,
+     482
+    ],
+    [
+     382,
+     422
+    ],
+    [
+     438,
+     380
+    ],
+    [
+     545,
+     365
+    ],
+    [
+     650,
+     390
+    ],
+    [
+     720,
+     435
+    ],
+    [
+     751,
+     495
+    ]
+   ],
+   "confidence": 0.85,
+   "note": "curved hairline crack around hole"
+  }
+ ]
+}

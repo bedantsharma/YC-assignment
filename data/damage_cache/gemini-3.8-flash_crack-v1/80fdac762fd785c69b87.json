@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.8-flash",
+ "prompt_version": "crack-v1",
+ "image_sha1": "c52867dd0cbbf0cc69ceabc19f11139020ec50e9",
+ "raw": "[\n  {\"points\": [[607, 446], [647, 448], [689, 454], [728, 463]], \"confidence\": 0.75, \"note\": \"vertical hairline crack extending below electrical opening\"}\n]",
+ "items": [
+  {
+   "points": [
+    [
+     607,
+     446
+    ],
+    [
+     647,
+     448
+    ],
+    [
+     689,
+     454
+    ],
+    [
+     728,
+     463
+    ]
+   ],
+   "confidence": 0.75,
+   "note": "vertical hairline crack extending below electrical opening"
+  }
+ ]
+}

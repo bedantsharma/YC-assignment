@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.8-flash",
+ "prompt_version": "v1",
+ "image_sha1": "9a9c0493cb02c5749462996c1f4da877a945b246",
+ "raw": "[\n  {\"box_2d\": [427, 868, 486, 999], \"confidence\": 0.98, \"label\": \"outlet_or_switch\", \"note\": \"electrical switch panel on wall\"},\n  {\"box_2d\": [63, 925, 108, 994], \"confidence\": 0.85, \"label\": \"outlet_or_switch\", \"note\": \"circular junction box cover plate on wall\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    427,
+    868,
+    486,
+    999
+   ],
+   "confidence": 0.98,
+   "label": "outlet_or_switch",
+   "note": "electrical switch panel on wall"
+  },
+  {
+   "box_2d": [
+    63,
+    925,
+    108,
+    994
+   ],
+   "confidence": 0.85,
+   "label": "outlet_or_switch",
+   "note": "circular junction box cover plate on wall"
+  }
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "crack-v1",
+ "image_sha1": "c52867dd0cbbf0cc69ceabc19f11139020ec50e9",
+ "raw": "[\n  {\n    \"points\": [\n      [615, 452],\n      [660, 454],\n      [705, 456],\n      [745, 458]\n    ],\n    \"confidence\": 0.75,\n    \"note\": \"hairline crack extending downwards from socket hole\"\n  }\n]",
+ "items": [
+  {
+   "points": [
+    [
+     615,
+     452
+    ],
+    [
+     660,
+     454
+    ],
+    [
+     705,
+     456
+    ],
+    [
+     745,
+     458
+    ]
+   ],
+   "confidence": 0.75,
+   "note": "hairline crack extending downwards from socket hole"
+  }
+ ]
+}

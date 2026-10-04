@@ -1,0 +1,19 @@
+{
+ "model": "gemini-3.8-flash",
+ "prompt_version": "v1",
+ "image_sha1": "40cae604e01e3011b1cd262f944495a3975a8bea",
+ "raw": "[\n  {\"box_2d\": [900, 670, 960, 712], \"confidence\": 0.98, \"label\": \"outlet_or_switch\", \"note\": \"wall switch plate\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    900,
+    670,
+    960,
+    712
+   ],
+   "confidence": 0.98,
+   "label": "outlet_or_switch",
+   "note": "wall switch plate"
+  }
+ ]
+}

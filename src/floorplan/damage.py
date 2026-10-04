@@ -31,6 +31,7 @@ import hashlib
 import io
 import json
 import os
+import warnings
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -90,6 +91,7 @@ Answer with a JSON list (empty list if there are no cracks). Each item has:
 0-1000, in order along the crack, following its bends;
 "confidence": 0 to 1, how sure you are this is a real crack;
 "note": a few words (e.g. "hairline crack from hole towards ceiling")."""
+MAX_CRACKS = 15  # more traced cracks in one image = the model looping (seen: 54 on a clean wall)
 CRACK_PX = 3  # width of a traced crack's mask: hairlines are thinner than this anyway
 
 RING_FRAC = 0.25  # ring of background around a box, as a share of the box size
@@ -140,7 +142,14 @@ def detect(
         dets.append(det)
     if crack_pass:
         cracks = []
-        for item in parse_crack_items(_cached_call(data, CRACK_PROMPT, CRACK_PROMPT_VERSION)):
+        traced = parse_crack_items(_cached_call(data, CRACK_PROMPT, CRACK_PROMPT_VERSION))
+        if len(traced) > MAX_CRACKS:
+            warnings.warn(
+                f"{image_id}: crack pass returned {len(traced)} cracks; discarded as degenerate",
+                stacklevel=2,
+            )
+            traced = []
+        for item in traced:
             if item["confidence"] < MIN_SCORE:
                 continue
             pts = [(x / 1000 * w, y / 1000 * h) for y, x in item["points"]]

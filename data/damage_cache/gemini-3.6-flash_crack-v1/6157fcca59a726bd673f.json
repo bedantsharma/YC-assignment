@@ -1,0 +1,44 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "crack-v1",
+ "image_sha1": "2e0896ad96b55b64c45961c287a3feff219c9efb",
+ "raw": "[\n  {\n    \"points\": [\n      [518, 226],\n      [545, 245],\n      [566, 258]\n    ],\n    \"confidence\": 0.65,\n    \"note\": \"hairline crack on plaster wall\"\n  },\n  {\n    \"points\": [\n      [595, 228],\n      [612, 238],\n      [626, 249]\n    ],\n    \"confidence\": 0.6,\n    \"note\": \"faint hairline crack on plaster wall\"\n  }\n]",
+ "items": [
+  {
+   "points": [
+    [
+     518,
+     226
+    ],
+    [
+     545,
+     245
+    ],
+    [
+     566,
+     258
+    ]
+   ],
+   "confidence": 0.65,
+   "note": "hairline crack on plaster wall"
+  },
+  {
+   "points": [
+    [
+     595,
+     228
+    ],
+    [
+     612,
+     238
+    ],
+    [
+     626,
+     249
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack on plaster wall"
+  }
+ ]
+}

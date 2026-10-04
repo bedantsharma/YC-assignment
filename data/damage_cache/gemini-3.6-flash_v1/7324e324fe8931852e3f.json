@@ -1,0 +1,63 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "v1",
+ "image_sha1": "67f9724fbf632241434cc2134a9a46d42893ecdf",
+ "raw": "[\n  {\"box_2d\": [0, 132, 222, 261], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"Exposed electrical wiring hanging from wall cutout\"},\n  {\"box_2d\": [555, 215, 583, 228], \"label\": \"hole\", \"confidence\": 0.85, \"note\": \"Small hole or wall opening\"},\n  {\"box_2d\": [708, 284, 762, 355], \"label\": \"water_stain\", \"confidence\": 0.8, \"note\": \"Water staining on lower wall behind bed area\"},\n  {\"box_2d\": [745, 402, 782, 430], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"Electrical switch/socket plate\"},\n  {\"box_2d\": [541, 550, 564, 584], \"label\": \"outlet_or_switch\", \"confidence\": 0.9, \"note\": \"Electrical switch/socket plate\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    0,
+    132,
+    222,
+    261
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "Exposed electrical wiring hanging from wall cutout"
+  },
+  {
+   "box_2d": [
+    555,
+    215,
+    583,
+    228
+   ],
+   "label": "hole",
+   "confidence": 0.85,
+   "note": "Small hole or wall opening"
+  },
+  {
+   "box_2d": [
+    708,
+    284,
+    762,
+    355
+   ],
+   "label": "water_stain",
+   "confidence": 0.8,
+   "note": "Water staining on lower wall behind bed area"
+  },
+  {
+   "box_2d": [
+    745,
+    402,
+    782,
+    430
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "Electrical switch/socket plate"
+  },
+  {
+   "box_2d": [
+    541,
+    550,
+    564,
+    584
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.9,
+   "note": "Electrical switch/socket plate"
+  }
+ ]
+}

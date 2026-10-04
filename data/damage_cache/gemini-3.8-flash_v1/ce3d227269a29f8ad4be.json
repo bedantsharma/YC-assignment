@@ -1,0 +1,52 @@
+{
+ "model": "gemini-3.8-flash",
+ "prompt_version": "v1",
+ "image_sha1": "9593c4522d21bcbfbeaed658ed86ae042b87396a",
+ "raw": "[\n  {\"box_2d\": [289, 198, 344, 244], \"confidence\": 0.95, \"label\": \"outlet_or_switch\", \"note\": \"light switch panel\"},\n  {\"box_2d\": [316, 484, 343, 516], \"confidence\": 0.9, \"label\": \"outlet_or_switch\", \"note\": \"light switch panel\"},\n  {\"box_2d\": [340, 835, 372, 852], \"confidence\": 0.85, \"label\": \"hole\", \"note\": \"uncovered hole/penetration in wall\"},\n  {\"box_2d\": [602, 916, 730, 999], \"confidence\": 0.7, \"label\": \"water_stain\", \"note\": \"damp discoloration along lower wall\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    289,
+    198,
+    344,
+    244
+   ],
+   "confidence": 0.95,
+   "label": "outlet_or_switch",
+   "note": "light switch panel"
+  },
+  {
+   "box_2d": [
+    316,
+    484,
+    343,
+    516
+   ],
+   "confidence": 0.9,
+   "label": "outlet_or_switch",
+   "note": "light switch panel"
+  },
+  {
+   "box_2d": [
+    340,
+    835,
+    372,
+    852
+   ],
+   "confidence": 0.85,
+   "label": "hole",
+   "note": "uncovered hole/penetration in wall"
+  },
+  {
+   "box_2d": [
+    602,
+    916,
+    730,
+    999
+   ],
+   "confidence": 0.7,
+   "label": "water_stain",
+   "note": "damp discoloration along lower wall"
+  }
+ ]
+}

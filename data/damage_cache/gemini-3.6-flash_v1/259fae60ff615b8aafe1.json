@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "v1",
+ "image_sha1": "5e5668270d39b78c6f093876e43a56b4d2f4e1e8",
+ "raw": "[\n  {\"box_2d\": [737, 420, 788, 460], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"Switchboard plate under picture frame\"},\n  {\"box_2d\": [766, 715, 795, 755], \"label\": \"outlet_or_switch\", \"confidence\": 0.92, \"note\": \"Switchboard plate next to right door\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    737,
+    420,
+    788,
+    460
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "Switchboard plate under picture frame"
+  },
+  {
+   "box_2d": [
+    766,
+    715,
+    795,
+    755
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.92,
+   "note": "Switchboard plate next to right door"
+  }
+ ]
+}

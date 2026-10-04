@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "v1",
+ "image_sha1": "30b03df53b747e81a64342f7f71707feb426e4d7",
+ "raw": "[\n  {\"box_2d\": [808, 21, 846, 88], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"Switch plate on wall\"},\n  {\"box_2d\": [947, 839, 999, 902], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"Switch plate on right wall\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    808,
+    21,
+    846,
+    88
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "Switch plate on wall"
+  },
+  {
+   "box_2d": [
+    947,
+    839,
+    999,
+    902
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "Switch plate on right wall"
+  }
+ ]
+}

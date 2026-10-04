@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "2e0896ad96b55b64c45961c287a3feff219c9efb",
+ "raw": "[\n  {\n    \"label\": \"outlet_or_switch\",\n    \"box_2d\": [\n      486,\n      55,\n      542,\n      129\n    ],\n    \"confidence\": 0.95,\n    \"note\": \"outlet_or_switch\"\n  },\n  {\n    \"label\": \"outlet_or_switch\",\n    \"box_2d\": [\n      356,\n      659,\n      411,\n      700\n    ],\n    \"confidence\": 0.95,\n    \"note\": \"outlet_or_switch\"\n  }\n]",
+ "items": [
+  {
+   "label": "outlet_or_switch",
+   "box_2d": [
+    486,
+    55,
+    542,
+    129
+   ],
+   "confidence": 0.95,
+   "note": "outlet_or_switch"
+  },
+  {
+   "label": "outlet_or_switch",
+   "box_2d": [
+    356,
+    659,
+    411,
+    700
+   ],
+   "confidence": 0.95,
+   "note": "outlet_or_switch"
+  }
+ ]
+}

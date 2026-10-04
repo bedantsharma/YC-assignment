@@ -1,0 +1,19 @@
+{
+ "model": "gemini-3.8-flash",
+ "prompt_version": "v1",
+ "image_sha1": "c5a52d80166a453bdead8ec1d730b2557320a3d4",
+ "raw": "[\n  {\"box_2d\": [59, 263, 103, 278], \"confidence\": 0.72, \"label\": \"hole\", \"note\": \"chipped plaster / missing piece at corner joint\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    59,
+    263,
+    103,
+    278
+   ],
+   "confidence": 0.72,
+   "label": "hole",
+   "note": "chipped plaster / missing piece at corner joint"
+  }
+ ]
+}

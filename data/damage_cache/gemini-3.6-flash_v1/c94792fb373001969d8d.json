@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "v1",
+ "image_sha1": "d67c5dc71066d0b33fc47980d9c4ba514ab20c7c",
+ "raw": "[\n  {\"box_2d\": [430, 828, 471, 880], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"Switchboard plate mounted on the wall.\"},\n  {\"box_2d\": [125, 554, 155, 571], \"label\": \"hole\", \"confidence\": 0.85, \"note\": \"Small circular wall hole or unmasked electrical opening.\"},\n  {\"box_2d\": [338, 645, 400, 745], \"label\": \"water_stain\", \"confidence\": 0.9, \"note\": \"Yellowish-brown damp or water stain patch on wall surface.\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    430,
+    828,
+    471,
+    880
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "Switchboard plate mounted on the wall."
+  },
+  {
+   "box_2d": [
+    125,
+    554,
+    155,
+    571
+   ],
+   "label": "hole",
+   "confidence": 0.85,
+   "note": "Small circular wall hole or unmasked electrical opening."
+  },
+  {
+   "box_2d": [
+    338,
+    645,
+    400,
+    745
+   ],
+   "label": "water_stain",
+   "confidence": 0.9,
+   "note": "Yellowish-brown damp or water stain patch on wall surface."
+  }
+ ]
+}

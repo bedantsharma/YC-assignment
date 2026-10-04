@@ -1,0 +1,19 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "v1",
+ "image_sha1": "96959bb7715be7934715fd6dea8ab4d2d8b5bbf6",
+ "raw": "[\n  {\n    \"box_2d\": [479, 366, 517, 428],\n    \"label\": \"outlet_or_switch\",\n    \"confidence\": 0.98,\n    \"note\": \"White electrical switchboard mounted on wall\"\n  }\n]",
+ "items": [
+  {
+   "box_2d": [
+    479,
+    366,
+    517,
+    428
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.98,
+   "note": "White electrical switchboard mounted on wall"
+  }
+ ]
+}

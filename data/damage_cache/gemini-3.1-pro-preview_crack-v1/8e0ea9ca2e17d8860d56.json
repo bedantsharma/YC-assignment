@@ -1,0 +1,112 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "crack-v1",
+ "image_sha1": "142204e4697b021be635f57eeca884170ac1e4e1",
+ "raw": "[\n  {\"points\": [[542, 291], [552, 268], [561, 248], [567, 231], [573, 215]], \"confidence\": 0.8, \"note\": \"crack radiating from hole\"},\n  {\"points\": [[561, 291], [573, 291], [585, 288], [594, 281], [600, 271]], \"confidence\": 0.8, \"note\": \"crack radiating from hole\"},\n  {\"points\": [[542, 301], [552, 308], [561, 318], [567, 331], [573, 344]], \"confidence\": 0.8, \"note\": \"crack radiating from hole\"},\n  {\"points\": [[561, 301], [573, 301], [585, 304], [594, 311], [600, 321]], \"confidence\": 0.8, \"note\": \"crack radiating from hole\"}\n]",
+ "items": [
+  {
+   "points": [
+    [
+     542,
+     291
+    ],
+    [
+     552,
+     268
+    ],
+    [
+     561,
+     248
+    ],
+    [
+     567,
+     231
+    ],
+    [
+     573,
+     215
+    ]
+   ],
+   "confidence": 0.8,
+   "note": "crack radiating from hole"
+  },
+  {
+   "points": [
+    [
+     561,
+     291
+    ],
+    [
+     573,
+     291
+    ],
+    [
+     585,
+     288
+    ],
+    [
+     594,
+     281
+    ],
+    [
+     600,
+     271
+    ]
+   ],
+   "confidence": 0.8,
+   "note": "crack radiating from hole"
+  },
+  {
+   "points": [
+    [
+     542,
+     301
+    ],
+    [
+     552,
+     308
+    ],
+    [
+     561,
+     318
+    ],
+    [
+     567,
+     331
+    ],
+    [
+     573,
+     344
+    ]
+   ],
+   "confidence": 0.8,
+   "note": "crack radiating from hole"
+  },
+  {
+   "points": [
+    [
+     561,
+     301
+    ],
+    [
+     573,
+     301
+    ],
+    [
+     585,
+     304
+    ],
+    [
+     594,
+     311
+    ],
+    [
+     600,
+     321
+    ]
+   ],
+   "confidence": 0.8,
+   "note": "crack radiating from hole"
+  }
+ ]
+}

@@ -1,0 +1,19 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "v1",
+ "image_sha1": "3f223444720a186a6c738f5ca669b9d54cd2d719",
+ "raw": "[\n  {\"box_2d\": [236, 550, 492, 593], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"Exposed electrical wiring hanging from the wall surface\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    236,
+    550,
+    492,
+    593
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "Exposed electrical wiring hanging from the wall surface"
+  }
+ ]
+}

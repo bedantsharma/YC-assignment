@@ -1,0 +1,26 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "crack-v1",
+ "image_sha1": "5d00075e3b04bc7c56536eb908be80ce62d28777",
+ "raw": "[\n  {\n    \"points\": [\n      [468, 425],\n      [470, 442],\n      [473, 458]\n    ],\n    \"confidence\": 0.75,\n    \"note\": \"hairline crack extending from window frame corner\"\n  }\n]",
+ "items": [
+  {
+   "points": [
+    [
+     468,
+     425
+    ],
+    [
+     470,
+     442
+    ],
+    [
+     473,
+     458
+    ]
+   ],
+   "confidence": 0.75,
+   "note": "hairline crack extending from window frame corner"
+  }
+ ]
+}

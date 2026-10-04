@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.8-flash",
+ "prompt_version": "v1",
+ "image_sha1": "13364da76837e3706b1e2722ed7922cc1ff4c5c9",
+ "raw": "[\n  {\"box_2d\": [518, 427, 563, 464], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"switch panel on wall\"},\n  {\"box_2d\": [534, 713, 564, 755], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"switch panel on wall\"},\n  {\"box_2d\": [237, 435, 269, 450], \"label\": \"outlet_or_switch\", \"confidence\": 0.7, \"note\": \"junction box cover plate\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    518,
+    427,
+    563,
+    464
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "switch panel on wall"
+  },
+  {
+   "box_2d": [
+    534,
+    713,
+    564,
+    755
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "switch panel on wall"
+  },
+  {
+   "box_2d": [
+    237,
+    435,
+    269,
+    450
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.7,
+   "note": "junction box cover plate"
+  }
+ ]
+}

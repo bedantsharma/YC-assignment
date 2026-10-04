@@ -1,0 +1,764 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "crack-v1",
+ "image_sha1": "96959bb7715be7934715fd6dea8ab4d2d8b5bbf6",
+ "raw": "[\n  {\"points\": [[521, 311], [537, 314]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[625, 540], [634, 537]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[561, 559], [572, 554]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[645, 605], [650, 605]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[650, 650], [655, 650]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 733], [604, 735]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 819], [615, 821]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 802], [615, 802]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 785], [615, 785]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 768], [615, 768]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 751], [615, 751]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 716], [615, 716]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 699], [615, 699]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 682], [615, 682]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 665], [615, 665]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 648], [615, 648]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 631], [615, 631]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 614], [615, 614]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 597], [615, 597]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 580], [615, 580]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 563], [615, 563]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 546], [615, 546]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 529], [615, 529]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 512], [615, 512]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 495], [615, 495]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 478], [615, 478]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 461], [615, 461]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 444], [615, 444]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 427], [615, 427]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 410], [615, 410]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 393], [615, 393]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 376], [615, 376]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 359], [615, 359]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 342], [615, 342]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 325], [615, 325]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 308], [615, 308]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 291], [615, 291]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 274], [615, 274]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 257], [615, 257]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 240], [615, 240]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 223], [615, 223]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 206], [615, 206]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 189], [615, 189]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 172], [615, 172]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 155], [615, 155]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 138], [615, 138]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 121], [615, 121]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 104], [615, 104]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 87], [615, 87]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 70], [615, 70]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 53], [615, 53]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 36], [615, 36]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 19], [615, 19]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"},\n  {\"points\": [[604, 2], [615, 2]], \"confidence\": 0.6, \"note\": \"faint hairline crack\"}\n]",
+ "items": [
+  {
+   "points": [
+    [
+     521,
+     311
+    ],
+    [
+     537,
+     314
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     625,
+     540
+    ],
+    [
+     634,
+     537
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     561,
+     559
+    ],
+    [
+     572,
+     554
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     645,
+     605
+    ],
+    [
+     650,
+     605
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     650,
+     650
+    ],
+    [
+     655,
+     650
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     733
+    ],
+    [
+     604,
+     735
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     819
+    ],
+    [
+     615,
+     821
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     802
+    ],
+    [
+     615,
+     802
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     785
+    ],
+    [
+     615,
+     785
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     768
+    ],
+    [
+     615,
+     768
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     751
+    ],
+    [
+     615,
+     751
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     716
+    ],
+    [
+     615,
+     716
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     699
+    ],
+    [
+     615,
+     699
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     682
+    ],
+    [
+     615,
+     682
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     665
+    ],
+    [
+     615,
+     665
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     648
+    ],
+    [
+     615,
+     648
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     631
+    ],
+    [
+     615,
+     631
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     614
+    ],
+    [
+     615,
+     614
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     597
+    ],
+    [
+     615,
+     597
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     580
+    ],
+    [
+     615,
+     580
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     563
+    ],
+    [
+     615,
+     563
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     546
+    ],
+    [
+     615,
+     546
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     529
+    ],
+    [
+     615,
+     529
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     512
+    ],
+    [
+     615,
+     512
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     495
+    ],
+    [
+     615,
+     495
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     478
+    ],
+    [
+     615,
+     478
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     461
+    ],
+    [
+     615,
+     461
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     444
+    ],
+    [
+     615,
+     444
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     427
+    ],
+    [
+     615,
+     427
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     410
+    ],
+    [
+     615,
+     410
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     393
+    ],
+    [
+     615,
+     393
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     376
+    ],
+    [
+     615,
+     376
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     359
+    ],
+    [
+     615,
+     359
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     342
+    ],
+    [
+     615,
+     342
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     325
+    ],
+    [
+     615,
+     325
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     308
+    ],
+    [
+     615,
+     308
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     291
+    ],
+    [
+     615,
+     291
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     274
+    ],
+    [
+     615,
+     274
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     257
+    ],
+    [
+     615,
+     257
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     240
+    ],
+    [
+     615,
+     240
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     223
+    ],
+    [
+     615,
+     223
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     206
+    ],
+    [
+     615,
+     206
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     189
+    ],
+    [
+     615,
+     189
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     172
+    ],
+    [
+     615,
+     172
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     155
+    ],
+    [
+     615,
+     155
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     138
+    ],
+    [
+     615,
+     138
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     121
+    ],
+    [
+     615,
+     121
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     104
+    ],
+    [
+     615,
+     104
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     87
+    ],
+    [
+     615,
+     87
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     70
+    ],
+    [
+     615,
+     70
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     53
+    ],
+    [
+     615,
+     53
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     36
+    ],
+    [
+     615,
+     36
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     19
+    ],
+    [
+     615,
+     19
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  },
+  {
+   "points": [
+    [
+     604,
+     2
+    ],
+    [
+     615,
+     2
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "faint hairline crack"
+  }
+ ]
+}

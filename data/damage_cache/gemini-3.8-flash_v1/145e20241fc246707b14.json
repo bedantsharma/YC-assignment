@@ -1,0 +1,63 @@
+{
+ "model": "gemini-3.8-flash",
+ "prompt_version": "v1",
+ "image_sha1": "67f9724fbf632241434cc2134a9a46d42893ecdf",
+ "raw": "[\n  {\"box_2d\": [0, 132, 220, 260], \"confidence\": 0.95, \"label\": \"exposed_wiring\", \"note\": \"exposed wiring and conduit coming out of wall\"},\n  {\"box_2d\": [557, 215, 583, 229], \"confidence\": 0.88, \"label\": \"hole\", \"note\": \"hole in wall surface\"},\n  {\"box_2d\": [743, 401, 782, 429], \"confidence\": 0.96, \"label\": \"outlet_or_switch\", \"note\": \"electrical switch plate\"},\n  {\"box_2d\": [542, 550, 567, 584], \"confidence\": 0.96, \"label\": \"outlet_or_switch\", \"note\": \"electrical switch plate\"},\n  {\"box_2d\": [708, 292, 755, 351], \"confidence\": 0.72, \"label\": \"water_stain\", \"note\": \"discoloration stain on wall above bed\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    0,
+    132,
+    220,
+    260
+   ],
+   "confidence": 0.95,
+   "label": "exposed_wiring",
+   "note": "exposed wiring and conduit coming out of wall"
+  },
+  {
+   "box_2d": [
+    557,
+    215,
+    583,
+    229
+   ],
+   "confidence": 0.88,
+   "label": "hole",
+   "note": "hole in wall surface"
+  },
+  {
+   "box_2d": [
+    743,
+    401,
+    782,
+    429
+   ],
+   "confidence": 0.96,
+   "label": "outlet_or_switch",
+   "note": "electrical switch plate"
+  },
+  {
+   "box_2d": [
+    542,
+    550,
+    567,
+    584
+   ],
+   "confidence": 0.96,
+   "label": "outlet_or_switch",
+   "note": "electrical switch plate"
+  },
+  {
+   "box_2d": [
+    708,
+    292,
+    755,
+    351
+   ],
+   "confidence": 0.72,
+   "label": "water_stain",
+   "note": "discoloration stain on wall above bed"
+  }
+ ]
+}

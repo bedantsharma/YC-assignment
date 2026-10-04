@@ -1,0 +1,74 @@
+{
+ "model": "gemini-3.8-flash",
+ "prompt_version": "v1",
+ "image_sha1": "1c5b0473cf991b79d2c5cb4cf308c56e1908bf38",
+ "raw": "[\n  {\"box_2d\": [848, 82, 908, 110], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"Switch plate on lower left wall\"},\n  {\"box_2d\": [554, 246, 584, 294], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"Switch plate on back wall\"},\n  {\"box_2d\": [88, 468, 122, 486], \"label\": \"outlet_or_switch\", \"confidence\": 0.8, \"note\": \"Junction box cover near ceiling\"},\n  {\"box_2d\": [91, 649, 123, 667], \"label\": \"outlet_or_switch\", \"confidence\": 0.8, \"note\": \"Junction box cover near ceiling\"},\n  {\"box_2d\": [752, 988, 806, 1000], \"label\": \"outlet_or_switch\", \"confidence\": 0.9, \"note\": \"Switch plate on right wall edge\"},\n  {\"box_2d\": [734, 600, 794, 631], \"label\": \"water_stain\", \"confidence\": 0.7, \"note\": \"Faint water stain below right edge of window sill\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    848,
+    82,
+    908,
+    110
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "Switch plate on lower left wall"
+  },
+  {
+   "box_2d": [
+    554,
+    246,
+    584,
+    294
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "Switch plate on back wall"
+  },
+  {
+   "box_2d": [
+    88,
+    468,
+    122,
+    486
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.8,
+   "note": "Junction box cover near ceiling"
+  },
+  {
+   "box_2d": [
+    91,
+    649,
+    123,
+    667
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.8,
+   "note": "Junction box cover near ceiling"
+  },
+  {
+   "box_2d": [
+    752,
+    988,
+    806,
+    1000
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.9,
+   "note": "Switch plate on right wall edge"
+  },
+  {
+   "box_2d": [
+    734,
+    600,
+    794,
+    631
+   ],
+   "label": "water_stain",
+   "confidence": 0.7,
+   "note": "Faint water stain below right edge of window sill"
+  }
+ ]
+}

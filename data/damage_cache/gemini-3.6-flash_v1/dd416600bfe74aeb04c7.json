@@ -1,0 +1,63 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "v1",
+ "image_sha1": "309ec3c8c1cb223840666f9c7a5c6102cd676293",
+ "raw": "[\n  {\"box_2d\": [375, 431, 632, 570], \"label\": \"hole\", \"confidence\": 0.95, \"note\": \"Hole in wall surface exposing plaster cavity\"},\n  {\"box_2d\": [460, 442, 603, 558], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"Exposed electrical wires inside wall cavity\"},\n  {\"box_2d\": [341, 363, 753, 535], \"label\": \"crack\", \"confidence\": 0.75, \"note\": \"Circular crack in paint/plaster surrounding hole\"},\n  {\"box_2d\": [553, 0, 655, 50], \"label\": \"peeling_paint\", \"confidence\": 0.85, \"note\": \"Peeling paint and plaster chip on wall surface\"},\n  {\"box_2d\": [706, 64, 753, 104], \"label\": \"peeling_paint\", \"confidence\": 0.8, \"note\": \"Small spot of flaking or peeling paint\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    375,
+    431,
+    632,
+    570
+   ],
+   "label": "hole",
+   "confidence": 0.95,
+   "note": "Hole in wall surface exposing plaster cavity"
+  },
+  {
+   "box_2d": [
+    460,
+    442,
+    603,
+    558
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "Exposed electrical wires inside wall cavity"
+  },
+  {
+   "box_2d": [
+    341,
+    363,
+    753,
+    535
+   ],
+   "label": "crack",
+   "confidence": 0.75,
+   "note": "Circular crack in paint/plaster surrounding hole"
+  },
+  {
+   "box_2d": [
+    553,
+    0,
+    655,
+    50
+   ],
+   "label": "peeling_paint",
+   "confidence": 0.85,
+   "note": "Peeling paint and plaster chip on wall surface"
+  },
+  {
+   "box_2d": [
+    706,
+    64,
+    753,
+    104
+   ],
+   "label": "peeling_paint",
+   "confidence": 0.8,
+   "note": "Small spot of flaking or peeling paint"
+  }
+ ]
+}

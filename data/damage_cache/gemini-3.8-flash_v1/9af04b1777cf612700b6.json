@@ -1,0 +1,74 @@
+{
+ "model": "gemini-3.8-flash",
+ "prompt_version": "v1",
+ "image_sha1": "142204e4697b021be635f57eeca884170ac1e4e1",
+ "raw": "[\n  {\"box_2d\": [56, 381, 185, 461], \"label\": \"outlet_or_switch\", \"confidence\": 0.88, \"note\": \"round junction or ceiling/wall rose plate\"},\n  {\"box_2d\": [112, 409, 996, 541], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"exposed electrical cables hanging down wall\"},\n  {\"box_2d\": [487, 308, 802, 443], \"label\": \"exposed_wiring\", \"confidence\": 0.89, \"note\": \"exposed coiled white electrical wire\"},\n  {\"box_2d\": [550, 63, 630, 168], \"label\": \"hole\", \"confidence\": 0.94, \"note\": \"hole in wall around conduit/pipe\"},\n  {\"box_2d\": [556, 204, 608, 286], \"label\": \"hole\", \"confidence\": 0.92, \"note\": \"hole in wall surface\"},\n  {\"box_2d\": [477, 298, 607, 439], \"label\": \"hole\", \"confidence\": 0.91, \"note\": \"hole in wall behind pipe and wire bundle\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    56,
+    381,
+    185,
+    461
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.88,
+   "note": "round junction or ceiling/wall rose plate"
+  },
+  {
+   "box_2d": [
+    112,
+    409,
+    996,
+    541
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "exposed electrical cables hanging down wall"
+  },
+  {
+   "box_2d": [
+    487,
+    308,
+    802,
+    443
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.89,
+   "note": "exposed coiled white electrical wire"
+  },
+  {
+   "box_2d": [
+    550,
+    63,
+    630,
+    168
+   ],
+   "label": "hole",
+   "confidence": 0.94,
+   "note": "hole in wall around conduit/pipe"
+  },
+  {
+   "box_2d": [
+    556,
+    204,
+    608,
+    286
+   ],
+   "label": "hole",
+   "confidence": 0.92,
+   "note": "hole in wall surface"
+  },
+  {
+   "box_2d": [
+    477,
+    298,
+    607,
+    439
+   ],
+   "label": "hole",
+   "confidence": 0.91,
+   "note": "hole in wall behind pipe and wire bundle"
+  }
+ ]
+}

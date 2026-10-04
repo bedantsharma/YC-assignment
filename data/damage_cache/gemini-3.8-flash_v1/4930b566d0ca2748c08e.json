@@ -1,0 +1,52 @@
+{
+ "model": "gemini-3.8-flash",
+ "prompt_version": "v1",
+ "image_sha1": "c70963762e48e08dcfd614eca4bdba449fe41a64",
+ "raw": "[\n  {\"box_2d\": [155, 820, 429, 866], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"dangling electrical wiring from wall hole\"},\n  {\"box_2d\": [766, 199, 822, 247], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"switch plate\"},\n  {\"box_2d\": [788, 492, 818, 524], \"label\": \"outlet_or_switch\", \"confidence\": 0.9, \"note\": \"switch plate\"},\n  {\"box_2d\": [829, 851, 862, 868], \"label\": \"hole\", \"confidence\": 0.8, \"note\": \"hole in wall exposing conduit\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    155,
+    820,
+    429,
+    866
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "dangling electrical wiring from wall hole"
+  },
+  {
+   "box_2d": [
+    766,
+    199,
+    822,
+    247
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "switch plate"
+  },
+  {
+   "box_2d": [
+    788,
+    492,
+    818,
+    524
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.9,
+   "note": "switch plate"
+  },
+  {
+   "box_2d": [
+    829,
+    851,
+    862,
+    868
+   ],
+   "label": "hole",
+   "confidence": 0.8,
+   "note": "hole in wall exposing conduit"
+  }
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.8-flash",
+ "prompt_version": "v1",
+ "image_sha1": "aca6912b840e1d82a7cfc68ea8c1b052c0c478c9",
+ "raw": "[\n  {\"box_2d\": [212, 420, 264, 458], \"confidence\": 0.95, \"label\": \"outlet_or_switch\", \"note\": \"wall switch plate between doors\"},\n  {\"box_2d\": [234, 714, 267, 755], \"confidence\": 0.95, \"label\": \"outlet_or_switch\", \"note\": \"wall switch plate to the right of the door\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    212,
+    420,
+    264,
+    458
+   ],
+   "confidence": 0.95,
+   "label": "outlet_or_switch",
+   "note": "wall switch plate between doors"
+  },
+  {
+   "box_2d": [
+    234,
+    714,
+    267,
+    755
+   ],
+   "confidence": 0.95,
+   "label": "outlet_or_switch",
+   "note": "wall switch plate to the right of the door"
+  }
+ ]
+}

@@ -246,3 +246,17 @@ def test_crack_pass_replaces_overlapping_main_crack(tmp_path, monkeypatch):
     traced = next(d for d in dets if d.source == "crack")
     assert traced.mask_source == "polyline"
     assert traced.points[0] == pytest.approx((150.0, 75.0))
+
+
+def test_crack_pass_drops_degenerate_answers(tmp_path, monkeypatch):
+    monkeypatch.setenv(damage.CACHE_ENV, str(tmp_path))
+    monkeypatch.setenv(damage.CACHE_ONLY_ENV, "1")
+    image = Image.new("RGB", (1000, 500), (180, 180, 180))
+    data, model = damage._encode(image), damage.model_name()
+    loop = [{"points": [[500, 10 * k], [500, 10 * k + 5]], "confidence": 0.9} for k in range(40)]
+    for items, version in (([], damage.PROMPT_VERSION), (loop, damage.CRACK_PROMPT_VERSION)):
+        path = damage._cache_path(data, model, version)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps({"items": items}))
+    with pytest.warns(UserWarning, match="degenerate"):
+        assert damage.detect("x", image, crack_pass=True) == []

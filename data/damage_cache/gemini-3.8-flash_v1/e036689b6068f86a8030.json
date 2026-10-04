@@ -1,0 +1,52 @@
+{
+ "model": "gemini-3.8-flash",
+ "prompt_version": "v1",
+ "image_sha1": "9752b8f639b10fe21acbc2460ad245b7cdbb9c64",
+ "raw": "[\n  {\"box_2d\": [0, 774, 150, 877], \"confidence\": 0.95, \"label\": \"exposed_wiring\", \"note\": \"exposed wiring dangling from wall/ceiling corner\"},\n  {\"box_2d\": [499, 208, 552, 253], \"confidence\": 0.95, \"label\": \"outlet_or_switch\", \"note\": \"switch plate\"},\n  {\"box_2d\": [521, 490, 549, 520], \"confidence\": 0.92, \"label\": \"outlet_or_switch\", \"note\": \"switch plate\"},\n  {\"box_2d\": [550, 838, 582, 854], \"confidence\": 0.85, \"label\": \"hole\", \"note\": \"small hole in plaster\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    0,
+    774,
+    150,
+    877
+   ],
+   "confidence": 0.95,
+   "label": "exposed_wiring",
+   "note": "exposed wiring dangling from wall/ceiling corner"
+  },
+  {
+   "box_2d": [
+    499,
+    208,
+    552,
+    253
+   ],
+   "confidence": 0.95,
+   "label": "outlet_or_switch",
+   "note": "switch plate"
+  },
+  {
+   "box_2d": [
+    521,
+    490,
+    549,
+    520
+   ],
+   "confidence": 0.92,
+   "label": "outlet_or_switch",
+   "note": "switch plate"
+  },
+  {
+   "box_2d": [
+    550,
+    838,
+    582,
+    854
+   ],
+   "confidence": 0.85,
+   "label": "hole",
+   "note": "small hole in plaster"
+  }
+ ]
+}

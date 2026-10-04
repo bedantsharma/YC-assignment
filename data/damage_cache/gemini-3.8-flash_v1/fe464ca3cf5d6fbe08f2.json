@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.8-flash",
+ "prompt_version": "v1",
+ "image_sha1": "3f223444720a186a6c738f5ca669b9d54cd2d719",
+ "raw": "[\n  {\"box_2d\": [238, 553, 496, 592], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"exposed wiring hanging from wall\"},\n  {\"box_2d\": [859, 562, 894, 579], \"label\": \"outlet_or_switch\", \"confidence\": 0.7, \"note\": \"low-level wall outlet or junction\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    238,
+    553,
+    496,
+    592
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "exposed wiring hanging from wall"
+  },
+  {
+   "box_2d": [
+    859,
+    562,
+    894,
+    579
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.7,
+   "note": "low-level wall outlet or junction"
+  }
+ ]
+}

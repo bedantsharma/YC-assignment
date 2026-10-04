@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.8-flash",
+ "prompt_version": "v1",
+ "image_sha1": "30b03df53b747e81a64342f7f71707feb426e4d7",
+ "raw": "[\n  {\"box_2d\": [807, 21, 846, 86], \"confidence\": 0.95, \"label\": \"outlet_or_switch\", \"note\": \"electrical switch plate on left wall\"},\n  {\"box_2d\": [948, 839, 1000, 903], \"confidence\": 0.95, \"label\": \"outlet_or_switch\", \"note\": \"electrical switch plate on right wall\"},\n  {\"box_2d\": [85, 652, 136, 671], \"confidence\": 0.75, \"label\": \"hole\", \"note\": \"hole or missing plaster at cornice above cabinet\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    807,
+    21,
+    846,
+    86
+   ],
+   "confidence": 0.95,
+   "label": "outlet_or_switch",
+   "note": "electrical switch plate on left wall"
+  },
+  {
+   "box_2d": [
+    948,
+    839,
+    1000,
+    903
+   ],
+   "confidence": 0.95,
+   "label": "outlet_or_switch",
+   "note": "electrical switch plate on right wall"
+  },
+  {
+   "box_2d": [
+    85,
+    652,
+    136,
+    671
+   ],
+   "confidence": 0.75,
+   "label": "hole",
+   "note": "hole or missing plaster at cornice above cabinet"
+  }
+ ]
+}

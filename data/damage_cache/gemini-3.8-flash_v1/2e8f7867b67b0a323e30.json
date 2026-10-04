@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.8-flash",
+ "prompt_version": "v1",
+ "image_sha1": "c52867dd0cbbf0cc69ceabc19f11139020ec50e9",
+ "raw": "[\n  {\"box_2d\": [537, 442, 595, 538], \"confidence\": 0.95, \"label\": \"hole\", \"note\": \"Hole in wall surface exposing electrical wiring\"},\n  {\"box_2d\": [546, 450, 588, 530], \"confidence\": 0.95, \"label\": \"exposed_wiring\", \"note\": \"Exposed electrical wiring inside hole\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    537,
+    442,
+    595,
+    538
+   ],
+   "confidence": 0.95,
+   "label": "hole",
+   "note": "Hole in wall surface exposing electrical wiring"
+  },
+  {
+   "box_2d": [
+    546,
+    450,
+    588,
+    530
+   ],
+   "confidence": 0.95,
+   "label": "exposed_wiring",
+   "note": "Exposed electrical wiring inside hole"
+  }
+ ]
+}

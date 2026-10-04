@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "v1",
+ "image_sha1": "1c5b0473cf991b79d2c5cb4cf308c56e1908bf38",
+ "raw": "[\n  {\"box_2d\": [554, 246, 582, 292], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"Wall switch plate near sewing machine\"},\n  {\"box_2d\": [850, 83, 908, 110], \"label\": \"outlet_or_switch\", \"confidence\": 0.93, \"note\": \"Wall socket near lower left floor\"},\n  {\"box_2d\": [757, 991, 804, 1000], \"label\": \"outlet_or_switch\", \"confidence\": 0.85, \"note\": \"Wall switch plate on far right wall edge\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    554,
+    246,
+    582,
+    292
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "Wall switch plate near sewing machine"
+  },
+  {
+   "box_2d": [
+    850,
+    83,
+    908,
+    110
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.93,
+   "note": "Wall socket near lower left floor"
+  },
+  {
+   "box_2d": [
+    757,
+    991,
+    804,
+    1000
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.85,
+   "note": "Wall switch plate on far right wall edge"
+  }
+ ]
+}

@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.8-flash",
+ "prompt_version": "v1",
+ "image_sha1": "f32a057704d767a072412199cd9a895ef22d2440",
+ "raw": "[\n  {\"box_2d\": [635, 831, 678, 882], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"electrical switch plate on wall\"},\n  {\"box_2d\": [345, 553, 372, 569], \"label\": \"hole\", \"confidence\": 0.82, \"note\": \"small hole in plaster wall\"},\n  {\"box_2d\": [553, 642, 707, 747], \"label\": \"water_stain\", \"confidence\": 0.85, \"note\": \"damp or water stain on wall\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    635,
+    831,
+    678,
+    882
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "electrical switch plate on wall"
+  },
+  {
+   "box_2d": [
+    345,
+    553,
+    372,
+    569
+   ],
+   "label": "hole",
+   "confidence": 0.82,
+   "note": "small hole in plaster wall"
+  },
+  {
+   "box_2d": [
+    553,
+    642,
+    707,
+    747
+   ],
+   "label": "water_stain",
+   "confidence": 0.85,
+   "note": "damp or water stain on wall"
+  }
+ ]
+}

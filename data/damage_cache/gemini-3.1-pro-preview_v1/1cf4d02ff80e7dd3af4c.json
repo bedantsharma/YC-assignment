@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "c52867dd0cbbf0cc69ceabc19f11139020ec50e9",
+ "raw": "[\n  {\n    \"label\": \"hole\",\n    \"box_2d\": [\n      537,\n      446,\n      593,\n      537\n    ],\n    \"confidence\": 0.95,\n    \"note\": \"hole\"\n  },\n  {\n    \"label\": \"exposed_wiring\",\n    \"box_2d\": [\n      546,\n      451,\n      589,\n      530\n    ],\n    \"confidence\": 0.9,\n    \"note\": \"exposed_wiring\"\n  },\n  {\n    \"label\": \"peeling_paint\",\n    \"box_2d\": [\n      585,\n      144,\n      609,\n      197\n    ],\n    \"confidence\": 0.8,\n    \"note\": \"peeling_paint\"\n  }\n]",
+ "items": [
+  {
+   "label": "hole",
+   "box_2d": [
+    537,
+    446,
+    593,
+    537
+   ],
+   "confidence": 0.95,
+   "note": "hole"
+  },
+  {
+   "label": "exposed_wiring",
+   "box_2d": [
+    546,
+    451,
+    589,
+    530
+   ],
+   "confidence": 0.9,
+   "note": "exposed_wiring"
+  },
+  {
+   "label": "peeling_paint",
+   "box_2d": [
+    585,
+    144,
+    609,
+    197
+   ],
+   "confidence": 0.8,
+   "note": "peeling_paint"
+  }
+ ]
+}

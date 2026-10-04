@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.8-flash",
+ "prompt_version": "v1",
+ "image_sha1": "24aa8d93d4e2d31ce316880d09557f10c638b252",
+ "raw": "[\n  {\"box_2d\": [678, 63, 735, 136], \"label\": \"outlet_or_switch\", \"confidence\": 0.98, \"note\": \"switchboard on left wall\"},\n  {\"box_2d\": [543, 668, 595, 709], \"label\": \"outlet_or_switch\", \"confidence\": 0.98, \"note\": \"switchboard on middle wall\"},\n  {\"box_2d\": [242, 681, 275, 699], \"label\": \"outlet_or_switch\", \"confidence\": 0.82, \"note\": \"round junction box cover plate\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    678,
+    63,
+    735,
+    136
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.98,
+   "note": "switchboard on left wall"
+  },
+  {
+   "box_2d": [
+    543,
+    668,
+    595,
+    709
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.98,
+   "note": "switchboard on middle wall"
+  },
+  {
+   "box_2d": [
+    242,
+    681,
+    275,
+    699
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.82,
+   "note": "round junction box cover plate"
+  }
+ ]
+}

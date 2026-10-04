@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "v1",
+ "image_sha1": "13364da76837e3706b1e2722ed7922cc1ff4c5c9",
+ "raw": "[\n  {\"box_2d\": [520, 428, 564, 465], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"wall switch panel\"},\n  {\"box_2d\": [535, 712, 563, 754], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"wall switch plate\"},\n  {\"box_2d\": [237, 434, 270, 449], \"label\": \"outlet_or_switch\", \"confidence\": 0.8, \"note\": \"circular socket or outlet cover\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    520,
+    428,
+    564,
+    465
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "wall switch panel"
+  },
+  {
+   "box_2d": [
+    535,
+    712,
+    563,
+    754
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "wall switch plate"
+  },
+  {
+   "box_2d": [
+    237,
+    434,
+    270,
+    449
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.8,
+   "note": "circular socket or outlet cover"
+  }
+ ]
+}

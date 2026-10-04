@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.8-flash",
+ "prompt_version": "v1",
+ "image_sha1": "f0dce7463538d02ed01781dc540864b6d945bad7",
+ "raw": "[\n  {\"box_2d\": [544, 36, 580, 101], \"confidence\": 0.99, \"label\": \"outlet_or_switch\", \"note\": \"switch plate on left wall\"},\n  {\"box_2d\": [645, 828, 699, 888], \"confidence\": 0.99, \"label\": \"outlet_or_switch\", \"note\": \"switch plate on right wall\"},\n  {\"box_2d\": [711, 433, 755, 477], \"confidence\": 0.58, \"label\": \"water_stain\", \"note\": \"water stain under window sill\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    544,
+    36,
+    580,
+    101
+   ],
+   "confidence": 0.99,
+   "label": "outlet_or_switch",
+   "note": "switch plate on left wall"
+  },
+  {
+   "box_2d": [
+    645,
+    828,
+    699,
+    888
+   ],
+   "confidence": 0.99,
+   "label": "outlet_or_switch",
+   "note": "switch plate on right wall"
+  },
+  {
+   "box_2d": [
+    711,
+    433,
+    755,
+    477
+   ],
+   "confidence": 0.58,
+   "label": "water_stain",
+   "note": "water stain under window sill"
+  }
+ ]
+}

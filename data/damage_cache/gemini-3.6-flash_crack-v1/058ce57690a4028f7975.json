@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "crack-v1",
+ "image_sha1": "f0dce7463538d02ed01781dc540864b6d945bad7",
+ "raw": "[\n  {\n    \"points\": [\n      [715, 455],\n      [730, 461],\n      [745, 466],\n      [758, 471]\n    ],\n    \"confidence\": 0.75,\n    \"note\": \"hairline crack below right corner of window frame\"\n  }\n]",
+ "items": [
+  {
+   "points": [
+    [
+     715,
+     455
+    ],
+    [
+     730,
+     461
+    ],
+    [
+     745,
+     466
+    ],
+    [
+     758,
+     471
+    ]
+   ],
+   "confidence": 0.75,
+   "note": "hairline crack below right corner of window frame"
+  }
+ ]
+}

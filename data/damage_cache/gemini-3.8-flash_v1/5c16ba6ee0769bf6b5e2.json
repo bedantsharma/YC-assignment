@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.8-flash",
+ "prompt_version": "v1",
+ "image_sha1": "2e0896ad96b55b64c45961c287a3feff219c9efb",
+ "raw": "[\n  {\"box_2d\": [486, 56, 544, 130], \"label\": \"outlet_or_switch\", \"confidence\": 0.98, \"note\": \"wall outlet and switch panel\"},\n  {\"box_2d\": [358, 659, 412, 700], \"label\": \"outlet_or_switch\", \"confidence\": 0.98, \"note\": \"light switch panel\"},\n  {\"box_2d\": [42, 681, 75, 700], \"label\": \"outlet_or_switch\", \"confidence\": 0.85, \"note\": \"circular junction box cover\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    486,
+    56,
+    544,
+    130
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.98,
+   "note": "wall outlet and switch panel"
+  },
+  {
+   "box_2d": [
+    358,
+    659,
+    412,
+    700
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.98,
+   "note": "light switch panel"
+  },
+  {
+   "box_2d": [
+    42,
+    681,
+    75,
+    700
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.85,
+   "note": "circular junction box cover"
+  }
+ ]
+}

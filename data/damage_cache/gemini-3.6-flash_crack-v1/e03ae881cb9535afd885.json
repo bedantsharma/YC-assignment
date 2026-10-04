@@ -1,0 +1,44 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "crack-v1",
+ "image_sha1": "96959bb7715be7934715fd6dea8ab4d2d8b5bbf6",
+ "raw": "[\n  {\n    \"points\": [\n      [515, 308],\n      [532, 312],\n      [546, 318]\n    ],\n    \"confidence\": 0.55,\n    \"note\": \"faint hairline crack on wall\"\n  },\n  {\n    \"points\": [\n      [535, 545],\n      [558, 552],\n      [580, 560]\n    ],\n    \"confidence\": 0.6,\n    \"note\": \"diagonal hairline crack on wall surface\"\n  }\n]",
+ "items": [
+  {
+   "points": [
+    [
+     515,
+     308
+    ],
+    [
+     532,
+     312
+    ],
+    [
+     546,
+     318
+    ]
+   ],
+   "confidence": 0.55,
+   "note": "faint hairline crack on wall"
+  },
+  {
+   "points": [
+    [
+     535,
+     545
+    ],
+    [
+     558,
+     552
+    ],
+    [
+     580,
+     560
+    ]
+   ],
+   "confidence": 0.6,
+   "note": "diagonal hairline crack on wall surface"
+  }
+ ]
+}

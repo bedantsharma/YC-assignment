@@ -1,0 +1,85 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "142204e4697b021be635f57eeca884170ac1e4e1",
+ "raw": "[\n  {\"box_2d\": [55, 382, 184, 460], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"A white circular junction box or cover plate on the wall.\"},\n  {\"box_2d\": [110, 413, 999, 543], \"label\": \"exposed_wiring\", \"confidence\": 0.98, \"note\": \"Red and blue electrical wires coming out of the junction box and hanging down.\"},\n  {\"box_2d\": [480, 300, 612, 523], \"label\": \"exposed_wiring\", \"confidence\": 0.96, \"note\": \"A bundle of wires, including a thick white cable and black wires, coming out of a hole in the wall.\"},\n  {\"box_2d\": [551, 65, 627, 166], \"label\": \"hole\", \"confidence\": 0.92, \"note\": \"A jagged hole in the wall surface, with a pipe or conduit coming out.\"},\n  {\"box_2d\": [556, 204, 607, 284], \"label\": \"hole\", \"confidence\": 0.90, \"note\": \"A small, roughly circular hole in the wall surface.\"},\n  {\"box_2d\": [480, 300, 564, 384], \"label\": \"hole\", \"confidence\": 0.88, \"note\": \"A larger, irregular hole in the wall where wires are emerging.\"},\n  {\"box_2d\": [583, 121, 999, 283], \"label\": \"exposed_wiring\", \"confidence\": 0.85, \"note\": \"A thick, tan-colored conduit or pipe coming out of a hole in the wall.\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    55,
+    382,
+    184,
+    460
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "A white circular junction box or cover plate on the wall."
+  },
+  {
+   "box_2d": [
+    110,
+    413,
+    999,
+    543
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.98,
+   "note": "Red and blue electrical wires coming out of the junction box and hanging down."
+  },
+  {
+   "box_2d": [
+    480,
+    300,
+    612,
+    523
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.96,
+   "note": "A bundle of wires, including a thick white cable and black wires, coming out of a hole in the wall."
+  },
+  {
+   "box_2d": [
+    551,
+    65,
+    627,
+    166
+   ],
+   "label": "hole",
+   "confidence": 0.92,
+   "note": "A jagged hole in the wall surface, with a pipe or conduit coming out."
+  },
+  {
+   "box_2d": [
+    556,
+    204,
+    607,
+    284
+   ],
+   "label": "hole",
+   "confidence": 0.9,
+   "note": "A small, roughly circular hole in the wall surface."
+  },
+  {
+   "box_2d": [
+    480,
+    300,
+    564,
+    384
+   ],
+   "label": "hole",
+   "confidence": 0.88,
+   "note": "A larger, irregular hole in the wall where wires are emerging."
+  },
+  {
+   "box_2d": [
+    583,
+    121,
+    999,
+    283
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.85,
+   "note": "A thick, tan-colored conduit or pipe coming out of a hole in the wall."
+  }
+ ]
+}

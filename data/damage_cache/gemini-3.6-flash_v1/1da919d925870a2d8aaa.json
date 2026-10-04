@@ -1,0 +1,74 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "v1",
+ "image_sha1": "142204e4697b021be635f57eeca884170ac1e4e1",
+ "raw": "[\n  {\"box_2d\": [59, 382, 182, 460], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"Junction box rosette plate mounted on surface\"},\n  {\"box_2d\": [110, 408, 1000, 544], \"label\": \"exposed_wiring\", \"confidence\": 0.98, \"note\": \"Exposed electrical wiring hanging from surface\"},\n  {\"box_2d\": [554, 63, 629, 168], \"label\": \"hole\", \"confidence\": 0.92, \"note\": \"Hole around hose entry in plaster wall\"},\n  {\"box_2d\": [558, 203, 603, 287], \"label\": \"hole\", \"confidence\": 0.9, \"note\": \"Oval cutout hole in wall\"},\n  {\"box_2d\": [480, 297, 592, 526], \"label\": \"hole\", \"confidence\": 0.93, \"note\": \"Hole in wall for wiring and piping\"},\n  {\"box_2d\": [320, 600, 363, 622], \"label\": \"hole\", \"confidence\": 0.8, \"note\": \"Hole/damage patch in wall surface\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    59,
+    382,
+    182,
+    460
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "Junction box rosette plate mounted on surface"
+  },
+  {
+   "box_2d": [
+    110,
+    408,
+    1000,
+    544
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.98,
+   "note": "Exposed electrical wiring hanging from surface"
+  },
+  {
+   "box_2d": [
+    554,
+    63,
+    629,
+    168
+   ],
+   "label": "hole",
+   "confidence": 0.92,
+   "note": "Hole around hose entry in plaster wall"
+  },
+  {
+   "box_2d": [
+    558,
+    203,
+    603,
+    287
+   ],
+   "label": "hole",
+   "confidence": 0.9,
+   "note": "Oval cutout hole in wall"
+  },
+  {
+   "box_2d": [
+    480,
+    297,
+    592,
+    526
+   ],
+   "label": "hole",
+   "confidence": 0.93,
+   "note": "Hole in wall for wiring and piping"
+  },
+  {
+   "box_2d": [
+    320,
+    600,
+    363,
+    622
+   ],
+   "label": "hole",
+   "confidence": 0.8,
+   "note": "Hole/damage patch in wall surface"
+  }
+ ]
+}

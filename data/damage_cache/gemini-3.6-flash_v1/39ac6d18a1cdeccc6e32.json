@@ -1,0 +1,52 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "v1",
+ "image_sha1": "9593c4522d21bcbfbeaed658ed86ae042b87396a",
+ "raw": "[\n  {\n    \"label\": \"outlet_or_switch\",\n    \"box_2d\": [289, 197, 344, 244],\n    \"confidence\": 0.95,\n    \"note\": \"Switch panel on left wall\"\n  },\n  {\n    \"label\": \"outlet_or_switch\",\n    \"box_2d\": [318, 485, 340, 516],\n    \"confidence\": 0.95,\n    \"note\": \"Switch plate beside door\"\n  },\n  {\n    \"label\": \"hole\",\n    \"box_2d\": [341, 836, 370, 851],\n    \"confidence\": 0.85,\n    \"note\": \"Hole in right wall\"\n  },\n  {\n    \"label\": \"water_stain\",\n    \"box_2d\": [613, 917, 835, 1000],\n    \"confidence\": 0.75,\n    \"note\": \"Water stain near bottom right corner of wall\"\n  }\n]",
+ "items": [
+  {
+   "label": "outlet_or_switch",
+   "box_2d": [
+    289,
+    197,
+    344,
+    244
+   ],
+   "confidence": 0.95,
+   "note": "Switch panel on left wall"
+  },
+  {
+   "label": "outlet_or_switch",
+   "box_2d": [
+    318,
+    485,
+    340,
+    516
+   ],
+   "confidence": 0.95,
+   "note": "Switch plate beside door"
+  },
+  {
+   "label": "hole",
+   "box_2d": [
+    341,
+    836,
+    370,
+    851
+   ],
+   "confidence": 0.85,
+   "note": "Hole in right wall"
+  },
+  {
+   "label": "water_stain",
+   "box_2d": [
+    613,
+    917,
+    835,
+    1000
+   ],
+   "confidence": 0.75,
+   "note": "Water stain near bottom right corner of wall"
+  }
+ ]
+}

@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "v1",
+ "image_sha1": "c52867dd0cbbf0cc69ceabc19f11139020ec50e9",
+ "raw": "[\n  {\"box_2d\": [537, 442, 595, 540], \"label\": \"hole\", \"confidence\": 0.95, \"note\": \"Hole in wall surface exposing wiring junction\"},\n  {\"box_2d\": [549, 448, 590, 532], \"label\": \"exposed_wiring\", \"confidence\": 0.96, \"note\": \"Exposed electrical wiring inside wall cavity\"},\n  {\"box_2d\": [584, 143, 609, 198], \"label\": \"peeling_paint\", \"confidence\": 0.72, \"note\": \"Chipped or flaking paint area\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    537,
+    442,
+    595,
+    540
+   ],
+   "label": "hole",
+   "confidence": 0.95,
+   "note": "Hole in wall surface exposing wiring junction"
+  },
+  {
+   "box_2d": [
+    549,
+    448,
+    590,
+    532
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.96,
+   "note": "Exposed electrical wiring inside wall cavity"
+  },
+  {
+   "box_2d": [
+    584,
+    143,
+    609,
+    198
+   ],
+   "label": "peeling_paint",
+   "confidence": 0.72,
+   "note": "Chipped or flaking paint area"
+  }
+ ]
+}

@@ -1,0 +1,63 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "v1",
+ "image_sha1": "9752b8f639b10fe21acbc2460ad245b7cdbb9c64",
+ "raw": "[\n  {\"box_2d\": [0, 775, 148, 874], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"Exposed electrical wires hanging from the top right wall corner\"},\n  {\"box_2d\": [503, 207, 552, 253], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"Switch panel on wall\"},\n  {\"box_2d\": [522, 492, 546, 521], \"label\": \"outlet_or_switch\", \"confidence\": 0.9, \"note\": \"Small switch panel on wall near door\"},\n  {\"box_2d\": [551, 839, 582, 854], \"label\": \"hole\", \"confidence\": 0.8, \"note\": \"Small hole in drywall/plaster\"},\n  {\"box_2d\": [820, 911, 930, 999], \"label\": \"water_stain\", \"confidence\": 0.8, \"note\": \"Water stain discolouration near floor level on right wall\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    0,
+    775,
+    148,
+    874
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "Exposed electrical wires hanging from the top right wall corner"
+  },
+  {
+   "box_2d": [
+    503,
+    207,
+    552,
+    253
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "Switch panel on wall"
+  },
+  {
+   "box_2d": [
+    522,
+    492,
+    546,
+    521
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.9,
+   "note": "Small switch panel on wall near door"
+  },
+  {
+   "box_2d": [
+    551,
+    839,
+    582,
+    854
+   ],
+   "label": "hole",
+   "confidence": 0.8,
+   "note": "Small hole in drywall/plaster"
+  },
+  {
+   "box_2d": [
+    820,
+    911,
+    930,
+    999
+   ],
+   "label": "water_stain",
+   "confidence": 0.8,
+   "note": "Water stain discolouration near floor level on right wall"
+  }
+ ]
+}

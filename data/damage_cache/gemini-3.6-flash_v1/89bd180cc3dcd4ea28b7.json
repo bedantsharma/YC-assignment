@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "v1",
+ "image_sha1": "f32a057704d767a072412199cd9a895ef22d2440",
+ "raw": "[\n  {\n    \"label\": \"hole\",\n    \"box_2d\": [343, 553, 372, 569],\n    \"confidence\": 0.88,\n    \"note\": \"small hole in wall surface\"\n  },\n  {\n    \"label\": \"water_stain\",\n    \"box_2d\": [554, 381, 712, 750],\n    \"confidence\": 0.92,\n    \"note\": \"water stain discolouration on lower wall\"\n  },\n  {\n    \"label\": \"outlet_or_switch\",\n    \"box_2d\": [634, 831, 674, 881],\n    \"confidence\": 0.98,\n    \"note\": \"switchboard plate on wall\"\n  }\n]",
+ "items": [
+  {
+   "label": "hole",
+   "box_2d": [
+    343,
+    553,
+    372,
+    569
+   ],
+   "confidence": 0.88,
+   "note": "small hole in wall surface"
+  },
+  {
+   "label": "water_stain",
+   "box_2d": [
+    554,
+    381,
+    712,
+    750
+   ],
+   "confidence": 0.92,
+   "note": "water stain discolouration on lower wall"
+  },
+  {
+   "label": "outlet_or_switch",
+   "box_2d": [
+    634,
+    831,
+    674,
+    881
+   ],
+   "confidence": 0.98,
+   "note": "switchboard plate on wall"
+  }
+ ]
+}

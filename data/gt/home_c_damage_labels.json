@@ -1,0 +1,66 @@
+{
+  "capture": "home C, staged damage room (room1 = bedroom), data/home_c/photos/room1/ (26 photos)",
+  "source": "Labelled by eye from the photos by Claude on Oct 4, 2026 (not by our detection code, not yet checked by the friend or the user). Image-level presence only: which classes are visible somewhere in each photo. No boxes. Corrected by the user where listed under `corrections`.",
+  "classes_scored": [
+    "hole",
+    "water_stain",
+    "exposed_wiring"
+  ],
+  "not_scored": {
+    "crack": "faint lines near the hole and the wiring cluster (IMG_1369-1371) may be cracks; cannot be told from the photos with confidence, so cracks are reported but not scored",
+    "peeling_paint": "small chipped spots near the wiring cluster (IMG_1370) and the left edge of IMG_1371 could be chipped paint or tape residue; not scored",
+    "mould": "none seen"
+  },
+  "present": {
+    "hole": [
+      "IMG_1350",
+      "IMG_1351",
+      "IMG_1352",
+      "IMG_1353",
+      "IMG_1354",
+      "IMG_1355",
+      "IMG_1356",
+      "IMG_1369",
+      "IMG_1370",
+      "IMG_1371"
+    ],
+    "water_stain": [],
+    "exposed_wiring": [
+      "IMG_1350",
+      "IMG_1351",
+      "IMG_1354",
+      "IMG_1355",
+      "IMG_1369",
+      "IMG_1370",
+      "IMG_1371"
+    ]
+  },
+  "notes": {
+    "hole": "the staged 2.5 in hole (close-up IMG_1371, low in IMG_1369) and the small holes around the wiring cluster high on the same wall (close-up IMG_1370)",
+    "water_stain": "none: the brown band on the damaged wall (IMG_1350, 1352, 1353) is grime from people touching the wall (user, Oct 4); any water_stain reported in this room is a false alarm",
+    "exposed_wiring": "wires and conduit coming out of the wall at the wiring cluster; wires inside the staged hole"
+  },
+  "no_damage": [
+    "IMG_1349",
+    "IMG_1357",
+    "IMG_1358",
+    "IMG_1359",
+    "IMG_1360",
+    "IMG_1361",
+    "IMG_1362",
+    "IMG_1363",
+    "IMG_1364",
+    "IMG_1365",
+    "IMG_1366",
+    "IMG_1367",
+    "IMG_1368",
+    "IMG_1372",
+    "IMG_1373",
+    "IMG_1374"
+  ],
+  "corrections": [
+    "Oct 4, user: the brown marks in IMG_1353 are not water damage but grime from people touching the white wall again and again; removed from water_stain (a model reporting water_stain there is a false alarm)",
+    "Oct 4, user: the same band in IMG_1350 and IMG_1352 is touch grime too; removed from water_stain (their hole / exposed_wiring labels kept)",
+    "Oct 4, Claude, after seeing the model overlays: IMG_1369 shows wires inside the hole; added to exposed_wiring (a label change made after seeing model output, disclosed as such)"
+  ]
+}

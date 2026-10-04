@@ -1,0 +1,19 @@
+{
+ "model": "gemini-3.6-flash",
+ "prompt_version": "v1",
+ "image_sha1": "52e28179be8826cd01880f8dbf6d7c1d812a2623",
+ "raw": "[\n  {\"box_2d\": [137, 372, 184, 439], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"Electrical switch box installed on the wall surface.\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    137,
+    372,
+    184,
+    439
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "Electrical switch box installed on the wall surface."
+  }
+ ]
+}
