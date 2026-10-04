@@ -9,10 +9,13 @@ Deadline Mon Oct 5, 10:00 IST.
 
 ## 0. First, collect what was left running (Oct 4 evening)
 
-1. **House video rerun** (`kaggle/house_v2`, kernel `floorplan-house-v2-runs`, dataset
-   `floorplan-house-v2` now with the laptop-decoded frames in `frames/`). If the kernel was
-   not pushed after the frames upload (it was still uploading at wrap-up), push it:
-   `uvx kaggle kernels push -p kaggle/house_v2 --accelerator NvidiaTeslaT4`.
+1. **House video rerun** (`kaggle/house_v2`, kernel `floorplan-house-v2-runs`). The upload
+   of the laptop-decoded frames was **stopped by a 30-min time limit** on Oct 4, so the
+   dataset `floorplan-house-v2` probably lacks `frames/`. Restage (`videos/c_home_v2.mp4`,
+   `code/floorplan` from `src/`, `frames/` = `data/home_c/frames/`, the dataset-metadata.json
+   with id `bedantsharma/floorplan-house-v2`), run `uvx kaggle datasets version -p <dir>
+   --dir-mode zip -m "frames"` in the background with a long timeout, wait for `ready`,
+   then `uvx kaggle kernels push -p kaggle/house_v2 --accelerator NvidiaTeslaT4`.
    Then: the log's `frames sha1 (90 frames)` must be `f2c905478fab…` (the laptop's); download
    to `outputs/kaggle_house_v2/` (delete the old, unusable `recon_cache` there first), and
    replay locally:
