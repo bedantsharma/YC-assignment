@@ -57,15 +57,15 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | ID | Requirement | File path | Artifact | Status | Notes |
 |---|---|---|---|---|---|
 | G1 | Opening widths ≤ 2 cm on ≥ 85% of openings; missed and phantom openings count as misses | `src/floorplan/openings.py` | [docs/openings.md](docs/openings.md) | **Not met** | Bedroom door found in both scans but 34 cm narrow (door leaf / frame in the gap); windows not detected |
-| G2 | Ceiling height ≤ 1.5 cm per room | `scripts/benchmark.py` *(planned)* | Ceiling table | Not started | |
-| G3 | Ceiling spread across repeat captures ≤ 1 cm; report says bias or noise | `scripts/benchmark.py` *(planned)* | Ceiling table + report sentence | Not started | |
-| G4 | Repeatability: two captures of a room agree within 1 cm or 0.5% per wall | `scripts/benchmark.py` *(planned)* | Repeatability table | Not started | Datasets A (×3), B (×3), C (×2) |
+| G2 | Ceiling height ≤ 1.5 cm per room | `scripts/benchmark.py` | `docs/benchmark_report.md` (ceiling table) | Partly met | LiDAR: 3 of 4 room measurements (−2.1 to +1.0 cm; the dining room misses by 0.6 cm); video 3–14 cm |
+| G3 | Ceiling spread across repeat captures ≤ 1 cm; report says bias or noise | `scripts/benchmark.py` | `docs/benchmark_report.md` (repeatability table + bias/noise sentence) | Partly met | B: 0.3–0.6 cm across 3 scans (met); C bedroom 0.2 / 1.3 cm; report: LiDAR error is cm-level noise, image tiers a corrected model bias |
+| G4 | Repeatability: two captures of a room agree within 1 cm or 0.5% per wall | `scripts/benchmark.py` | `docs/benchmark_report.md` (repeatability table) | **Not met** | C bedroom scans: short side 0.4 cm, long side 4.6 cm; B scans differ 3–110 cm (coverage, fix map 02b); video v1 vs v2 1.2 cm |
 | G5 | Drift: report states the method used on the multi-room capture | `src/floorplan/drift.py` (`floorplan run --drift`) | [docs/drift_ablation.md](docs/drift_ablation.md) (method section) | In progress | "Poses used as-is" is an automatic fail. Built (chunked 2D ICP on walls), **off by default (user decision)**: made the `c_home_01` kitchen and A `c00a170fe1` worse; report must state method + ablation |
 | G6 | Drift: ablation of stitched footprint with correction on and off | `scripts/drift_ablation.py` | [docs/drift_ablation.md](docs/drift_ablation.md) (table; no figure yet) | Partial | Mixed: damage-room repeat scans 21 → 1 cm on the short side; A `c00a170fe1` walls lose support |
 | G7 | Photo tier: one stitched plan, correct adjacency, no overlaps, footprint ±8%, calibrated intervals | `scripts/score_photos.py` (vs LiDAR) | `docs/photo_tier.md` §8 | **Not met** | No stitch (rooms side by side, no adjacency); footprint 45.0 vs 59.8 m² on `c_home_01` protocol stills (hall and room2 had 2–3 photos) |
 | G8 | Photo tier: wall lengths ±8% with calibrated intervals | `scripts/score_photos.py` (vs LiDAR); `scripts/benchmark.py` *(planned)* | `docs/photo_tier.md` §8 | Partly met | Area within ±8% for rooms with ≥ 4 good photos (5 of 6), not for 2–3 photos; wall lengths not compared yet; intervals contain LiDAR in 8 of 11 rooms, uncalibrated; vs LiDAR, not tape |
 | G9 | Video tier: wall lengths ±3% | `scripts/video_scale.py` (vs LiDAR); `scripts/benchmark.py` *(planned)* | Held-out table in `docs/video_scale.md` | Not met | After scale correction, held-out rooms: ceilings within 3.3% (meets), √area +0.2 / +2.6 / −8.5%, longest wall up to −15.5% (outline differences); vs LiDAR, not tape |
-| G10 | Calibration scored at every tier; no confident garbage on thin input | `scripts/calibration.py` *(planned)* | Coverage table per tier | Not started | Caps total score if violated |
+| G10 | Calibration scored at every tier; no confident garbage on thin input | `scripts/calibration.py` | `docs/benchmark_report.md` (calibration table) | In progress | 90% coverage vs home C: LiDAR sides 10/11, ceilings 4/4; video and photo in the report; photo rooms with partial coverage are the risk |
 
 ## 5. Head-to-head (brief Part 3)
 
@@ -99,11 +99,11 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | D1 | Compliance matrix: requirement → file path → artifact → status | `COMPLIANCE.md` | This file | In progress | Updated as work lands |
 | D2 | Capture route plus device matrix | see C1, C2, C9 | | Not started | |
 | D3 | README: fresh clean machine → running on a new capture in < 15 min, one command per capture | `README.md` | Timed fresh-clone test | In progress | |
-| D4 | Reproduction bundle regenerates every reported number from raw inputs | `scripts/reproduce.sh` *(planned)* | Bundle + script | Not started | |
-| D5 | Cached model outputs replay deterministically **and** the live path also runs | `src/floorplan/cache.py` *(planned)* | Cache + live run log | Not started | The walk-in test runs live |
-| D6 | Benchmark report: gates at all three tiers, repeatability, head-to-head, timing | `docs/benchmark_report.md` *(planned)* | Report | Not started | |
-| D7 | Fix-loop bundle | see F1–F5 | | Not started | |
-| D8 | Technical report ≤ 6 pages: architecture, tiers + device matrix, drift handling, error budget, calibration, fix-loop story, known failure modes | `docs/technical_report.md` *(planned)* | Report (PDF) | Not started | |
+| D4 | Reproduction bundle regenerates every reported number from raw inputs | `scripts/reproduce.sh` | Bundle + script | Done | LiDAR live; video/photo replay the Kaggle model cache; then `gt_table.py`, `benchmark.py` |
+| D5 | Cached model outputs replay deterministically **and** the live path also runs | `src/floorplan/mvs.py` (`FLOORPLAN_RECON_CACHE`, `_ONLY`) | `outputs/kaggle_*/recon_cache` + Kaggle logs | In progress | Replay verified (cache keyed by frame pixels); live path runs on Kaggle T4; on the 16 GB laptop live runs hit memory pressure |
+| D6 | Benchmark report: gates at all three tiers, repeatability, head-to-head, timing | `scripts/benchmark.py` | [docs/benchmark_report.md](docs/benchmark_report.md) | Done | Generated, not hand-edited |
+| D7 | Fix-loop bundle | see F1–F5 | [docs/fix_declaration.md](docs/fix_declaration.md), tags `fixloop-before` / `fixloop-after` | Done | |
+| D8 | Technical report ≤ 6 pages: architecture, tiers + device matrix, drift handling, error budget, calibration, fix-loop story, known failure modes | `docs/technical_report.md` | [docs/technical_report.md](docs/technical_report.md) | Done | ~2,000 words |
 | D9 | Raw benchmark data: sensor logs, ground truth, app exports | `data/` + upload | Bundle | Not started | |
 
 ## 9. Walk-in test
@@ -118,10 +118,10 @@ Paths marked *(planned)* do not exist yet. Datasets A/B/C are defined in
 | ID | Requirement | File path | Artifact | Status | Notes |
 |---|---|---|---|---|---|
 | K1 | Handheld consumer capture only | `docs/capture_protocol.md` | Protocol | In progress | iPhone only, no tripods or rigs |
-| K2 | Pretrained models, datasets, APIs allowed with disclosure | `docs/technical_report.md` *(planned)* | Disclosure section | In progress | ARKitScenes disclosed in data plan |
+| K2 | Pretrained models, datasets, APIs allowed with disclosure | `docs/technical_report.md` §9 | Disclosure section | Done | Pi3X (CC BY-NC), MapAnything (Apache 2.0), tested DA3 / SpatialLM, ARKitScenes, Kaggle compute; no hosted API |
 | K3 | Runs without calling our own infrastructure | `src/floorplan/` | Code review | In progress | Hosted APIs allowed by Cozmo (Oct 3); disclose any use, keep a local fallback |
 | K4 | Weights and large binaries fetched by script, not committed | `scripts/fetch_*` | Fetch scripts | In progress | `scripts/fetch_arkitscenes.sh` |
-| K5 | Mirrors, glass, wet-look surfaces, low light covered | `docs/technical_report.md` *(planned)* | Known-failure-modes section | Not started | |
+| K5 | Mirrors, glass, wet-look surfaces, low light covered | `docs/technical_report.md` §8 | Known-failure-modes section | Done | Described from the method; low light not measured |
 
 ## Coverage
 
