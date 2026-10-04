@@ -23,3 +23,6 @@ outputs/
 .DS_Store
 .ruff_cache/
 !data/gt/
+
+# Raw drops from the friend before sorting into data/home_c (large; never commit)
+dataset/
