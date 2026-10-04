@@ -41,14 +41,20 @@ def main(argv: list[str] | None = None) -> int:
         "src/floorplan/damage.py); LiDAR tier only so far",
     )
     p_run.add_argument("--damage-frames", type=int, help="keyframes sent to the damage detector")
+    p_run.add_argument(
+        "--crack-pass", action="store_true", help="damage: second Gemini call tracing cracks"
+    )
     p_dmg = sub.add_parser(
         "damage", help="detect damage on photos (no sizes): detections.json + overlays"
     )
     p_dmg.add_argument("images", type=Path, nargs="+", help="image files or folders")
     p_dmg.add_argument("--out", type=Path, default=Path("outputs/damage_photos"))
+    p_dmg.add_argument(
+        "--crack-pass", action="store_true", help="second Gemini call tracing cracks"
+    )
     args = parser.parse_args(argv)
     if args.command == "damage":
-        return _damage_photos(args.images, args.out)
+        return _damage_photos(args.images, args.out, args.crack_pass)
 
     out_dir = args.out / f"{_capture_id(args.capture)}_{args.tier or 'auto'}"
     try:
@@ -62,6 +68,7 @@ def main(argv: list[str] | None = None) -> int:
             damage=args.damage,
             damage_frames=args.damage_frames,
             damage_dir=out_dir / "damage" if args.damage else None,
+            crack_pass=args.crack_pass,
         )
     except ValueError as err:
         print(f"floorplan: {err}", file=sys.stderr)
@@ -85,7 +92,7 @@ def _capture_id(path: Path) -> str:
     return path.stem if path.is_file() else path.name
 
 
-def _damage_photos(paths: list[Path], out: Path) -> int:
+def _damage_photos(paths: list[Path], out: Path, crack_pass: bool = False) -> int:
     """Detection only: one row per detection, and an overlay per image with detections."""
     import json
 
@@ -106,7 +113,7 @@ def _damage_photos(paths: list[Path], out: Path) -> int:
     for f in files:
         image = ImageOps.exif_transpose(Image.open(f)).convert("RGB")
         image_id = f"{f.parent.name}/{f.stem}"
-        dets = detect(image_id, image)
+        dets = detect(image_id, image, crack_pass=crack_pass)
         for d in dets:
             rows.append(
                 {
@@ -116,6 +123,10 @@ def _damage_photos(paths: list[Path], out: Path) -> int:
                     "box_px": [round(v, 1) for v in d.box],
                     "mask_px": int(d.mask.sum()) if d.mask is not None else None,
                     "mask_source": d.mask_source,
+                    "source": d.source,
+                    "points_px": [[round(x, 1), round(y, 1)] for x, y in d.points]
+                    if d.points
+                    else None,
                     "note": d.note,
                 }
             )
@@ -125,7 +136,12 @@ def _damage_photos(paths: list[Path], out: Path) -> int:
             overlay(image, dets, dets).save(dest, quality=85)
         print(f"{image_id}: " + (", ".join(f"{d.label} {d.score:.2f}" for d in dets) or "-"))
     out.mkdir(parents=True, exist_ok=True)
-    record = {"model": model_name(), "images": [str(f) for f in files], "detections": rows}
+    record = {
+        "model": model_name(),
+        "crack_pass": crack_pass,
+        "images": [str(f) for f in files],
+        "detections": rows,
+    }
     (out / "detections.json").write_text(json.dumps(record, indent=1))
     print(f"{len(rows)} detections on {len(files)} images -> {out}/detections.json")
     return 0

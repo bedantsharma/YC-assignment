@@ -50,6 +50,7 @@ def run_damage(
     floor_z: float,
     n_frames: int = DAMAGE_FRAMES,
     overlay_dir: Path | None = None,
+    crack_pass: bool = False,
 ):
     """(surfaces, damage, flags, scope, warnings) for one Stray Scanner capture."""
     if detect_format(path) != "stray":
@@ -70,7 +71,7 @@ def run_damage(
         turns, pose, K = upright(frames.poses[i], k_raw, raw.size)
         image = Image.fromarray(np.rot90(np.asarray(raw), turns))
         view = View(f"frame_{i:06d}", pose, K, image.size)
-        dets = detect(view.image_id, image)
+        dets = detect(view.image_id, image, crack_pass=crack_pass)
         counts["detections"] += len(dets)
         kept = []
         for det in dets:
@@ -216,6 +217,8 @@ def overlay(image: Image.Image, dets: list[Detection], kept: list[Detection]) ->
     lw = max(2, im.width // 400)
     for det in dets:
         col = COLOURS.get(det.label, (255, 255, 255)) if det in kept else (128, 128, 128)
+        if det.points:
+            draw.line(det.points, fill=col, width=lw)
         draw.rectangle(det.box, outline=col, width=lw)
         draw.text((det.box[0] + 4, det.box[1] + 4), f"{det.label} {det.score:.2f}", fill=col)
     return im

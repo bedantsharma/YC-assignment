@@ -214,3 +214,35 @@ def test_crack_gets_length_and_aesthetic_band():
     assert dmg[0].length.lo <= 0.8 <= dmg[0].length.hi
     # 8 mm wide but only 4 px: 8 - 4 = 4 mm is not confidently above 5 mm
     assert {f.rule_id for f in flags} == {"R8"}
+
+
+def test_parse_crack_items():
+    items = [
+        {"points": [[100, 200], [150, 260], ["x", 1]], "confidence": 0.8, "note": "hairline"},
+        {"points": [[1, 2]]},  # too short
+        {"box_2d": [1, 2, 3, 4]},
+    ]
+    out = damage.parse_crack_items(items)
+    assert len(out) == 1
+    assert out[0]["points"] == [(100.0, 200.0), (150.0, 260.0)]
+
+
+def test_crack_pass_replaces_overlapping_main_crack(tmp_path, monkeypatch):
+    monkeypatch.setenv(damage.CACHE_ENV, str(tmp_path))
+    monkeypatch.setenv(damage.CACHE_ONLY_ENV, "1")
+    image = Image.new("RGB", (1000, 500), (180, 180, 180))
+    data, model = damage._encode(image), damage.model_name()
+    main = [
+        {"label": "crack", "box_2d": [100, 100, 300, 400], "confidence": 0.6},
+        {"label": "hole", "box_2d": [600, 600, 700, 700], "confidence": 0.9},
+    ]
+    crack = [{"points": [[150, 150], [250, 350]], "confidence": 0.7, "note": "faint"}]
+    for items, version in ((main, damage.PROMPT_VERSION), (crack, damage.CRACK_PROMPT_VERSION)):
+        path = damage._cache_path(data, model, version)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps({"items": items}))
+    dets = damage.detect("x", image, crack_pass=True)
+    assert sorted((d.label, d.source) for d in dets) == [("crack", "crack"), ("hole", "main")]
+    traced = next(d for d in dets if d.source == "crack")
+    assert traced.mask_source == "polyline"
+    assert traced.points[0] == pytest.approx((150.0, 75.0))

@@ -16,12 +16,17 @@ as JSON in `FLOORPLAN_DAMAGE_CACHE` (default `data/damage_cache`), keyed by the 
 sent, the model and the prompt version. `FLOORPLAN_DAMAGE_CACHE_ONLY=1` makes a miss an error:
 reported numbers then replay without the network.
 
+Crack pass (optional, `crack_pass=True`). Boxes suit cracks badly and the main prompt
+misses faint ones, so a second call per image asks only for cracks, traced as polylines;
+the mask is the polyline CRACK_PX wide, and its length comes straight from the trace.
+
 Mask. Inside each box (padded), pixels that differ from the ring of wall around it by more
 than a robust threshold; the connected part nearest the box centre is kept. When that finds
 too little or almost the whole box, the ellipse inscribed in the box is used instead and
 the mask is marked `ellipse`.
 """
 
+import contextlib
 import hashlib
 import io
 import json
@@ -30,7 +35,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 from scipy import ndimage
 
 DAMAGE_CLASSES = ("crack", "water_stain", "mould", "hole", "peeling_paint")
@@ -69,6 +74,24 @@ Answer with a JSON list (empty list if there is nothing). Each item has:
 "confidence": 0 to 1, how sure you are this is a real instance of that class;
 "note": a few words on what you see."""
 
+CRACK_PROMPT_VERSION = "crack-v1"
+CRACK_PROMPT = """You are a building surveyor looking ONLY for cracks in the interior
+surfaces (plaster, drywall, paint) of a home in this photo. Look closely: include faint
+hairline cracks, short cracks, and cracks radiating from corners, holes, sockets or
+patched areas.
+
+Do NOT report: joints between boards, tiles or panels; the edges of furniture, frames,
+doors or windows; the corner line where two surfaces meet; wires, cables or strings;
+shadows, scratches on furniture, wood grain; or the outline of a smooth plaster patch
+(a filled repair) unless the patch itself is cracked.
+
+Answer with a JSON list (empty list if there are no cracks). Each item has:
+"points": the crack traced as a polyline, a list of 2 to 20 [y, x] points normalised to
+0-1000, in order along the crack, following its bends;
+"confidence": 0 to 1, how sure you are this is a real crack;
+"note": a few words (e.g. "hairline crack from hole towards ceiling")."""
+CRACK_PX = 3  # width of a traced crack's mask: hairlines are thinner than this anyway
+
 RING_FRAC = 0.25  # ring of background around a box, as a share of the box size
 BOX_PAD_FRAC = 0.1  # boxes from VLMs are loose: search a little outside them
 MIN_MAD = 6.0  # grey levels: floor on the background spread
@@ -84,7 +107,9 @@ class Detection:
     box: tuple[float, float, float, float]  # x0, y0, x1, y1 in pixels of the image given
     note: str = ""
     mask: np.ndarray | None = field(default=None, repr=False)  # bool, full image size
-    mask_source: str = ""  # "contrast" or "ellipse"
+    mask_source: str = ""  # "contrast", "ellipse" or "polyline"
+    points: list[tuple[float, float]] | None = None  # crack pass: traced (x, y) pixels
+    source: str = "main"  # which prompt found it: "main" or "crack"
 
     @property
     def is_damage(self) -> bool:
@@ -95,10 +120,13 @@ def model_name() -> str:
     return os.environ.get(MODEL_ENV, DEFAULT_MODEL)
 
 
-def detect(image_id: str, image: Image.Image, with_masks: bool = True) -> list[Detection]:
-    """Damage and context detections on one upright image."""
+def detect(
+    image_id: str, image: Image.Image, with_masks: bool = True, crack_pass: bool = False
+) -> list[Detection]:
+    """Damage and context detections on one upright image. crack_pass: a second call that
+    traces cracks as polylines; its cracks replace the main prompt's cracks they overlap."""
     data = _encode(image)
-    items = _cached_call(data)
+    items = _cached_call(data, PROMPT, PROMPT_VERSION)
     w, h = image.size
     dets = []
     for item in parse_items(items):
@@ -110,7 +138,56 @@ def detect(image_id: str, image: Image.Image, with_masks: bool = True) -> list[D
         if with_masks:
             det.mask, det.mask_source = outline(image, box)
         dets.append(det)
+    if crack_pass:
+        cracks = []
+        for item in parse_crack_items(_cached_call(data, CRACK_PROMPT, CRACK_PROMPT_VERSION)):
+            if item["confidence"] < MIN_SCORE:
+                continue
+            pts = [(x / 1000 * w, y / 1000 * h) for y, x in item["points"]]
+            xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+            box = (min(xs), min(ys), max(xs), max(ys))
+            det = Detection(image_id, "crack", item["confidence"], box, item["note"])
+            det.points, det.source = pts, "crack"
+            if with_masks:
+                det.mask, det.mask_source = polyline_mask(pts, (w, h)), "polyline"
+            cracks.append(det)
+        dets = [
+            d
+            for d in dets
+            if d.label != "crack" or not any(_boxes_touch(d.box, c.box) for c in cracks)
+        ] + cracks
     return dets
+
+
+def parse_crack_items(items) -> list[dict]:
+    """Keep polylines of 2+ in-range points."""
+    out = []
+    for it in items if isinstance(items, list) else []:
+        if not isinstance(it, dict) or not isinstance(it.get("points"), list):
+            continue
+        pts = []
+        for p in it["points"]:
+            if isinstance(p, list | tuple) and len(p) == 2:
+                with contextlib.suppress(TypeError, ValueError):
+                    pts.append(tuple(min(1000.0, max(0.0, float(v))) for v in p))
+        if len(pts) < 2:
+            continue
+        try:
+            score = min(1.0, max(0.0, float(it.get("confidence", 0.5))))
+        except (TypeError, ValueError):
+            continue
+        out.append({"points": pts, "confidence": score, "note": str(it.get("note", ""))[:200]})
+    return out
+
+
+def polyline_mask(points: list[tuple[float, float]], size: tuple[int, int]) -> np.ndarray:
+    im = Image.new("1", size, 0)
+    ImageDraw.Draw(im).line(points, fill=1, width=CRACK_PX, joint="curve")
+    return np.asarray(im, dtype=bool)
+
+
+def _boxes_touch(a, b) -> bool:
+    return a[0] <= b[2] and b[0] <= a[2] and a[1] <= b[3] and b[1] <= a[3]
 
 
 def parse_items(items) -> list[dict]:
@@ -200,25 +277,25 @@ def _encode(image: Image.Image) -> bytes:
     return buf.getvalue()
 
 
-def _cache_path(data: bytes, model: str) -> Path:
+def _cache_path(data: bytes, model: str, version: str = PROMPT_VERSION) -> Path:
     root = Path(os.environ.get(CACHE_ENV, DEFAULT_CACHE))
-    key = hashlib.sha1(data + model.encode() + PROMPT_VERSION.encode()).hexdigest()[:20]
-    return root / f"{model}_{PROMPT_VERSION}" / f"{key}.json"
+    key = hashlib.sha1(data + model.encode() + version.encode()).hexdigest()[:20]
+    return root / f"{model}_{version}" / f"{key}.json"
 
 
-def _cached_call(data: bytes) -> list:
+def _cached_call(data: bytes, prompt: str, version: str) -> list:
     model = model_name()
-    path = _cache_path(data, model)
+    path = _cache_path(data, model, version)
     if path.exists():
         return json.loads(path.read_text())["items"]
     if os.environ.get(CACHE_ONLY_ENV) == "1":
         raise RuntimeError(f"damage cache miss ({path}) and {CACHE_ONLY_ENV}=1")
-    text = _call_gemini(data, model)
+    text = _call_gemini(data, model, prompt)
     items = _parse_json(text)
     path.parent.mkdir(parents=True, exist_ok=True)
     record = {
         "model": model,
-        "prompt_version": PROMPT_VERSION,
+        "prompt_version": version,
         "image_sha1": hashlib.sha1(data).hexdigest(),
         "raw": text,
         "items": items,
@@ -245,7 +322,7 @@ def _parse_json(text: str) -> list:
     return out if isinstance(out, list) else []
 
 
-def _call_gemini(data: bytes, model: str) -> str:
+def _call_gemini(data: bytes, model: str, prompt: str) -> str:
     try:
         from google import genai
         from google.genai import types
@@ -254,7 +331,7 @@ def _call_gemini(data: bytes, model: str) -> str:
     client = genai.Client()
     response = client.models.generate_content(
         model=model,
-        contents=[types.Part.from_bytes(data=data, mime_type="image/jpeg"), PROMPT],
+        contents=[types.Part.from_bytes(data=data, mime_type="image/jpeg"), prompt],
         config=types.GenerateContentConfig(
             temperature=0.0,
             response_mime_type="application/json",

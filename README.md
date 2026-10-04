@@ -24,8 +24,8 @@ comparison in [docs/model_research.md](docs/model_research.md), whole home and s
 [docs/video_scale.md](docs/video_scale.md)); the photo tier runs end to end on room folders
 (same model; on the friend's real photos rooms come out within a median 19 cm with every
 photo, some rooms fail with 8 or fewer, and the whole-home stitch is weak:
-[docs/photo_tier.md](docs/photo_tier.md)). Damage detection is researched and planned, not
-built ([docs/damage_research.md](docs/damage_research.md)). See
+[docs/photo_tier.md](docs/photo_tier.md)). Damage detection (Gemini, hosted) is built for the
+LiDAR tier and being tested ([docs/damage_research.md](docs/damage_research.md)). See
 [ROADMAP.md](ROADMAP.md) for progress and [requirements.md](requirements.md) for the full
 scope.
 
@@ -96,6 +96,16 @@ uv run floorplan run data/home_c/photo_sets/k8
 FLOORPLAN_FRAMES_CACHE=data/home_c/frames FLOORPLAN_RECON_CACHE=outputs/kaggle_house_v2/recon_cache \
   FLOORPLAN_RECON_CACHE_ONLY=1 uv run floorplan run data/home_c/video/c_home_v2.mp4 --tier video --frames 300 --up top
 
+# Damage (hosted Gemini; credentials from the environment, see "Damage detection" below)
+# Detection only on photos: outputs/damage_photos/detections.json + overlays
+uv run floorplan damage data/home_c/photos/room1 --crack-pass
+# Full damage stage on a LiDAR capture: damage[], flags[], scope[] in plan.json, overlays
+uv run floorplan run data/home_c/lidar/c_damage_01 --damage --crack-pass
+# Change the model (default gemini-3.1-pro-preview); each model's answers are cached apart
+FLOORPLAN_GEMINI_MODEL=gemini-3.8-flash uv run floorplan damage data/home_c/photos/room1
+# Replay cached Gemini answers with no network (a cache miss is an error)
+FLOORPLAN_DAMAGE_CACHE_ONLY=1 uv run floorplan run data/home_c/lidar/c_damage_01 --damage
+
 # Fuse every Stray Scanner capture and plot top-down views to outputs/topdown_overview.png
 uv run scripts/fuse_topdown.py
 
@@ -117,6 +127,30 @@ uv run scripts/calibration.py
 uv run scripts/benchmark.py
 scripts/reproduce.sh
 ```
+
+## Damage detection
+
+Damage is found by Google's Gemini (a **hosted** model, called over the network), one call
+per image, plus an optional second call per image that traces cracks as polylines
+(`--crack-pass`). Sizes do not come from Gemini: each detection is outlined in the image and
+projected onto the measured wall plane with the frame's pose (`src/floorplan/damage_geom.py`).
+
+Credentials are read from the environment by `google-genai`; the code never stores them.
+
+```bash
+# Vertex AI with an API key
+export GOOGLE_GENAI_USE_VERTEXAI=true
+export GOOGLE_CLOUD_PROJECT=<project-id>
+export GOOGLE_CLOUD_LOCATION=global
+export GOOGLE_API_KEY=<key>
+# or the Gemini Developer API (AI Studio key): only GOOGLE_API_KEY
+```
+
+| Variable | Effect |
+|---|---|
+| `FLOORPLAN_GEMINI_MODEL` | model name (default `gemini-3.1-pro-preview`; also tested `gemini-3.8-flash`, `gemini-3.6-flash`) |
+| `FLOORPLAN_DAMAGE_CACHE` | where answers are cached (default `data/damage_cache/`, committed) |
+| `FLOORPLAN_DAMAGE_CACHE_ONLY=1` | never call the network; a missing answer is an error |
 
 ## Output format
 
@@ -142,7 +176,7 @@ confidence interval (coverage given by `interval_coverage`, default 0.9).
 | `rooms[].openings[]` | `id`, `wall_id`, `kind` (`door` / `window` / `passage`), `width`, `height`, `connects_to` (room id) |
 | `adjacency[]` | `room_a`, `room_b`, `opening_id`: which rooms connect, and through which opening |
 | `surfaces[]` | `id`, `room_id`, `kind` (`wall` / `floor` / `ceiling`), `wall_id`, `area` |
-| `damage[]` | `id`, `surface_id`, `damage_class`, `score` (detector confidence 0–1), `region` (u0, v0, u1, v1 metres on the surface), `area` |
+| `damage[]` | `id`, `surface_id`, `damage_class`, `score` (detector confidence 0–1), `region` (u0, v0, u1, v1 metres on the surface; wall: u along the wall from its start corner, which is the right-hand corner seen from inside, v above the floor), `area`, `centre` (u, v), `length` (cracks), `width_band` (cracks), `views` (images it was seen in), `note` |
 | `flags[]` | Concealed-damage flags: `id`, `rule_id`, `rule` (text of the rule that fired), `surface_id`, `damage_ids` |
 | `scope[]` | Repair line items: `id`, `surface_id`, `action`, `quantity`, `reason_ids` (damage / flag ids) |
 | `footprint_area` | Whole-property floor area |

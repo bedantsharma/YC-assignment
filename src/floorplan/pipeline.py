@@ -41,6 +41,7 @@ def run(
     damage: bool = False,
     damage_frames: int | None = None,
     damage_dir: Path | None = None,
+    crack_pass: bool = False,
 ) -> Result:
     """damage: detect damage (hosted Gemini; LiDAR tier only so far), overlays to damage_dir."""
     path = Path(path)
@@ -48,7 +49,7 @@ def run(
     tier = resolve_tier(fmt, tier)
     capture = Capture(path.stem if path.is_file() else path.name, tier=tier, source=str(path))
     if tier == "lidar":
-        return _run_lidar(path, capture, drift, damage, damage_frames, damage_dir)
+        return _run_lidar(path, capture, drift, damage, damage_frames, damage_dir, crack_pass)
     if damage:
         raise ValueError("--damage is only built for the LiDAR tier so far")
     if tier == "video":
@@ -252,6 +253,7 @@ def _run_lidar(
     damage: bool = False,
     damage_frames: int | None = None,
     damage_dir: Path | None = None,
+    crack_pass: bool = False,
 ) -> Result:
     timing = {}
     start = time.perf_counter()
@@ -296,6 +298,7 @@ def _run_lidar(
             plan.floor_z,
             damage_frames or DAMAGE_FRAMES,
             damage_dir,
+            crack_pass,
         )
         timing["damage"] = round(time.perf_counter() - start, 3)
         warnings += notes
