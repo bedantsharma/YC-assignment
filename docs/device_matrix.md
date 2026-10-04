@@ -27,7 +27,7 @@ the brief.
 
 | Measurement | Gate | LiDAR | Video | Photos |
 |---|---|---|---|---|
-| Room side, median abs. error | LiDAR: repeatability; video ±3%; photos ±8% | 5 cm | 8 cm (11 of 16 within ±3%) | 25 cm (13 of 22 within ±8%) |
+| Room side, median abs. error | LiDAR: repeatability; video ±3%; photos ±8% | 5 cm | 8 cm (11 of 16 within ±3%) | 19 cm (29 of 40 within ±8%) |
 | Ceiling height | ≤ 1.5 cm per room | −2.1 to +1.0 cm (3 of 4 met) | 0.3–14 cm | 1–48 cm |
 | Opening width | ≤ 2 cm on ≥ 85% of openings | door 34 cm narrow; windows missed | not scored | not scored |
 | Footprint (stitched) | photos ±8% | one cloud, stitched by construction | stitched on room clips; the 5-min house clip folds | not stitched |

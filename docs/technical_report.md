@@ -72,7 +72,7 @@ Home C, our output vs the ground truth (`uv run scripts/benchmark.py`):
 
 | Measurement | Gate (brief) | LiDAR | Video | Photos |
 |---|---|---|---|---|
-| Room side, median abs. error | video ±3%, photos ±8% | **5 cm** (12 sides) | **8 cm** (16 sides; 11 of 16 within ±3%) | 25 cm (22 sides; 13 of 22 within ±8%) |
+| Room side, median abs. error | video ±3%, photos ±8% | **5 cm** (12 sides) | **8 cm** (16 sides; 11 of 16 within ±3%) | 19 cm (40 sides; 29 of 40 within ±8%) |
 | Ceiling | ≤ 1.5 cm | 3 of 4 rooms (−2.1 to +1.0 cm) | 0.3–14 cm | 1–48 cm |
 | Repeatability | 1 cm or 0.5% per wall | **not met**: bedroom 0.4 cm short side, 4.6 cm long side | 1.2 cm both sides (v1 vs v2) | – |
 | Openings | ≤ 2 cm on ≥ 85% | **not met**: door found, 34 cm narrow; windows not detected | – | – |
@@ -250,9 +250,11 @@ indications, not accuracy figures. Pause-based frame choice is built for LiDAR o
   Sizes, flags and scope are computed locally.
 - **Datasets:** ARKitScenes (Apple, research licence) for B; Cozmo's captures for A; C is
   our own capture with the owner's permission.
-- **Compute:** models run on Kaggle (two T4s; fp16, since the T4 has no bf16 attention
-  kernels); the laptop replays their cached output (`FLOORPLAN_RECON_CACHE`), which is how
-  every video and photo number here regenerates without a GPU. The live path runs the same
-  code with the model loaded; on this 16 GB laptop one Pi3X run hits memory pressure.
+- **Compute:** the image model runs on Kaggle (two T4s, fp16): by default a video or photo
+  run uploads its frames to a private Kaggle dataset and runs one GPU job (~4-5 min), then
+  caches the result (`FLOORPLAN_RECON_CACHE`), which is how every number here regenerates
+  without a GPU. Without network, a low-memory local mode runs small windows in separate
+  processes; Pi3X does not fit this 16 GB laptop, so that mode is for larger machines.
+- **Florence-2-base** (Microsoft, MIT) is the offline damage detector on the laptop.
 - **Competitor:** Polycam (Apple RoomPlan) on the same home; screenshots of its plan,
   numbers transcribed into [data/gt/home_c_polycam.json](../data/gt/home_c_polycam.json).

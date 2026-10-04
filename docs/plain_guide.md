@@ -89,7 +89,7 @@ scanning app), and by hand with a tape and the architect's drawing (the "truth")
 | Our scan vs Polycam, room by room | Ours as good or better on **6 of 8** measurements (target 70%) |
 | Ceiling height, LiDAR | Within **1 to 2 cm** |
 | Room sizes, video | Typically 8 cm off; 11 of 16 within 3% |
-| Room sizes, photos | Typically 20 to 25 cm off; 13 of 22 within 8% |
+| Room sizes, photos | Typically 19 cm off; 29 of 40 within 8% |
 | Are the ranges honest? | The truth was inside the range for 91% of LiDAR walls, 92% video, 80% photos |
 | A staged hole (6.35 cm across) | Found on every input type; its measured size range held the true size **7 times out of 7** |
 
