@@ -150,3 +150,15 @@ def test_carving_marks_the_space_a_camera_looked_across():
     seen = carved_mask(sight, grid, floor_z=0.0)
     assert seen[10:40, 10].all()  # the line of sight to the wall point
     assert not seen[10, 15:40].any()  # nothing towards the point above the wall band
+
+
+def test_carving_ignores_sight_lines_outside_the_grid():
+    from floorplan.plan2d import Grid, Sightlines, carved_mask
+
+    grid = Grid(0.0, np.zeros(2), 0.1, (50, 50))
+    sight = Sightlines(  # camera off the grid's west side: the line enters it at v = 2.8 m
+        cams=np.array([[-2.0, 4.0]]), points=np.array([[3.0, 1.0, 1.0]]), view=np.array([0])
+    )
+    seen = carved_mask(sight, grid, floor_z=0.0)
+    assert seen[30, 10] and seen[0, 27]  # the in-grid part of the line of sight
+    assert not seen[0, 30:].any()  # off-grid samples are dropped, not clipped onto the border

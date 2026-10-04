@@ -170,7 +170,8 @@ def carved_mask(sight: Sightlines, grid: Grid, floor_z: float) -> np.ndarray:
     pts, view = sight.points[keep, :2], sight.view[keep]
     t = np.linspace(0.0, 1.0, SIGHT_STEPS)[:, None, None]
     seg = sight.cams[view][None] * (1 - t) + pts[None] * t
-    ij = grid.cells(seg.reshape(-1, 2))
+    # not grid.cells: it clips, which would pile every off-grid sample onto the border cells
+    ij = np.floor((grid.to_plan(seg.reshape(-1, 2)) - grid.origin) / grid.res).astype(int)
     ok = (ij[:, 0] >= 0) & (ij[:, 0] < grid.shape[0]) & (ij[:, 1] >= 0) & (ij[:, 1] < grid.shape[1])
     seen = np.zeros(grid.shape, bool)
     seen[ij[ok, 0], ij[ok, 1]] = True
