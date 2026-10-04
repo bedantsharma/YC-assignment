@@ -113,7 +113,7 @@ THRESH_SIGMA = 3.0
 MASK_MIN_FILL, MASK_MAX_FILL = 0.03, 0.9  # share of the box; outside: use the ellipse
 
 
-@dataclass
+@dataclass(eq=False)  # identity: `det in kept` must not compare mask arrays
 class Detection:
     image_id: str
     label: str

@@ -345,3 +345,16 @@ def test_traced_diagonal_crack_length_comes_from_the_trace():
     assert crack.length == pytest.approx(0.8 * np.sqrt(2), rel=0.05)
     lo, hi = np.percentile(crack.length_draws, [5, 95])
     assert lo <= 0.8 * np.sqrt(2) <= hi
+
+
+def test_overlay_handles_duplicate_detections():
+    # the same item twice in one answer: `det in kept` compared the masks and raised
+    from floorplan.damage_lidar import overlay
+
+    image = Image.new("RGB", (200, 100), (180, 180, 180))
+    a, b = (
+        Detection("x", "hole", 0.9, (10, 10, 40, 40), mask=_square_mask(25, 25, 10, (100, 200)))
+        for _ in range(2)
+    )
+    assert overlay(image, [a, b], [a, b]).size == (200, 100)
+    assert overlay(image, [a, b], [b]).size == (200, 100)
