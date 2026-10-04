@@ -1,0 +1,18 @@
+{
+  "id": "bedantsharma/floorplan-cache-runs",
+  "title": "floorplan cache runs",
+  "code_file": "cache_runs.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": "true",
+  "enable_gpu": "true",
+  "enable_internet": "true",
+  "machine_shape": "NvidiaTeslaT4",
+  "dataset_sources": [
+    "bedantsharma/floorplan-video-c2",
+    "bedantsharma/floorplan-home-c"
+  ],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}
