@@ -1,9 +1,14 @@
 """Damage stage of the LiDAR tier: keyframes of the recording's RGB video -> detections ->
 sizes on the measured surfaces -> flags and scope.
 
-Keyframes. DAMAGE_FRAMES slots evenly over the recording; in each, the sharpest of a few
-neighbouring frames (variance of the Laplacian). Stray Scanner stores frame i of rgb.mp4
-with pose row i of odometry.csv (same count on every capture checked).
+Keyframes (damage_frames.py). The frames where the user paused (the protocol asks for a
+hold at each damage), then the fewest frames that see every wall and ceiling patch twice,
+close and near face-on; up to DAMAGE_FRAMES in all. Each is swapped for the sharpest of
+its neighbours (variance of the Laplacian). Stray Scanner stores frame i of rgb.mp4 with
+pose row i of odometry.csv (same count on every capture checked); the stage loads the full
+recording itself, since the pipeline's copy is thinned for geometry.
+
+Calls. The detector is a network call, so up to DETECT_WORKERS images are sent at once.
 
 Upright. Stray stores portrait captures sideways; the detector gets each frame turned by a
 multiple of 90 degrees so the world's up is the image's top (from the frame's pose), and
@@ -15,14 +20,16 @@ the ray hits, the detection is dropped and counted in a warning.
 """
 
 import subprocess
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import numpy as np
 from PIL import Image, ImageDraw
 from scipy import ndimage
 
-from floorplan.capture import STRAY_RGB_SIZE, LidarCapture, detect_format
+from floorplan.capture import STRAY_RGB_SIZE, LidarCapture, detect_format, load_lidar
 from floorplan.damage import Detection, detect, model_name
+from floorplan.damage_frames import NEED, select
 from floorplan.damage_geom import (
     Placed,
     View,
@@ -36,8 +43,10 @@ from floorplan.damage_geom import (
 from floorplan.damage_rules import build
 from floorplan.output import Room
 
-DAMAGE_FRAMES = 40
-CANDIDATE_STEP = 6  # frames either side of a slot tried for sharpness
+DAMAGE_FRAMES = 60
+CANDIDATE_STEP = 4  # frames either side of a chosen frame tried for sharpness
+DETECT_WORKERS = 8
+UNSEEN_WARN = 0.3  # warn about surfaces with more than this share never seen up close
 OCCLUDED_M = 0.25
 SEED = 0
 
@@ -56,26 +65,35 @@ def run_damage(
     if detect_format(path) != "stray":
         return [], [], [], [], ["damage: only Stray Scanner recordings are supported so far"]
     video = path / "rgb.mp4"
-    n = len(frames.poses)
-    idx = _keyframes(video, n, n_frames)
-    depth_w = Image.open(frames.depth_paths[0]).size[0]
+    full = load_lidar(path)  # `frames` is thinned for geometry; video frame i = pose row i
+    n = len(full.poses)
+    depth_w = Image.open(full.depth_paths[0]).size[0]
     to_rgb = STRAY_RGB_SIZE[0] / depth_w
+    k_rgb = full.intrinsics.copy()
+    k_rgb[:, :2] *= to_rgb
     planes = surface_planes(rooms, floor_z)
+    plan_poses = np.array([to_plan_pose(p, angle_deg) for p in full.poses])
+    sel = select(
+        plan_poses, k_rgb, STRAY_RGB_SIZE, planes, _fps(path), n_frames, lambda i: _depth(full, i)
+    )
+    idx = _sharpest(video, sel.frames, n)
     rng = np.random.default_rng(SEED)
+
+    views = []
+    for i, raw in idx.items():
+        turns, pose, K = upright(full.poses[i], k_rgb[i], raw.size)
+        image = Image.fromarray(np.rot90(np.asarray(raw), turns))
+        views.append((i, turns, raw.size, image, View(f"frame_{i:06d}", pose, K, image.size)))
+    with ThreadPoolExecutor(DETECT_WORKERS) as pool:
+        found = list(pool.map(lambda v: detect(v[4].image_id, v[3], crack_pass=crack_pass), views))
 
     placed: list[Placed] = []
     counts = {"detections": 0, "occluded": 0, "off_surface": 0, "context": 0}
-    for i, raw in idx.items():
-        k_raw = frames.intrinsics[i].copy()
-        k_raw[:2] *= to_rgb
-        turns, pose, K = upright(frames.poses[i], k_raw, raw.size)
-        image = Image.fromarray(np.rot90(np.asarray(raw), turns))
-        view = View(f"frame_{i:06d}", pose, K, image.size)
-        dets = detect(view.image_id, image, crack_pass=crack_pass)
+    for (i, turns, raw_size, image, view), dets in zip(views, found, strict=True):
         counts["detections"] += len(dets)
         kept = []
         for det in dets:
-            if _occluded(det, view, frames, i, turns, raw.size, angle_deg, planes, rooms):
+            if _occluded(det, view, full, i, turns, raw_size, angle_deg, planes, rooms):
                 counts["occluded"] += 1
                 continue
             p = place(view, angle_deg, planes, rooms, det, rng)
@@ -90,13 +108,24 @@ def run_damage(
 
     merged = merge(placed)
     surfs, damage, flags, scope = build(merged, rooms)
+    n_pause = sum(1 for f in sel.frames if any(a <= f <= b for a, b in sel.pauses))
     warnings = [
+        f"damage keyframes: {len(sel.frames)} of {n} frames ({n_pause} from "
+        f"{len(sel.pauses)} pauses, the rest for coverage); wall and ceiling patches seen "
+        f"up close by 1+ keyframes: {100 * sel.seen_once:.0f}%, by {NEED}+: "
+        f"{100 * sel.seen_need:.0f}%",
         f"damage: {model_name()} (hosted, Google) on {len(idx)} keyframes: "
         f"{counts['detections']} detections, {counts['occluded']} dropped as in front of the "
         f"surface (LiDAR depth), {counts['off_surface']} not on a measured surface; "
         f"{len(damage)} damage items after merging views; masks are model-free (contrast, "
-        "ellipse fallback)"
+        "ellipse fallback)",
     ]
+    unseen = [f"{sid} {100 * v:.0f}%" for sid, v in sel.unseen.items() if v > UNSEEN_WARN]
+    if unseen:
+        warnings.append(
+            "damage: never seen up close by any frame (small damage there can be missed): "
+            + ", ".join(unseen)
+        )
     single = [d.id for d in damage if len(d.views) == 1]
     if single:
         warnings.append(f"damage: seen in one view only (less certain): {', '.join(single)}")
@@ -165,11 +194,29 @@ def _occluded(det: Detection, view, frames, i, turns, raw_size, angle_deg, plane
     return float(np.median(vals)) < z_surface - OCCLUDED_M
 
 
-def _keyframes(video: Path, n: int, slots: int) -> dict[int, Image.Image]:
-    """Sharpest frame near each of `slots` evenly spaced frame indices."""
-    centres = np.linspace(CANDIDATE_STEP, n - 1 - CANDIDATE_STEP, slots).round().astype(int)
-    offsets = (-CANDIDATE_STEP, 0, CANDIDATE_STEP)
-    cands = sorted({int(c + o) for c in centres for o in offsets if 0 <= c + o < n})
+def _fps(path: Path) -> float:
+    t = np.loadtxt(path / "odometry.csv", delimiter=",", skiprows=1, usecols=0, ndmin=1)
+    return float(1.0 / np.median(np.diff(t))) if len(t) > 1 else 30.0
+
+
+def _depth(cap: LidarCapture, i: int) -> np.ndarray:
+    """LiDAR depth in metres, 0 where confidence is low."""
+    depth = np.asarray(Image.open(cap.depth_paths[i]), dtype=float) / 1000.0
+    conf = np.asarray(Image.open(cap.confidence_paths[i]))
+    return np.where(conf >= 1, depth, 0.0)
+
+
+def _sharpest(video: Path, centres: list[int], n: int) -> dict[int, Image.Image]:
+    """Sharpest frame within CANDIDATE_STEP of each centre (one decoding pass)."""
+    offsets = range(-CANDIDATE_STEP, CANDIDATE_STEP + 1, 2)
+    owner = {}
+    for k, c in enumerate(centres):
+        for o in offsets:
+            if 0 <= c + o < n:
+                owner.setdefault(c + o, k)
+    cands = sorted(owner)
+    if not cands:
+        return {}
     w, h = STRAY_RGB_SIZE
     expr = "+".join(f"eq(n\\,{c})" for c in cands)
     proc = subprocess.Popen(
@@ -183,11 +230,10 @@ def _keyframes(video: Path, n: int, slots: int) -> dict[int, Image.Image]:
         if len(buf) < w * h * 3:
             break
         img = np.frombuffer(buf, np.uint8).reshape(h, w, 3)
-        g = img[::4, ::4].mean(axis=2)
-        sharp = float(ndimage.laplace(g).var())
-        slot = int(np.argmin(np.abs(centres - c)))
-        if slot not in best or sharp > best[slot][0]:
-            best[slot] = (sharp, c, img.copy())
+        sharp = float(ndimage.laplace(img[::4, ::4].mean(axis=2)).var())
+        k = owner[c]
+        if k not in best or sharp > best[k][0]:
+            best[k] = (sharp, c, img.copy())
     proc.stdout.close()
     proc.wait()
     return {c: Image.fromarray(img) for _, c, img in sorted(best.values(), key=lambda t: t[1])}
