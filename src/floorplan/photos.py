@@ -12,6 +12,7 @@ whose photos' camera positions fall inside it most often. A room no photo was ta
 is named after the nearest camera's folder, with a warning.
 """
 
+import math
 from collections import Counter
 from pathlib import Path
 
@@ -26,6 +27,7 @@ PHOTO_LONG_SIDE = 960
 # Rooms with fewer photos than this came out 10-35% small in tests (part of the room never
 # seen; docs/photo_tier.md); with 5-7 protocol-style photos, within 3-5% on sqrt(area)
 MIN_PHOTOS_GOOD = 5
+STRIP_OVERLAP = 0.25  # share of a strip seen by the next (odd-orientation photos)
 
 
 def few_photo_warnings(rooms: dict[str, list[Path]]) -> list[str]:
@@ -39,18 +41,69 @@ def few_photo_warnings(rooms: dict[str, list[Path]]) -> list[str]:
 
 def load_images(paths: list[Path]) -> list[Image.Image]:
     """Upright RGB images (EXIF orientation applied), long side PHOTO_LONG_SIDE."""
-    try:
-        from pillow_heif import register_heif_opener
-
-        register_heif_opener()  # iPhone Camera saves HEIC by default
-    except ImportError:
-        pass
+    _register_heif()
     out = []
     for p in paths:
         img = ImageOps.exif_transpose(Image.open(p)).convert("RGB")
         img.thumbnail((PHOTO_LONG_SIDE, PHOTO_LONG_SIDE), Image.Resampling.LANCZOS)
         out.append(img)
     return out
+
+
+def load_folder(paths: list[Path]) -> tuple[list[Image.Image], list[str]]:
+    """One folder's photos as images of one orientation, plus notes on what was split.
+
+    The model resizes every view of a pass to one aspect ratio, so a portrait photo in a
+    landscape folder loses its top and bottom to a centre crop. Instead each photo of the
+    minority orientation is split, at full resolution, into strips of the majority aspect
+    that overlap by STRIP_OVERLAP and together cover the whole photo. A strip is an
+    off-centre crop of the same camera: Pi3X predicts a ray per pixel, so it needs no
+    centred principal point. Folders of one orientation come out as load_images.
+    """
+    full = [_upright(p) for p in paths]
+    landscape = [im.width >= im.height for im in full]
+    major = sum(landscape) * 2 >= len(full)  # True: landscape (ties go landscape)
+    ref = [im for im, ls in zip(full, landscape, strict=True) if ls == major]
+    aspect = float(np.median([max(im.size) / min(im.size) for im in ref]))
+    out, split = [], 0
+    for im, ls in zip(full, landscape, strict=True):
+        if ls == major:
+            out.append(im)
+            continue
+        split += 1
+        w, h = im.size
+        if major:  # portrait photo -> landscape strips stacked top to bottom
+            s = round(w / aspect)
+            n = math.ceil((h - s) / (s * (1 - STRIP_OVERLAP))) + 1
+            out += [im.crop((0, y, w, y + s)) for y in _offsets(h, s, n)]
+        else:  # landscape photo -> portrait strips left to right
+            s = round(h / aspect)
+            n = math.ceil((w - s) / (s * (1 - STRIP_OVERLAP))) + 1
+            out += [im.crop((x, 0, x + s, h)) for x in _offsets(w, s, n)]
+    for im in out:
+        im.thumbnail((PHOTO_LONG_SIDE, PHOTO_LONG_SIDE), Image.Resampling.LANCZOS)
+    kind = "portrait" if major else "landscape"
+    notes = [f"{split} {kind} photo(s) split into {'landscape' if major else 'portrait'} "
+             "strips to match the folder"] if split else []  # fmt: skip
+    return out, notes
+
+
+def _offsets(length: int, strip: int, n: int) -> list[int]:
+    return [round(v) for v in np.linspace(0, length - strip, n)]
+
+
+def _upright(path: Path) -> Image.Image:
+    _register_heif()
+    return ImageOps.exif_transpose(Image.open(path)).convert("RGB")
+
+
+def _register_heif() -> None:
+    try:
+        from pillow_heif import register_heif_opener
+
+        register_heif_opener()  # iPhone Camera saves HEIC by default
+    except ImportError:
+        pass
 
 
 def main_room(rooms: list[Room], angle_deg: float, cams_xy: np.ndarray) -> int:

@@ -70,18 +70,19 @@ def _run_video(path: Path, capture: Capture, n_frames: int, up: str, model: str)
 def _run_photos(path: Path, capture: Capture, model: str) -> Result:
     """Each folder reconstructed on its own; its main room kept and named after it. Rooms
     are laid out side by side: their relative positions are not measured."""
-    from floorplan.photos import few_photo_warnings, load_images, shift_room
+    from floorplan.photos import few_photo_warnings, load_folder, shift_room
 
     folders = load_photos(path).rooms
     timing: dict[str, float] = {}
     rooms, warnings, x = [], [], 0.0
     for name, photos in folders.items():
         start = time.perf_counter()
-        images = load_images(photos)
+        images, split = load_folder(photos)
+        warnings += [f"{name}: {note}" for note in split]
         timing["load"] = round(timing.get("load", 0.0) + time.perf_counter() - start, 3)
         sub_timing: dict[str, float] = {}
         res = _from_images(
-            capture, images, model, "photo", sub_timing, [], [name] * len(photos), True
+            capture, images, model, "photo", sub_timing, [], [name] * len(images), True
         )
         for k, v in sub_timing.items():
             timing[k] = round(timing.get(k, 0.0) + v, 3)

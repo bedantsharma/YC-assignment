@@ -4,7 +4,13 @@ import numpy as np
 from PIL import Image
 
 from floorplan.output import Measurement, Room
-from floorplan.photos import PHOTO_LONG_SIDE, few_photo_warnings, label_rooms, load_images
+from floorplan.photos import (
+    PHOTO_LONG_SIDE,
+    few_photo_warnings,
+    label_rooms,
+    load_folder,
+    load_images,
+)
 
 
 def _room(rid, x0, y0, x1, y1):
@@ -49,6 +55,36 @@ def test_load_images_applies_exif_rotation_and_resizes(tmp_path):
     img.save(tmp_path / "a.jpg", exif=exif)
     (out,) = load_images([tmp_path / "a.jpg"])
     assert out.size == (720, PHOTO_LONG_SIDE)
+
+
+def _photos(tmp_path, sizes):
+    paths = []
+    for i, (w, h) in enumerate(sizes):
+        img = Image.fromarray(np.tile(np.arange(h, dtype=np.uint8)[:, None, None], (1, w, 3)))
+        img.save(tmp_path / f"{i}.png")
+        paths.append(tmp_path / f"{i}.png")
+    return paths
+
+
+def test_odd_orientation_photo_is_split_into_overlapping_strips(tmp_path):
+    # two landscape photos and one portrait: the portrait becomes landscape strips that
+    # together cover its full height (nothing cropped away), long side PHOTO_LONG_SIDE
+    paths = _photos(tmp_path, [(1920, 1080), (1920, 1080), (1080, 1920)])
+    images, notes = load_folder(paths)
+    strips = images[2:]
+    assert len(images) == 2 + len(strips) and 3 <= len(strips) <= 5
+    assert all(im.size == (PHOTO_LONG_SIDE, 540) for im in images)
+    # pixel value = source row: the first strip starts at the top, the last ends at the bottom
+    assert np.asarray(strips[0])[0, 0, 0] == 0
+    assert np.asarray(strips[-1])[-1, 0, 0] == (1919 & 255)
+    assert notes == ["1 portrait photo(s) split into landscape strips to match the folder"]
+
+
+def test_folder_of_one_orientation_is_unchanged(tmp_path):
+    paths = _photos(tmp_path, [(1080, 1920), (1080, 1920)])
+    images, notes = load_folder(paths)
+    assert [im.size for im in images] == [im.size for im in load_images(paths)]
+    assert notes == []
 
 
 def test_photo_tier_end_to_end_names_rooms_from_folders(photo_capture, monkeypatch):
