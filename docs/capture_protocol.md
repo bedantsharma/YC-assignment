@@ -8,7 +8,7 @@ There are three ways to capture (**tiers**). You only need the one you were aske
 | Tier | Phone | App | Time |
 |---|---|---|---|
 | **LiDAR** | iPhone 12 Pro or newer **Pro** model | Stray Scanner (free, App Store) | 3–5 min per floor |
-| **Video** | any iPhone 15 or newer | built-in Camera | 3–5 min per floor |
+| **Video** | any iPhone 15 or newer | built-in Camera | about 1–2 min per room |
 | **Photos** | any iPhone 15 or newer | built-in Camera | about 2 min per room |
 
 ## 1. Before you start (2 minutes)
@@ -19,20 +19,21 @@ There are three ways to capture (**tiers**). You only need the one you were aske
    door once you have started.
 4. If there is a **large mirror** you can easily cover (a towel works), cover it.
 5. Ask people and pets to stay out of the rooms while you capture.
-6. *Optional, improves the Photos tier:* tape one **A4 sheet of paper** flat on a wall in
-   each room, at chest height.
 
-## 2. The walk (LiDAR and Video tiers)
+## 2. The walk (LiDAR tier; the Video tier differs, see below)
 
-Both the LiDAR and Video tiers use the same walk. Hold the phone **upright in both hands at
-chest height**. Move **slowly**, about half your normal walking speed. When you change
-direction, **turn your whole body**, not just the phone.
+Hold the phone **upright in both hands at chest height**. Move **slowly**, about half your
+normal walking speed. When you change direction, **turn your whole body**, not just the
+phone.
 
 1. Start in the **hallway or entrance**. Start recording, then **hold still for 3 seconds**
    pointing at something with detail (a picture, a shelf, a door frame).
 2. Walk into the first room. Go around it **keeping the wall on your left**, with the phone
    pointed **across the room** at the opposite wall.
 3. In **every room**, before you leave it:
+   - **Every wall, top to bottom:** sweep each wall from the floor up to where it meets the
+     ceiling, including the parts behind and above furniture. A wall the phone never sees
+     is measured wrong (on our test home, one unseen wall cost 23 cm).
    - **Ceiling:** tilt the phone up until you can see where the walls meet the ceiling, and
      turn slowly in a full circle.
    - **Floor:** tilt down until you can see where the walls meet the floor, and turn slowly in
@@ -50,14 +51,29 @@ recording per floor.
 
 **LiDAR tier:** open **Stray Scanner**, tap the record button, do the walk, tap stop.
 
-**Video tier:** open **Camera**, choose **Video**, check the lens is **1x** (not 0.5x), and
-check **Action mode is off** (the running-figure icon is not highlighted). Do not use
-Cinematic mode. Tap record, do the walk, tap stop.
+### Video tier: one short clip per room
+
+Open **Camera**, choose **Video**, check the lens is **1x** (not 0.5x), and check **Action
+mode is off** (the running-figure icon is not highlighted). Do not use Cinematic mode.
+
+Record **one clip per room**, about 1–2 minutes each (a long clip of the whole home came
+out with rooms folded onto each other; clips of one room were within 5 cm):
+
+1. Stand in the doorway, start recording, hold still for 3 seconds.
+2. Walk slowly around the room, phone **at eye level** pointed across the room at the
+   opposite wall, so each shot shows the floor line, the whole wall and the ceiling line.
+   Tilt up or down only a little; no full circles at the ceiling or the floor.
+3. Damage: go to about 1 m away, face it, **hold for 3 seconds**.
+4. Back at the doorway, hold still for 3 seconds, stop.
+
+If you are asked for the whole home in **one** video, do the same at eye level through
+every room, under 5 minutes, without ceiling or floor circles.
 
 ## 3. Photos tier
 
 Settings: **Camera > Photo**, lens **1x**, hold the phone **sideways (landscape)**, no zoom,
-no Portrait mode, flash off.
+no Portrait mode, flash off. **RAW / ProRAW off** (Settings > Camera > Formats): the
+pipeline reads normal photos (HEIC or JPEG), not RAW files.
 
 **First, make one album per room** in the Photos app (tap **+**, then **New Album**), named
 `Room 1 Kitchen`, `Room 2 Hallway`, and so on. After each room, add its photos to its album.
@@ -88,8 +104,9 @@ AirDrop everything to the laptop running the pipeline.
 - **Video:** in Photos, select the video, tap **Share > Options**, switch on **All Photos
   Data**, then AirDrop it.
 - **Photos:** open each room album, tap **Select > Select All > Share > Options**, switch on
-  **All Photos Data**, then AirDrop it. Do one album at a time, so each room arrives as its
-  own folder.
+  **All Photos Data**, then AirDrop it. Do **one album at a time** and tell the operator
+  which room it is: AirDrop delivers loose photos, and the operator puts each room's photos
+  in a folder named after the room.
 
 Do **not** send files through WhatsApp or email: they shrink photos and videos and lose the
 information the pipeline needs.

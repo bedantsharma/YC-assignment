@@ -31,8 +31,8 @@ something goes wrong.
 | They captured | What arrives | Command |
 |---|---|---|
 | LiDAR (Stray Scanner) | a zip (or a folder) | `./run.sh ~/Downloads/<recording>.zip --damage` |
-| Video of one room | `IMG_xxxx.MOV` | `./run.sh ~/Downloads/IMG_xxxx.MOV --frames 60 --damage` |
-| Video of several rooms | `IMG_xxxx.MOV` | `./run.sh ~/Downloads/IMG_xxxx.MOV --frames 90 --damage` |
+| Video, one clip per room (what the protocol asks) | one `IMG_xxxx.MOV` per room | per clip: `./run.sh ~/Downloads/IMG_xxxx.MOV --frames 60 --damage` |
+| Video, one clip of several rooms | `IMG_xxxx.MOV` | `./run.sh ~/Downloads/IMG_xxxx.MOV --frames 90 --damage` (long whole-home clips can fold rooms together: ask for one clip per room if there is time) |
 | Photos | loose photos | in Finder make `~/Downloads/walkin/<RoomName>/` per room and drag each room's photos in, then `./run.sh ~/Downloads/walkin --damage` |
 
 The plan picture opens by itself when it is done. Results: `outputs/<name>_<tier>/`

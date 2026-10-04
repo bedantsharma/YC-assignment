@@ -20,7 +20,7 @@ inside that range 9 times out of 10.
 | What you give it | Phone needed | How good |
 |---|---|---|
 | **LiDAR scan** (the free *Stray Scanner* app) | iPhone Pro or iPad Pro (they have a depth sensor) | Best: walls within about 5 cm |
-| **Video**: walk slowly through the rooms | Any iPhone 15 or newer | Good: walls within about 8 cm |
+| **Video**: one short clip per room, at eye level | Any iPhone 15 or newer | Good: walls within about 8 cm |
 | **Photos**: 2 to 15 per room, one folder per room | Any iPhone 15 or newer | Rough: walls within about 20 cm |
 
 How to film or photograph a room, step by step: `docs/capture_protocol.md` (two pages).
