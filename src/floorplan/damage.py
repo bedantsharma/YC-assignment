@@ -1,0 +1,263 @@
+"""Damage detection on images: a hosted VLM (Gemini) finds and labels damage as boxes, a
+model-free step outlines each box as a pixel mask (docs/damage_research.md).
+
+Detector. One Gemini call per image asks for the five damage classes plus two context
+classes (sockets / switches and exposed wiring, used only by the concealed-damage rules).
+Boxes come back as `box_2d` = [ymin, xmin, ymax, xmax] normalised to 0-1000.
+
+Credentials are never read or stored by this code: `google-genai` picks them up from the
+environment. Vertex AI: `GOOGLE_GENAI_USE_VERTEXAI=true`, `GOOGLE_CLOUD_PROJECT`,
+`GOOGLE_CLOUD_LOCATION` and either `GOOGLE_APPLICATION_CREDENTIALS` (service-account JSON)
+or `gcloud auth application-default login`; or Vertex express mode / the Gemini Developer
+API with `GOOGLE_API_KEY`. Model: `FLOORPLAN_GEMINI_MODEL` (default `DEFAULT_MODEL`).
+
+Cache. A hosted model cannot be rerun to the same answer later, so every response is stored
+as JSON in `FLOORPLAN_DAMAGE_CACHE` (default `data/damage_cache`), keyed by the image bytes
+sent, the model and the prompt version. `FLOORPLAN_DAMAGE_CACHE_ONLY=1` makes a miss an error:
+reported numbers then replay without the network.
+
+Mask. Inside each box (padded), pixels that differ from the ring of wall around it by more
+than a robust threshold; the connected part nearest the box centre is kept. When that finds
+too little or almost the whole box, the ellipse inscribed in the box is used instead and
+the mask is marked `ellipse`.
+"""
+
+import hashlib
+import io
+import json
+import os
+from dataclasses import dataclass, field
+from pathlib import Path
+
+import numpy as np
+from PIL import Image
+from scipy import ndimage
+
+DAMAGE_CLASSES = ("crack", "water_stain", "mould", "hole", "peeling_paint")
+CONTEXT_CLASSES = ("outlet_or_switch", "exposed_wiring")
+DEFAULT_MODEL = "gemini-2.5-flash"
+MODEL_ENV = "FLOORPLAN_GEMINI_MODEL"
+CACHE_ENV = "FLOORPLAN_DAMAGE_CACHE"
+CACHE_ONLY_ENV = "FLOORPLAN_DAMAGE_CACHE_ONLY"
+DEFAULT_CACHE = Path("data/damage_cache")
+PROMPT_VERSION = "v1"
+SEND_LONG_SIDE = 1536  # px; boxes are normalised, so the size only limits detail and cost
+JPEG_QUALITY = 92
+MIN_SCORE = 0.3
+
+PROMPT = f"""You are a building surveyor inspecting the interior surfaces (walls, ceiling,
+floor) of a home in this photo for damage.
+
+Find every visible instance of these damage classes:
+- crack: a crack in plaster, drywall or paint (not a joint between boards or tiles)
+- water_stain: a water or damp stain, tide mark or discolouration from moisture
+- mould: mould or mildew growth (dark speckled patches)
+- hole: a hole or missing piece in a wall, ceiling or floor surface
+- peeling_paint: paint that is peeling, flaking or blistering
+
+Also mark these context objects (they are not damage):
+- outlet_or_switch: an electrical socket, switch plate or junction box on a surface
+- exposed_wiring: visible electrical wires or conduit on or coming out of a surface
+
+Do NOT report furniture, decor, shadows, reflections, light spots, wood grain, picture
+hooks, small nail holes (under 5 mm), or the normal edges where two surfaces meet.
+One box per separate instance; a box tight around that instance only.
+
+Answer with a JSON list (empty list if there is nothing). Each item has:
+"label": one of {", ".join(DAMAGE_CLASSES + CONTEXT_CLASSES)};
+"box_2d": [ymin, xmin, ymax, xmax] normalised to 0-1000;
+"confidence": 0 to 1, how sure you are this is a real instance of that class;
+"note": a few words on what you see."""
+
+RING_FRAC = 0.25  # ring of background around a box, as a share of the box size
+BOX_PAD_FRAC = 0.1  # boxes from VLMs are loose: search a little outside them
+MIN_MAD = 6.0  # grey levels: floor on the background spread
+THRESH_SIGMA = 3.0
+MASK_MIN_FILL, MASK_MAX_FILL = 0.03, 0.9  # share of the box; outside: use the ellipse
+
+
+@dataclass
+class Detection:
+    image_id: str
+    label: str
+    score: float
+    box: tuple[float, float, float, float]  # x0, y0, x1, y1 in pixels of the image given
+    note: str = ""
+    mask: np.ndarray | None = field(default=None, repr=False)  # bool, full image size
+    mask_source: str = ""  # "contrast" or "ellipse"
+
+    @property
+    def is_damage(self) -> bool:
+        return self.label in DAMAGE_CLASSES
+
+
+def model_name() -> str:
+    return os.environ.get(MODEL_ENV, DEFAULT_MODEL)
+
+
+def detect(image_id: str, image: Image.Image, with_masks: bool = True) -> list[Detection]:
+    """Damage and context detections on one upright image."""
+    data = _encode(image)
+    items = _cached_call(data)
+    w, h = image.size
+    dets = []
+    for item in parse_items(items):
+        y0, x0, y1, x1 = item["box_2d"]
+        box = (x0 / 1000 * w, y0 / 1000 * h, x1 / 1000 * w, y1 / 1000 * h)
+        det = Detection(image_id, item["label"], item["confidence"], box, item["note"])
+        if det.score < MIN_SCORE:
+            continue
+        if with_masks:
+            det.mask, det.mask_source = outline(image, box)
+        dets.append(det)
+    return dets
+
+
+def parse_items(items) -> list[dict]:
+    """Keep well-formed items with a known label; clip boxes to 0-1000 and order them."""
+    out = []
+    for it in items if isinstance(items, list) else []:
+        if not isinstance(it, dict):
+            continue
+        label = str(it.get("label", "")).strip().lower().replace(" ", "_")
+        label = {"mold": "mould", "peeling": "peeling_paint", "stain": "water_stain"}.get(
+            label, label
+        )
+        box = it.get("box_2d")
+        if label not in DAMAGE_CLASSES + CONTEXT_CLASSES or not isinstance(box, list):
+            continue
+        if len(box) != 4:
+            continue
+        try:
+            y0, x0, y1, x1 = (min(1000.0, max(0.0, float(v))) for v in box)
+            score = float(it.get("confidence", 0.5))
+        except (TypeError, ValueError):
+            continue
+        y0, y1 = sorted((y0, y1))
+        x0, x1 = sorted((x0, x1))
+        if y1 - y0 < 1 or x1 - x0 < 1:
+            continue
+        out.append(
+            {
+                "label": label,
+                "box_2d": [y0, x0, y1, x1],
+                "confidence": min(1.0, max(0.0, score)),
+                "note": str(it.get("note", ""))[:200],
+            }
+        )
+    return out
+
+
+def outline(image: Image.Image, box: tuple[float, float, float, float]):
+    """Pixel mask of the damage inside `box` (model-free), and how it was made."""
+    grey = np.asarray(image.convert("L"), dtype=float)
+    h, w = grey.shape
+    x0, y0, x1, y1 = box
+    bw, bh = max(x1 - x0, 2.0), max(y1 - y0, 2.0)
+    px, py = BOX_PAD_FRAC * bw, BOX_PAD_FRAC * bh
+    rx, ry = RING_FRAC * bw + px, RING_FRAC * bh + py
+    ox0, oy0 = int(max(0, x0 - rx)), int(max(0, y0 - ry))
+    ox1, oy1 = int(min(w, x1 + rx + 1)), int(min(h, y1 + ry + 1))
+    ix0, iy0 = int(max(0, x0 - px)), int(max(0, y0 - py))
+    ix1, iy1 = int(min(w, x1 + px + 1)), int(min(h, y1 + py + 1))
+
+    mask = np.zeros((h, w), bool)
+    win = grey[oy0:oy1, ox0:ox1]
+    inner = np.zeros(win.shape, bool)
+    inner[iy0 - oy0 : iy1 - oy0, ix0 - ox0 : ix1 - ox0] = True
+    ring = win[~inner]
+    if ring.size >= 20 and inner.any():
+        med = float(np.median(ring))
+        mad = max(1.4826 * float(np.median(np.abs(ring - med))), MIN_MAD)
+        odd = inner & (np.abs(win - med) > THRESH_SIGMA * mad)
+        odd = ndimage.binary_closing(odd, iterations=2) & inner
+        lab, n = ndimage.label(odd)
+        if n:
+            cy, cx = (y0 + y1) / 2 - oy0, (x0 + x1) / 2 - ox0
+            sizes = ndimage.sum(odd, lab, range(1, n + 1))
+            coms = np.array(ndimage.center_of_mass(odd, lab, range(1, n + 1)))
+            dist = np.hypot(coms[:, 0] - cy, coms[:, 1] - cx) / np.hypot(bw, bh)
+            # big parts near the centre win; tiny specks far away lose
+            k = int(np.argmax(sizes / (1.0 + 4.0 * dist)))
+            part = ndimage.binary_fill_holes(lab == k + 1)
+            fill = part.sum() / max(1, inner.sum())
+            if MASK_MIN_FILL <= fill <= MASK_MAX_FILL:
+                mask[oy0:oy1, ox0:ox1] = part
+                return mask, "contrast"
+    yy, xx = np.mgrid[0:h, 0:w]
+    cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+    mask = ((xx + 0.5 - cx) / (bw / 2)) ** 2 + ((yy + 0.5 - cy) / (bh / 2)) ** 2 <= 1.0
+    return mask, "ellipse"
+
+
+def _encode(image: Image.Image) -> bytes:
+    im = image.convert("RGB")
+    scale = SEND_LONG_SIDE / max(im.size)
+    if scale < 1:
+        im = im.resize((round(im.width * scale), round(im.height * scale)), Image.LANCZOS)
+    buf = io.BytesIO()
+    im.save(buf, "JPEG", quality=JPEG_QUALITY)
+    return buf.getvalue()
+
+
+def _cache_path(data: bytes, model: str) -> Path:
+    root = Path(os.environ.get(CACHE_ENV, DEFAULT_CACHE))
+    key = hashlib.sha1(data + model.encode() + PROMPT_VERSION.encode()).hexdigest()[:20]
+    return root / f"{model}_{PROMPT_VERSION}" / f"{key}.json"
+
+
+def _cached_call(data: bytes) -> list:
+    model = model_name()
+    path = _cache_path(data, model)
+    if path.exists():
+        return json.loads(path.read_text())["items"]
+    if os.environ.get(CACHE_ONLY_ENV) == "1":
+        raise RuntimeError(f"damage cache miss ({path}) and {CACHE_ONLY_ENV}=1")
+    text = _call_gemini(data, model)
+    items = _parse_json(text)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    record = {
+        "model": model,
+        "prompt_version": PROMPT_VERSION,
+        "image_sha1": hashlib.sha1(data).hexdigest(),
+        "raw": text,
+        "items": items,
+    }
+    path.write_text(json.dumps(record, indent=1))
+    return items
+
+
+def _parse_json(text: str) -> list:
+    text = text.strip()
+    if text.startswith("```"):
+        text = text.strip("`")
+        text = text[text.find("\n") + 1 :] if "\n" in text else text
+    try:
+        out = json.loads(text)
+    except json.JSONDecodeError:
+        start, end = text.find("["), text.rfind("]")
+        if start < 0 or end <= start:
+            return []
+        try:
+            out = json.loads(text[start : end + 1])
+        except json.JSONDecodeError:
+            return []
+    return out if isinstance(out, list) else []
+
+
+def _call_gemini(data: bytes, model: str) -> str:
+    try:
+        from google import genai
+        from google.genai import types
+    except ImportError as err:  # pragma: no cover
+        raise RuntimeError("google-genai is not installed: uv sync") from err
+    client = genai.Client()
+    response = client.models.generate_content(
+        model=model,
+        contents=[types.Part.from_bytes(data=data, mime_type="image/jpeg"), PROMPT],
+        config=types.GenerateContentConfig(
+            temperature=0.0,
+            response_mime_type="application/json",
+        ),
+    )
+    return response.text or "[]"

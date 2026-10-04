@@ -38,13 +38,19 @@ def run(
     frames: int = VIDEO_FRAMES,
     up: str = "auto",
     model: str = "pi3x",
+    damage: bool = False,
+    damage_frames: int | None = None,
+    damage_dir: Path | None = None,
 ) -> Result:
+    """damage: detect damage (hosted Gemini; LiDAR tier only so far), overlays to damage_dir."""
     path = Path(path)
     fmt = detect_format(path)
     tier = resolve_tier(fmt, tier)
     capture = Capture(path.stem if path.is_file() else path.name, tier=tier, source=str(path))
     if tier == "lidar":
-        return _run_lidar(path, capture, drift)
+        return _run_lidar(path, capture, drift, damage, damage_frames, damage_dir)
+    if damage:
+        raise ValueError("--damage is only built for the LiDAR tier so far")
     if tier == "video":
         return _run_video(path, capture, frames, up, model)
 
@@ -239,7 +245,14 @@ def _sightlines(rec, cams: np.ndarray, vertical: np.ndarray, model: str, tier: s
     return Sightlines(cams[:, :2], np.concatenate(pts), np.concatenate(view))
 
 
-def _run_lidar(path: Path, capture: Capture, drift: bool) -> Result:
+def _run_lidar(
+    path: Path,
+    capture: Capture,
+    drift: bool,
+    damage: bool = False,
+    damage_frames: int | None = None,
+    damage_dir: Path | None = None,
+) -> Result:
     timing = {}
     start = time.perf_counter()
     n_frames = len(load_lidar(path).depth_paths)
@@ -270,11 +283,32 @@ def _run_lidar(path: Path, capture: Capture, drift: bool) -> Result:
 
     warnings = [f"used {len(frames.depth_paths)} of {n_frames} depth frames"]
     warnings += drift_warnings + plan.warnings
+    found = ([], [], [], [])
+    if damage and plan.rooms:
+        from floorplan.damage_lidar import DAMAGE_FRAMES, run_damage
+
+        start = time.perf_counter()
+        *found, notes = run_damage(
+            path,
+            frames,
+            plan.rooms,
+            plan.rotation_deg,
+            plan.floor_z,
+            damage_frames or DAMAGE_FRAMES,
+            damage_dir,
+        )
+        timing["damage"] = round(time.perf_counter() - start, 3)
+        warnings += notes
+    surfaces, damage_items, flags, scope = found
     return Result(
         capture=capture,
         rooms=plan.rooms,
         footprint_area=plan.footprint_area,
         adjacency=plan.adjacency,
+        surfaces=surfaces,
+        damage=damage_items,
+        flags=flags,
+        scope=scope,
         plan_rotation_deg=plan.rotation_deg,
         drift_correction=DRIFT_METHOD if drift else None,
         timing_s=timing,

@@ -34,20 +34,100 @@ def main(argv: list[str] | None = None) -> int:
         default="pi3x",
         help="video tier: pi3x (more accurate, CC BY-NC weights) or mapanything (Apache 2.0)",
     )
+    p_run.add_argument(
+        "--damage",
+        action="store_true",
+        help="detect damage with Gemini (hosted; credentials from the environment, see "
+        "src/floorplan/damage.py); LiDAR tier only so far",
+    )
+    p_run.add_argument("--damage-frames", type=int, help="keyframes sent to the damage detector")
+    p_dmg = sub.add_parser(
+        "damage", help="detect damage on photos (no sizes): detections.json + overlays"
+    )
+    p_dmg.add_argument("images", type=Path, nargs="+", help="image files or folders")
+    p_dmg.add_argument("--out", type=Path, default=Path("outputs/damage_photos"))
     args = parser.parse_args(argv)
+    if args.command == "damage":
+        return _damage_photos(args.images, args.out)
 
+    out_dir = args.out / f"{_capture_id(args.capture)}_{args.tier or 'auto'}"
     try:
-        result = run(args.capture, args.tier, args.drift, args.frames, args.up, args.model)
+        result = run(
+            args.capture,
+            args.tier,
+            args.drift,
+            args.frames,
+            args.up,
+            args.model,
+            damage=args.damage,
+            damage_frames=args.damage_frames,
+            damage_dir=out_dir / "damage" if args.damage else None,
+        )
     except ValueError as err:
         print(f"floorplan: {err}", file=sys.stderr)
         return 2
 
-    out_dir = args.out / f"{result.capture.id}_{result.capture.tier}"
+    final_dir = args.out / f"{result.capture.id}_{result.capture.tier}"
+    if (out_dir / "damage").is_dir() and out_dir != final_dir:
+        final_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / "damage").replace(final_dir / "damage")
+        out_dir.rmdir() if not any(out_dir.iterdir()) else None
+    out_dir = final_dir
     path = write_json(result, out_dir / "plan.json")
     render_plan(result, out_dir / "plan.png")
     print(f"{result.capture.id} [{result.capture.tier}] -> {path} (+ plan.png)")
     for warning in result.warnings:
         print(f"  warning: {warning}")
+    return 0
+
+
+def _capture_id(path: Path) -> str:
+    return path.stem if path.is_file() else path.name
+
+
+def _damage_photos(paths: list[Path], out: Path) -> int:
+    """Detection only: one row per detection, and an overlay per image with detections."""
+    import json
+
+    from PIL import Image, ImageOps
+
+    from floorplan.capture import PHOTO_SUFFIXES
+    from floorplan.damage import detect, model_name
+    from floorplan.damage_lidar import overlay
+
+    files = []
+    for p in paths:
+        files += (
+            sorted(f for f in p.rglob("*") if f.suffix.lower() in PHOTO_SUFFIXES)
+            if (p.is_dir())
+            else [p]
+        )
+    rows = []
+    for f in files:
+        image = ImageOps.exif_transpose(Image.open(f)).convert("RGB")
+        image_id = f"{f.parent.name}/{f.stem}"
+        dets = detect(image_id, image)
+        for d in dets:
+            rows.append(
+                {
+                    "image": str(f),
+                    "label": d.label,
+                    "score": d.score,
+                    "box_px": [round(v, 1) for v in d.box],
+                    "mask_px": int(d.mask.sum()) if d.mask is not None else None,
+                    "mask_source": d.mask_source,
+                    "note": d.note,
+                }
+            )
+        if dets:
+            dest = out / "overlays" / f"{f.parent.name}_{f.stem}.jpg"
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            overlay(image, dets, dets).save(dest, quality=85)
+        print(f"{image_id}: " + (", ".join(f"{d.label} {d.score:.2f}" for d in dets) or "-"))
+    out.mkdir(parents=True, exist_ok=True)
+    record = {"model": model_name(), "images": [str(f) for f in files], "detections": rows}
+    (out / "detections.json").write_text(json.dumps(record, indent=1))
+    print(f"{len(rows)} detections on {len(files)} images -> {out}/detections.json")
     return 0
 
 

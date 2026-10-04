@@ -26,3 +26,6 @@ outputs/
 
 # Raw drops from the friend before sorting into data/home_c (large; never commit)
 dataset/
+
+# Gemini damage responses: the record of a hosted model run (small JSON, committed)
+!data/damage_cache/

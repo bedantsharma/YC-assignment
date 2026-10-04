@@ -108,6 +108,13 @@ class Damage:
     score: float  # detector confidence, 0..1
     region: tuple[float, float, float, float]  # u0, v0, u1, v1 in metres on the surface
     area: Measurement
+    # wall: u along the wall from its start corner (seen from inside: the right-hand corner),
+    # v above the floor; floor / ceiling: plan (x, y)
+    centre: tuple[float, float] | None = None
+    length: Measurement | None = None  # cracks: length along the crack
+    width_band: str | None = None  # cracks: width as a band (hairlines are below a pixel)
+    views: list[str] = field(default_factory=list)  # images it was seen in
+    note: str = ""  # detector's description
 
 
 @dataclass
