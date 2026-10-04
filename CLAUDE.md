@@ -34,7 +34,11 @@ land); datasets: `docs/data_plan.md`. Deadline: Mon Oct 5, 10:00 IST.
   - `lidar.py`: point cloud → output `Room`s with intervals (shared geometry backend)
   - `drift.py`: opt-in pose drift correction (`--drift`, off by default)
   - `video.py`: upright frames from a video (orientation), vertical from wall normals
-  - `mvs.py`: frames → metric cloud + camera poses (Pi3X default, MapAnything fallback)
+  - `mvs.py`: frames → metric cloud + camera poses (Pi3X default, MapAnything fallback);
+    `ensure()` routes model passes: Kaggle (`remote.py` + `kaggle_kernel.py`) by default,
+    else `mvs_local.py` (low-memory windows in child processes)
+  - `ffmpeg.py`: system ffmpeg or the bundled imageio-ffmpeg; length / rotation without ffprobe
+  - `check.py`: `floorplan check`, readiness of every tier (run before the walk-in)
   - `chunks.py`: > 30 frames in overlapping windows, chained by similarity fits
   - `intervals.py`: video scale-bias correction and per-axis interval widening
   - `photos.py`: photo folders → upright images; plan rooms named after folders
@@ -91,8 +95,8 @@ coverage of wall / ceiling patches (2 views each, within 3 m and 60 deg, not hid
 LiDAR depth), up to 60 keyframes. The protocol asks for a 3 s hold at 1 m from each damage;
 photo tier: damage close-ups go inside that room's folder (a loose photo has no pose or
 scale). Still to do: video tier (pauses from pixels by phase correlation; reconstruct pause
-frames first so each has a Pi3X pose), photo tier (every photo to the detector), optional
-low-res screening pass.
+frames first so each has a Pi3X pose), optional low-res screening pass. Built since: video
+tier on the reconstruction's even frames, photo tier on every photo.
 
 ## Working rules
 
