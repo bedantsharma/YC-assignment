@@ -275,3 +275,9 @@ uv run pytest               # tests
 - [docs/damage_research.md](docs/damage_research.md): damage detection research and plan (models, datasets, sizing on the wall, rules, scope items)
 - [docs/damage_models.md](docs/damage_models.md): Gemini 3.1 Pro vs 3.8 / 3.6 Flash vs Florence-2 on the staged room's photos
 - [docs/damage_hole.md](docs/damage_hole.md): the staged hole's measured size vs the tape, every tier and detector
+
+## License
+
+Proprietary, all rights reserved: see [LICENSE](LICENSE). Cozmo AI / Brynz Tech may clone,
+run and reproduce it to evaluate the assessment; no other use or copying without written
+permission. Third-party dependencies and model weights keep their own licences.

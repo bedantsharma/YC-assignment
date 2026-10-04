@@ -1,0 +1,30 @@
+Copyright (c) 2026 Bedant Sharma. All rights reserved.
+
+This repository, including its source code, scripts, documentation, reports, figures and
+data files (together, the "Software"), is the proprietary work and intellectual property of
+Bedant Sharma.
+
+No licence is granted to copy, modify, merge, publish, distribute, sublicense, sell, or
+create derivative works from the Software, in whole or in part, or to use it for any
+commercial or non-commercial purpose, without prior written permission from the copyright
+holder.
+
+Evaluation permission. Cozmo AI and Brynz Tech, solely for the purpose of evaluating the
+author's take-home assessment, may clone, read, install and run the Software and reproduce
+its reported results. This permission ends when the evaluation ends and does not extend to
+any other use, including incorporating any part of the Software into other products,
+services or codebases.
+
+Viewing the Software on GitHub, and forking it within GitHub as GitHub's Terms of Service
+allow, grants no further rights.
+
+Third-party components keep their own licences: dependencies installed by `uv sync`, and
+model weights downloaded at run time (for example Pi3X, CC BY-NC 4.0; MapAnything, Apache
+2.0; Florence-2-base, MIT), which are not part of this repository and are not covered by
+this notice.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. IN NO
+EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY ARISING FROM THE
+SOFTWARE OR ITS USE.
+
+For permission requests: bedant.sharma.dev@gmail.com

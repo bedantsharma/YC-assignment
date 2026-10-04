@@ -3,6 +3,7 @@ name = "floorplan"
 version = "0.1.0"
 description = "Phone captures (LiDAR, video, photos) to dimensioned floor plans"
 readme = "README.md"
+license = { file = "LICENSE" }
 authors = [
     { name = "Bedant sharma", email = "manurishi1103@gmail.com" }
 ]
