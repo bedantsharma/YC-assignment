@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "75f8acb72dd8dab2b69d37bf047a109dc62100df",
+ "raw": "[\n  {\n    \"label\": \"exposed_wiring\",\n    \"box_2d\": [\n      720,\n      114,\n      1000,\n      280\n    ],\n    \"confidence\": 0.9,\n    \"note\": \"White wire hanging down from the shelf.\"\n  },\n  {\n    \"label\": \"exposed_wiring\",\n    \"box_2d\": [\n      754,\n      850,\n      846,\n      990\n    ],\n    \"confidence\": 0.85,\n    \"note\": \"Black wire hanging down from the shelf.\"\n  }\n]",
+ "items": [
+  {
+   "label": "exposed_wiring",
+   "box_2d": [
+    720,
+    114,
+    1000,
+    280
+   ],
+   "confidence": 0.9,
+   "note": "White wire hanging down from the shelf."
+  },
+  {
+   "label": "exposed_wiring",
+   "box_2d": [
+    754,
+    850,
+    846,
+    990
+   ],
+   "confidence": 0.85,
+   "note": "Black wire hanging down from the shelf."
+  }
+ ]
+}

@@ -1,0 +1,52 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "b96348cf09de0067553384e6d7dfd2f3c4045549",
+ "raw": "[\n  {\"box_2d\": [545, 608, 579, 644], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"electrical outlet\"},\n  {\"box_2d\": [516, 229, 540, 328], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"electrical outlet\"},\n  {\"box_2d\": [131, 675, 396, 998], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"exposed wiring\"},\n  {\"box_2d\": [444, 610, 624, 703], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"exposed wiring\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    545,
+    608,
+    579,
+    644
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "electrical outlet"
+  },
+  {
+   "box_2d": [
+    516,
+    229,
+    540,
+    328
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "electrical outlet"
+  },
+  {
+   "box_2d": [
+    131,
+    675,
+    396,
+    998
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "exposed wiring"
+  },
+  {
+   "box_2d": [
+    444,
+    610,
+    624,
+    703
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "exposed wiring"
+  }
+ ]
+}

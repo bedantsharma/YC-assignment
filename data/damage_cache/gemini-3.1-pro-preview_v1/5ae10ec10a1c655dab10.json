@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "79628cb42afb51fe2177706d590cde7cb5c92188",
+ "raw": "[\n  {\"box_2d\": [185, 430, 318, 577], \"label\": \"hole\", \"confidence\": 0.95, \"note\": \"large hole in wall around exhaust fan\"},\n  {\"box_2d\": [398, 195, 431, 235], \"label\": \"outlet_or_switch\", \"confidence\": 0.98, \"note\": \"electrical switch plate\"},\n  {\"box_2d\": [314, 485, 413, 510], \"label\": \"water_stain\", \"confidence\": 0.85, \"note\": \"drip stain below exhaust fan hole\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    185,
+    430,
+    318,
+    577
+   ],
+   "label": "hole",
+   "confidence": 0.95,
+   "note": "large hole in wall around exhaust fan"
+  },
+  {
+   "box_2d": [
+    398,
+    195,
+    431,
+    235
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.98,
+   "note": "electrical switch plate"
+  },
+  {
+   "box_2d": [
+    314,
+    485,
+    413,
+    510
+   ],
+   "label": "water_stain",
+   "confidence": 0.85,
+   "note": "drip stain below exhaust fan hole"
+  }
+ ]
+}

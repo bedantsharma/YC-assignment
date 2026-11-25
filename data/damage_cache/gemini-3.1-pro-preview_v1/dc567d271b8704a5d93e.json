@@ -1,0 +1,19 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "1c96a8316c1e7e77d7a6d7f4734ec66019f506e5",
+ "raw": "[\n  {\"box_2d\": [575, 938, 602, 1000], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"electrical outlet on the wall\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    575,
+    938,
+    602,
+    1000
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "electrical outlet on the wall"
+  }
+ ]
+}

@@ -1,0 +1,52 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "c2e231db25b56541bf1eea0c97bb4b391ae99863",
+ "raw": "[\n  {\"box_2d\": [129, 141, 406, 678], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"white wire running along wall and door frame\"},\n  {\"box_2d\": [451, 71, 640, 176], \"label\": \"exposed_wiring\", \"confidence\": 0.95, \"note\": \"white wire hanging down wall\"},\n  {\"box_2d\": [557, 71, 592, 110], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"black electrical outlet on wall\"},\n  {\"box_2d\": [402, 138, 454, 190], \"label\": \"outlet_or_switch\", \"confidence\": 0.9, \"note\": \"white electrical box or switch on wall\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    129,
+    141,
+    406,
+    678
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "white wire running along wall and door frame"
+  },
+  {
+   "box_2d": [
+    451,
+    71,
+    640,
+    176
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.95,
+   "note": "white wire hanging down wall"
+  },
+  {
+   "box_2d": [
+    557,
+    71,
+    592,
+    110
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "black electrical outlet on wall"
+  },
+  {
+   "box_2d": [
+    402,
+    138,
+    454,
+    190
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.9,
+   "note": "white electrical box or switch on wall"
+  }
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "5f6e0b803065ddc5ebb2344b9209f1f272b0e0fa",
+ "raw": "[\n  {\"box_2d\": [315, 294, 441, 322], \"label\": \"water_stain\", \"confidence\": 0.9, \"note\": \"water stain running down wall from fan\"},\n  {\"box_2d\": [155, 204, 322, 393], \"label\": \"hole\", \"confidence\": 0.95, \"note\": \"large hole in wall for exhaust fan\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    315,
+    294,
+    441,
+    322
+   ],
+   "label": "water_stain",
+   "confidence": 0.9,
+   "note": "water stain running down wall from fan"
+  },
+  {
+   "box_2d": [
+    155,
+    204,
+    322,
+    393
+   ],
+   "label": "hole",
+   "confidence": 0.95,
+   "note": "large hole in wall for exhaust fan"
+  }
+ ]
+}

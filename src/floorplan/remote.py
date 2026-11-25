@@ -35,6 +35,7 @@ UPLOAD_QUALITY = 95  # JPEG: ~5x smaller than PNG; the model works at ~518 px
 TIMEOUT_ENV = "FLOORPLAN_KAGGLE_TIMEOUT_MIN"
 TIMEOUT_MIN = 40
 POLL_S = 20
+DATASET_VISIBLE_MIN = 5  # a new dataset version should be downloadable within this
 STALE_RETRIES = 2
 POLL_FAILS = 3  # consecutive failed status calls (network blip) before giving up
 
@@ -59,12 +60,15 @@ def run(jobs: list[tuple[Path, list[Image.Image]]], model: str) -> float:
         _write_dataset(data, jobs, model, token, f"{user}/{DATASET}")
         exists = _cli(cli, "datasets", "status", f"{user}/{DATASET}", check=False)[0] == 0
         if exists:
-            _cli(cli, "datasets", "version", "-p", str(data), "-m", f"run {token}",
-                 "--dir-mode", "zip")  # fmt: skip
+            upload = _cli(cli, "datasets", "version", "-p", str(data), "-m", f"run {token}",
+                          "--dir-mode", "zip")[1]  # fmt: skip
         else:
-            _cli(cli, "datasets", "create", "-p", str(data), "--dir-mode", "zip")
+            upload = _cli(cli, "datasets", "create", "-p", str(data), "--dir-mode", "zip")[1]
         _wait(lambda: _cli(cli, "datasets", "status", f"{user}/{DATASET}")[1].strip()
               .endswith("ready"), deadline, "dataset processing")  # fmt: skip
+        # the CLI can exit 0 without a new version (and "ready" then describes the old
+        # one): only a jobs.json carrying this run's token proves the upload landed
+        _await_token(cli, f"{user}/{DATASET}", token, tmp / "check", upload)
 
         _write_kernel(kernel, user, token)
         status = {"s": ""}
@@ -110,6 +114,30 @@ def run(jobs: list[tuple[Path, list[Image.Image]]], model: str) -> float:
     secs = time.perf_counter() - start
     _say(f"Kaggle: done in {secs / 60:.1f} min")
     return secs
+
+
+def _await_token(cli: list[str], slug: str, token: str, tmp: Path, upload: str) -> None:
+    """Wait until the dataset's latest jobs.json carries `token`; raise with the upload
+    command's output if it never does (the kernel would only report a stale dataset)."""
+    end = time.perf_counter() + 60 * DATASET_VISIBLE_MIN
+    seen = ""
+    while True:
+        shutil.rmtree(tmp, ignore_errors=True)
+        tmp.mkdir()
+        code, text = _cli(cli, "datasets", "download", slug, "-f", "jobs.json", "-p", str(tmp),
+                          "--force", check=False)  # fmt: skip
+        try:
+            seen = json.loads((tmp / "jobs.json").read_text())["token"]
+        except (OSError, ValueError, KeyError):
+            seen = f"unreadable (kaggle exit {code}: {text.strip()[-120:]})"
+        if seen == token:
+            return
+        if time.perf_counter() > end:
+            raise RuntimeError(
+                f"Kaggle dataset still holds run {seen}, not {token}, "
+                f"{DATASET_VISIBLE_MIN} min after upload; upload output: {upload.strip()[-300:]}"
+            )
+        time.sleep(POLL_S)
 
 
 def username() -> str:

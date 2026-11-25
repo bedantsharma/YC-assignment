@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "94e94b56021cf7773c79942dfab6bf40bd755edb",
+ "raw": "[\n  {\"box_2d\": [548, 889, 576, 1000], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"electrical outlet on tiled wall\"},\n  {\"box_2d\": [193, 218, 333, 383], \"label\": \"hole\", \"confidence\": 0.9, \"note\": \"large hole in wall containing exhaust fan\"},\n  {\"box_2d\": [328, 298, 434, 326], \"label\": \"water_stain\", \"confidence\": 0.8, \"note\": \"drip stain below exhaust fan hole\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    548,
+    889,
+    576,
+    1000
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "electrical outlet on tiled wall"
+  },
+  {
+   "box_2d": [
+    193,
+    218,
+    333,
+    383
+   ],
+   "label": "hole",
+   "confidence": 0.9,
+   "note": "large hole in wall containing exhaust fan"
+  },
+  {
+   "box_2d": [
+    328,
+    298,
+    434,
+    326
+   ],
+   "label": "water_stain",
+   "confidence": 0.8,
+   "note": "drip stain below exhaust fan hole"
+  }
+ ]
+}

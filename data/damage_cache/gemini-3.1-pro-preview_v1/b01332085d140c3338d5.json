@@ -1,0 +1,41 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "96280ebd3b7886aec26b4c241f4d65d4128c972a",
+ "raw": "[\n  {\n    \"label\": \"outlet_or_switch\",\n    \"box_2d\": [\n      605,\n      924,\n      636,\n      1000\n    ],\n    \"confidence\": 0.95,\n    \"note\": \"outlet_or_switch\"\n  },\n  {\n    \"label\": \"hole\",\n    \"box_2d\": [\n      65,\n      380,\n      228,\n      610\n    ],\n    \"confidence\": 0.9,\n    \"note\": \"hole\"\n  },\n  {\n    \"label\": \"outlet_or_switch\",\n    \"box_2d\": [\n      544,\n      0,\n      568,\n      68\n    ],\n    \"confidence\": 0.95,\n    \"note\": \"outlet_or_switch\"\n  }\n]",
+ "items": [
+  {
+   "label": "outlet_or_switch",
+   "box_2d": [
+    605,
+    924,
+    636,
+    1000
+   ],
+   "confidence": 0.95,
+   "note": "outlet_or_switch"
+  },
+  {
+   "label": "hole",
+   "box_2d": [
+    65,
+    380,
+    228,
+    610
+   ],
+   "confidence": 0.9,
+   "note": "hole"
+  },
+  {
+   "label": "outlet_or_switch",
+   "box_2d": [
+    544,
+    0,
+    568,
+    68
+   ],
+   "confidence": 0.95,
+   "note": "outlet_or_switch"
+  }
+ ]
+}

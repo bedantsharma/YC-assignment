@@ -1,0 +1,19 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "5de37a23af12c869246b9cc542d5cbaef650882a",
+ "raw": "[\n  {\"box_2d\": [588, 336, 613, 406], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"electrical outlet on the headboard\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    588,
+    336,
+    613,
+    406
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "electrical outlet on the headboard"
+  }
+ ]
+}

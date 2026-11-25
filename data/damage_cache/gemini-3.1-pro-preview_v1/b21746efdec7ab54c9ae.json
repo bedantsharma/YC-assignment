@@ -1,0 +1,30 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "110ad034d1a957da821bac815634cc19cf844e6c",
+ "raw": "[\n  {\"box_2d\": [274, 26, 300, 83], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"electrical switch plate on wall\"},\n  {\"box_2d\": [295, 0, 433, 58], \"label\": \"exposed_wiring\", \"confidence\": 0.85, \"note\": \"wire hanging from switch plate\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    274,
+    26,
+    300,
+    83
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "electrical switch plate on wall"
+  },
+  {
+   "box_2d": [
+    295,
+    0,
+    433,
+    58
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.85,
+   "note": "wire hanging from switch plate"
+  }
+ ]
+}

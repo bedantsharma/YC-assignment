@@ -1,0 +1,52 @@
+{
+ "model": "gemini-3.1-pro-preview",
+ "prompt_version": "v1",
+ "image_sha1": "457818e6ad334e02b3a539e43fe04dbae7f907bc",
+ "raw": "[\n  {\"box_2d\": [508, 436, 531, 533], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"electrical switch plate\"},\n  {\"box_2d\": [548, 817, 584, 858], \"label\": \"outlet_or_switch\", \"confidence\": 0.95, \"note\": \"electrical socket\"},\n  {\"box_2d\": [262, 905, 450, 1000], \"label\": \"exposed_wiring\", \"confidence\": 0.9, \"note\": \"electrical wire\"},\n  {\"box_2d\": [447, 817, 630, 933], \"label\": \"exposed_wiring\", \"confidence\": 0.9, \"note\": \"electrical wire\"}\n]",
+ "items": [
+  {
+   "box_2d": [
+    508,
+    436,
+    531,
+    533
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "electrical switch plate"
+  },
+  {
+   "box_2d": [
+    548,
+    817,
+    584,
+    858
+   ],
+   "label": "outlet_or_switch",
+   "confidence": 0.95,
+   "note": "electrical socket"
+  },
+  {
+   "box_2d": [
+    262,
+    905,
+    450,
+    1000
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.9,
+   "note": "electrical wire"
+  },
+  {
+   "box_2d": [
+    447,
+    817,
+    630,
+    933
+   ],
+   "label": "exposed_wiring",
+   "confidence": 0.9,
+   "note": "electrical wire"
+  }
+ ]
+}
